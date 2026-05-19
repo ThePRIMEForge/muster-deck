@@ -60,6 +60,17 @@ test('infers mission subcategories from role and focus text', () => {
   ]);
 });
 
+test('infers tractor beam utility subcategory', () => {
+  const vehicle = {
+    career: 'Transport',
+    role: 'Cargo',
+    foci: [{ en_EN: 'Tractor Beam' }],
+    description: { en_EN: 'Uses tractor beams for towing and cargo recovery.' },
+  };
+
+  assert.deepEqual(inferSubcategoryKeys(vehicle), ['cargo_transport', 'tractor_beam']);
+});
+
 test('normalizes Wiki image metadata into media records', () => {
   const media = normalizeMedia({
     images: [

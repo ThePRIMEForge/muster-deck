@@ -62,6 +62,7 @@ Each ship may have multiple subcategories. Subcategories describe mission utilit
 - EMP / QED
 - Exploration
 - Data runner
+- Tractor Beam
 
 Subcategories can be inferred from Wiki and UEX, but users with admin permissions can override them. Overrides should record who changed them and when.
 

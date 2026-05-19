@@ -20,6 +20,7 @@ const SUBCATEGORY_RULES = [
   ['emp_qed', /\bemp\b|\bqed\b|\bquantum enforcement\b/],
   ['exploration', /\bexploration\b|\bexplorer\b|\bpathfinder\b|\bexpedition\b/],
   ['data_runner', /\bdata runner\b|\bdata-running\b|\bdata\b/],
+  ['tractor_beam', /\btractor beam\b|\btractor beams\b|\btowing\b|\btow\b/],
 ];
 
 function localizedText(value) {

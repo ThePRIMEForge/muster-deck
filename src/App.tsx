@@ -39,6 +39,7 @@ import type {
 
 type ViewMode = 'list' | 'islands';
 type SetupMode = 'ship' | 'type';
+type AppPage = 'operation' | 'setup';
 
 type ChangeRequest = {
   id: string;
@@ -200,7 +201,7 @@ const setupShipOptions: SetupShipOption[] = [
     positions: ironcladPositions,
   },
   {
-    name: 'Medical Support Slot',
+    name: 'Medical Support Request',
     manufacturer: 'Any',
     categoryKey: 'medium',
     categoryName: 'Medium',
@@ -226,12 +227,14 @@ function App() {
   const [filter, setFilter] = useState<FilterMode>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [memberSearchTerm, setMemberSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState<AppPage>('operation');
   const [masterLocked, setMasterLocked] = useState(false);
   const [lockedTeams, setLockedTeams] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [setupOpen, setSetupOpen] = useState(true);
   const [setupMode, setSetupMode] = useState<SetupMode>('ship');
   const [setupShipName, setSetupShipName] = useState('Perseus');
+  const [setupShipSearchTerm, setSetupShipSearchTerm] = useState('');
   const [setupTypeKey, setSetupTypeKey] = useState<FleetShipRequest['categoryKey']>('heavy_fighter');
   const [setupTeamKey, setSetupTeamKey] = useState('alpha');
   const [setupProfile, setSetupProfile] = useState<StaffingProfile>('standard');
@@ -375,7 +378,7 @@ function App() {
     const templateByName = new Map(
       setupShipOptions.map((option) => [normalizeName(option.name), option]),
     );
-    const catalogChoices = shipCatalog.map((ship) => optionFromCatalog(ship, templateByName));
+    const catalogChoices = dedupeShipOptions(shipCatalog.map((ship) => optionFromCatalog(ship, templateByName)));
     const catalogNames = new Set(catalogChoices.map((option) => normalizeName(option.name)));
     const missingTemplates = setupShipOptions.filter(
       (option) => !catalogNames.has(normalizeName(option.name)) && option.manufacturer !== 'Any',
@@ -385,6 +388,24 @@ function App() {
       left.name.localeCompare(right.name),
     );
   }, [shipCatalog]);
+  const filteredSetupShipChoices = useMemo(() => {
+    const search = setupShipSearchTerm.trim().toLowerCase();
+
+    if (search.length === 0) {
+      return setupShipChoices;
+    }
+
+    const matches = setupShipChoices.filter((ship) =>
+      [ship.name, ship.manufacturer, ship.categoryName].join(' ').toLowerCase().includes(search),
+    );
+    const selected = setupShipChoices.find((ship) => ship.name === setupShipName);
+
+    if (selected && !matches.some((ship) => ship.name === selected.name)) {
+      return [selected, ...matches];
+    }
+
+    return matches;
+  }, [setupShipChoices, setupShipName, setupShipSearchTerm]);
   const selectedSetupShip = setupShipChoices.find((ship) => ship.name === setupShipName);
   const selectedSetupType = categoryFilters.find((category) => category.key === setupTypeKey);
   const removalRequest = fleetRequests.find((request) => request.id === requestPendingRemovalId);
@@ -604,6 +625,24 @@ function App() {
     }
   }
 
+  function updateRequestProfile(requestId: string, profile: StaffingProfile) {
+    setFleetRequests((current) =>
+      current.map((request) =>
+        request.id === requestId ? { ...request, staffingProfile: profile } : request,
+      ),
+    );
+  }
+
+  function updateRequestCrewTarget(requestId: string, crewTarget: number) {
+    setFleetRequests((current) =>
+      current.map((request) =>
+        request.id === requestId
+          ? { ...request, requiredPositions: Math.max(1, crewTarget) }
+          : request,
+      ),
+    );
+  }
+
   function updateChangeRequest(requestId: string, status: ChangeRequest['status']) {
     const request = changeRequests.find((candidate) => candidate.id === requestId);
 
@@ -726,8 +765,35 @@ function App() {
 
         <nav className="filter-stack" aria-label="Fleet filters">
           <button
-            className={filter === 'all' ? 'filter-button active' : 'filter-button'}
-            onClick={() => setFilter('all')}
+            className={currentPage === 'setup' ? 'filter-button active' : 'filter-button'}
+            onClick={() => setCurrentPage('setup')}
+            type="button"
+          >
+            <SlidersHorizontal size={16} />
+            <span>Fleet Setup</span>
+            <strong>{fleetRequests.length}</strong>
+          </button>
+
+          <button
+            className={currentPage === 'operation' ? 'filter-button active' : 'filter-button'}
+            onClick={() => setCurrentPage('operation')}
+            type="button"
+          >
+            <Ship size={16} />
+            <span>Operation View</span>
+            <strong>{totals.required}</strong>
+          </button>
+
+          <button
+            className={
+              currentPage === 'operation' && filter === 'all'
+                ? 'filter-button active'
+                : 'filter-button'
+            }
+            onClick={() => {
+              setCurrentPage('operation');
+              setFilter('all');
+            }}
             type="button"
           >
             <CircleDot size={16} />
@@ -743,9 +809,16 @@ function App() {
 
             return (
               <button
-                className={filter === category.key ? 'filter-button active' : 'filter-button'}
+                className={
+                  currentPage === 'operation' && filter === category.key
+                    ? 'filter-button active'
+                    : 'filter-button'
+                }
                 key={category.key}
-                onClick={() => setFilter(category.key)}
+                onClick={() => {
+                  setCurrentPage('operation');
+                  setFilter(category.key);
+                }}
                 type="button"
               >
                 <Shield size={16} />
@@ -758,12 +831,18 @@ function App() {
           <div className="filter-group-label">Teams</div>
           {teamFilters.map((team) => {
             const teamKey = team.toLowerCase();
-            const active = filter === `team:${teamKey}`;
+            const active = currentPage === 'operation' && filter === `team:${teamKey}`;
             const locked = Boolean(lockedTeams[teamKey]);
 
             return (
               <div className={active ? 'team-filter active' : 'team-filter'} key={team}>
-                <button onClick={() => setFilter(`team:${teamKey}`)} type="button">
+                <button
+                  onClick={() => {
+                    setCurrentPage('operation');
+                    setFilter(`team:${teamKey}`);
+                  }}
+                  type="button"
+                >
                   <Users size={16} />
                   <span>{team}</span>
                 </button>
@@ -803,9 +882,16 @@ function App() {
               <Unlock size={18} />
               <span>Unlock All</span>
             </button>
-            <button className="icon-action primary" onClick={() => setSetupOpen(true)} type="button">
+            <button
+              className="icon-action primary"
+              onClick={() => {
+                setCurrentPage('setup');
+                setSetupOpen(true);
+              }}
+              type="button"
+            >
               <Plus size={18} />
-              <span>Add Slot</span>
+              <span>Fleet Setup</span>
             </button>
           </div>
         </header>
@@ -831,35 +917,41 @@ function App() {
           </div>
         </div>
 
-        <div className="planning-grid">
-          <FleetSetupPanel
-            open={setupOpen}
-            mode={setupMode}
-            shipOptions={setupShipChoices}
-            selectedShipName={setupShipName}
-            selectedTypeKey={setupTypeKey}
-            selectedTeamKey={setupTeamKey}
-            selectedProfile={setupProfile}
+        {currentPage === 'setup' ? (
+          <FleetSetupWorkspace
+            changeRequests={changeRequests}
             crewTarget={setupCrewTarget}
-            quantity={setupQuantity}
             customPositions={customPositions}
-            onToggleOpen={() => setSetupOpen((current) => !current)}
-            onModeChange={handleSetupModeChange}
-            onShipChange={handleSetupShipChange}
-            onTypeChange={handleSetupTypeChange}
-            onTeamChange={setSetupTeamKey}
-            onProfileChange={setSetupProfile}
-            onCrewTargetChange={setSetupCrewTarget}
-            onQuantityChange={setSetupQuantity}
-            onOpenCustomCrew={() => setCustomCrewOpen(true)}
+            fleetRequests={fleetRequests}
+            messages={fleetMessages}
+            mode={setupMode}
             onAddFleetLine={addFleetLine}
+            onCrewTargetChange={setSetupCrewTarget}
+            onModeChange={handleSetupModeChange}
+            onOpenCustomCrew={() => setCustomCrewOpen(true)}
+            onProfileChange={setSetupProfile}
+            onQuantityChange={setSetupQuantity}
+            onRemoveRequest={requestRemoveFleetLine}
+            onRequestCrewTargetChange={updateRequestCrewTarget}
+            onRequestProfileChange={updateRequestProfile}
+            onRequestTeamChange={moveRequestToTeam}
+            onShipChange={handleSetupShipChange}
+            onShipSearchChange={setSetupShipSearchTerm}
+            onTeamChange={setSetupTeamKey}
+            onTypeChange={handleSetupTypeChange}
+            onUpdateChangeRequest={updateChangeRequest}
+            quantity={setupQuantity}
+            selectedProfile={setupProfile}
+            selectedShipName={setupShipName}
+            selectedTeamKey={setupTeamKey}
+            selectedTypeKey={setupTypeKey}
+            setupOpen={setupOpen}
+            shipOptions={filteredSetupShipChoices}
+            shipSearchTerm={setupShipSearchTerm}
+            onToggleSetup={() => setSetupOpen((current) => !current)}
           />
-          <div className="command-stack">
-            <ChangeLogPanel requests={changeRequests} onUpdate={updateChangeRequest} />
-            <MessageHistoryPanel messages={fleetMessages} variant="command" />
-          </div>
-        </div>
-
+        ) : (
+          <>
         <div className="toolbar">
           <div className="search-box">
             <Search size={17} />
@@ -919,6 +1011,8 @@ function App() {
             />
           ))}
         </div>
+          </>
+        )}
       </section>
 
       <aside className="member-rail">
@@ -999,6 +1093,176 @@ function App() {
   );
 }
 
+function FleetSetupWorkspace({
+  changeRequests,
+  crewTarget,
+  customPositions,
+  fleetRequests,
+  messages,
+  mode,
+  onAddFleetLine,
+  onCrewTargetChange,
+  onModeChange,
+  onOpenCustomCrew,
+  onProfileChange,
+  onQuantityChange,
+  onRemoveRequest,
+  onRequestCrewTargetChange,
+  onRequestProfileChange,
+  onRequestTeamChange,
+  onShipChange,
+  onShipSearchChange,
+  onTeamChange,
+  onToggleSetup,
+  onTypeChange,
+  onUpdateChangeRequest,
+  quantity,
+  selectedProfile,
+  selectedShipName,
+  selectedTeamKey,
+  selectedTypeKey,
+  setupOpen,
+  shipOptions,
+  shipSearchTerm,
+}: {
+  changeRequests: ChangeRequest[];
+  crewTarget: number;
+  customPositions: PositionRequirement[];
+  fleetRequests: FleetShipRequest[];
+  messages: FleetMessage[];
+  mode: SetupMode;
+  onAddFleetLine: () => void;
+  onCrewTargetChange: (crewTarget: number) => void;
+  onModeChange: (mode: SetupMode) => void;
+  onOpenCustomCrew: () => void;
+  onProfileChange: (profile: StaffingProfile) => void;
+  onQuantityChange: (quantity: number) => void;
+  onRemoveRequest: (requestId: string) => void;
+  onRequestCrewTargetChange: (requestId: string, crewTarget: number) => void;
+  onRequestProfileChange: (requestId: string, profile: StaffingProfile) => void;
+  onRequestTeamChange: (requestId: string, teamKey: string) => void;
+  onShipChange: (shipName: string) => void;
+  onShipSearchChange: (searchTerm: string) => void;
+  onTeamChange: (teamKey: string) => void;
+  onToggleSetup: () => void;
+  onTypeChange: (categoryKey: FleetShipRequest['categoryKey']) => void;
+  onUpdateChangeRequest: (requestId: string, status: ChangeRequest['status']) => void;
+  quantity: number;
+  selectedProfile: StaffingProfile;
+  selectedShipName: string;
+  selectedTeamKey: string;
+  selectedTypeKey: FleetShipRequest['categoryKey'];
+  setupOpen: boolean;
+  shipOptions: SetupShipOption[];
+  shipSearchTerm: string;
+}) {
+  return (
+    <section className="setup-page">
+      <div className="setup-page-header">
+        <div>
+          <p className="eyebrow">Fleet Commander</p>
+          <h2>Fleet Setup</h2>
+        </div>
+        <span>{fleetRequests.length} fleet lines</span>
+      </div>
+
+      <div className="setup-page-grid">
+        <FleetSetupPanel
+          open={setupOpen}
+          mode={mode}
+          shipOptions={shipOptions}
+          selectedShipName={selectedShipName}
+          selectedTypeKey={selectedTypeKey}
+          selectedTeamKey={selectedTeamKey}
+          selectedProfile={selectedProfile}
+          crewTarget={crewTarget}
+          quantity={quantity}
+          customPositions={customPositions}
+          shipSearchTerm={shipSearchTerm}
+          onToggleOpen={onToggleSetup}
+          onModeChange={onModeChange}
+          onShipChange={onShipChange}
+          onShipSearchChange={onShipSearchChange}
+          onTypeChange={onTypeChange}
+          onTeamChange={onTeamChange}
+          onProfileChange={onProfileChange}
+          onCrewTargetChange={onCrewTargetChange}
+          onQuantityChange={onQuantityChange}
+          onOpenCustomCrew={onOpenCustomCrew}
+          onAddFleetLine={onAddFleetLine}
+        />
+        <div className="command-stack">
+          <ChangeLogPanel requests={changeRequests} onUpdate={onUpdateChangeRequest} />
+          <MessageHistoryPanel messages={messages} variant="command" />
+        </div>
+      </div>
+
+      <div className="setup-roster-panel">
+        <div className="setup-roster-header">
+          <strong>Current Fleet</strong>
+          <span>No images, no rosters, setup-only view</span>
+        </div>
+        <div className="setup-table" role="table" aria-label="Fleet setup table">
+          <div className="setup-table-row header" role="row">
+            <span>Ship</span>
+            <span>Team</span>
+            <span>Profile</span>
+            <span>Crew</span>
+            <span>Positions</span>
+            <span />
+          </div>
+          {fleetRequests.map((request) => (
+            <div className="setup-table-row" role="row" key={request.id}>
+              <div className="setup-ship-cell">
+                <strong>{request.shipName}</strong>
+                <span>{request.categoryName}</span>
+              </div>
+              <select
+                value={request.teamKey}
+                onChange={(event) => onRequestTeamChange(request.id, event.target.value)}
+              >
+                {teamFilters.map((team) => (
+                  <option key={team} value={team.toLowerCase()}>
+                    {team}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={request.staffingProfile}
+                onChange={(event) =>
+                  onRequestProfileChange(request.id, event.target.value as StaffingProfile)
+                }
+              >
+                {(Object.keys(profileLabels) as StaffingProfile[]).map((profile) => (
+                  <option key={profile} value={profile}>
+                    {profileLabels[profile]}
+                  </option>
+                ))}
+              </select>
+              <input
+                min={1}
+                max={40}
+                type="number"
+                value={request.requiredPositions}
+                onChange={(event) => onRequestCrewTargetChange(request.id, Number(event.target.value))}
+              />
+              <span className="setup-position-summary">{summarizeCrew(request.crew)}</span>
+              <button
+                className="remove-line-button"
+                onClick={() => onRemoveRequest(request.id)}
+                type="button"
+                aria-label={`Remove ${request.shipName}`}
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function FleetSetupPanel({
   open,
   mode,
@@ -1010,9 +1274,11 @@ function FleetSetupPanel({
   crewTarget,
   quantity,
   customPositions,
+  shipSearchTerm,
   onToggleOpen,
   onModeChange,
   onShipChange,
+  onShipSearchChange,
   onTypeChange,
   onTeamChange,
   onProfileChange,
@@ -1031,9 +1297,11 @@ function FleetSetupPanel({
   crewTarget: number;
   quantity: number;
   customPositions: PositionRequirement[];
+  shipSearchTerm: string;
   onToggleOpen: () => void;
   onModeChange: (mode: SetupMode) => void;
   onShipChange: (shipName: string) => void;
+  onShipSearchChange: (searchTerm: string) => void;
   onTypeChange: (categoryKey: FleetShipRequest['categoryKey']) => void;
   onTeamChange: (teamKey: string) => void;
   onProfileChange: (profile: StaffingProfile) => void;
@@ -1074,13 +1342,23 @@ function FleetSetupPanel({
           <label>
             <span>{mode === 'ship' ? 'Specific ship' : 'Ship type'}</span>
             {mode === 'ship' ? (
-            <select value={selectedShipName} onChange={(event) => onShipChange(event.target.value)}>
-              {shipOptions.map((ship) => (
-                <option key={ship.name} value={ship.name}>
-                  {ship.name} {ship.manufacturer ? `(${ship.manufacturer})` : ''}
-                </option>
-              ))}
-            </select>
+              <>
+                <input
+                  value={shipSearchTerm}
+                  onChange={(event) => onShipSearchChange(event.target.value)}
+                  placeholder="Search ships"
+                />
+                <select
+                  value={selectedShipName}
+                  onChange={(event) => onShipChange(event.target.value)}
+                >
+                  {shipOptions.map((ship) => (
+                    <option key={`${ship.name}-${ship.manufacturer}`} value={ship.name}>
+                      {ship.name} {ship.manufacturer ? `(${ship.manufacturer})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </>
             ) : (
               <select
                 value={selectedTypeKey}
@@ -1723,6 +2001,46 @@ function categoryLabel(categoryKey: FleetShipRequest['categoryKey']) {
   return categoryFilters.find((category) => category.key === categoryKey)?.label ?? 'Ship';
 }
 
+function dedupeShipOptions(options: SetupShipOption[]) {
+  const byName = new Map<string, SetupShipOption>();
+
+  for (const option of options) {
+    const baseName = baseShipName(option.name);
+    const key = normalizeName(baseName);
+    const normalizedOption = { ...option, name: baseName };
+    const current = byName.get(key);
+
+    if (!current || preferredShipOption(normalizedOption, current)) {
+      byName.set(key, normalizedOption);
+    }
+  }
+
+  return Array.from(byName.values());
+}
+
+function baseShipName(name: string) {
+  return name
+    .replace(/\s*\([^)]*\)\s*$/g, '')
+    .replace(
+      /\s+(Best in Show.*|BIS.*|Expedition|Executive Edition|Foundation Festival.*|Ghoulish Green|Heartseeker|ILW.*|IAE.*|Luminalia.*|Pirate|Solar Winds|Snowblind|Dunestalker|Carbon|Talus|Wikelo.*)$/i,
+      '',
+    )
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function preferredShipOption(candidate: SetupShipOption, current: SetupShipOption) {
+  if (current.name === candidate.name) {
+    return candidate.positions.length > current.positions.length;
+  }
+
+  if (candidate.name.length !== current.name.length) {
+    return candidate.name.length < current.name.length;
+  }
+
+  return candidate.manufacturer !== 'Unknown' && current.manufacturer === 'Unknown';
+}
+
 function normalizeName(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
@@ -1763,6 +2081,22 @@ function buildCrewAssignments(positions: PositionRequirement[]) {
 
 function totalPositionQuantity(positions: PositionRequirement[]) {
   return positions.reduce((total, position) => total + position.quantity, 0);
+}
+
+function summarizeCrew(crew: CrewAssignment[]) {
+  if (crew.length === 0) {
+    return 'No positions selected';
+  }
+
+  const counts = crew.reduce<Record<string, number>>((total, seat) => {
+    const label = seat.role.replace(/\s+\d+$/, '');
+    total[label] = (total[label] ?? 0) + 1;
+    return total;
+  }, {});
+
+  return Object.entries(counts)
+    .map(([label, count]) => (count > 1 ? `${count} ${label}` : label))
+    .join(', ');
 }
 
 export default App;

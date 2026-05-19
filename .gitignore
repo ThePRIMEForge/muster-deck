@@ -5,6 +5,9 @@
 node_modules/
 dist/
 build/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
 
 .firecrawl/
 .superpowers/

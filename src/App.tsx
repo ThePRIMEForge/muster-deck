@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  CheckCircle2,
   ChevronDown,
   ChevronUp,
   CircleDot,
+  ClipboardList,
   Grid2X2,
   List,
   Lock,
@@ -10,9 +12,12 @@ import {
   Search,
   Shield,
   Ship,
+  SlidersHorizontal,
   Unlock,
   UserRound,
   Users,
+  X,
+  XCircle,
 } from 'lucide-react';
 import {
   categoryFilters,
@@ -33,6 +38,23 @@ import type {
 
 type ViewMode = 'list' | 'islands';
 
+type ChangeRequest = {
+  id: string;
+  memberName: string;
+  summary: string;
+  status: 'pending' | 'approved' | 'denied';
+};
+
+type SetupShipOption = {
+  name: string;
+  manufacturer: string;
+  categoryKey: FleetShipRequest['categoryKey'];
+  categoryName: string;
+  requiredPositions: number;
+  optionalPositions: number;
+  imageUrl?: string;
+};
+
 const profileLabels: Record<StaffingProfile, string> = {
   skeleton: 'Skeleton',
   standard: 'Standard',
@@ -47,14 +69,95 @@ const profileClassNames: Record<StaffingProfile, string> = {
   custom: 'profile-custom',
 };
 
+const setupShipOptions: SetupShipOption[] = [
+  {
+    name: 'Idris',
+    manufacturer: 'Aegis Dynamics',
+    categoryKey: 'capital',
+    categoryName: 'Capital',
+    requiredPositions: 10,
+    optionalPositions: 11,
+    imageUrl: 'https://media.starcitizen.tools/d/dd/Idris_M_flying_over_world_-_cropped.jpg',
+  },
+  {
+    name: 'Perseus',
+    manufacturer: 'Roberts Space Industries',
+    categoryKey: 'subcapital',
+    categoryName: 'Subcapital',
+    requiredPositions: 3,
+    optionalPositions: 3,
+    imageUrl: 'https://media.starcitizen.tools/6/6c/Perseus_angled_combat.jpg',
+  },
+  {
+    name: 'Heavy Fighter Slot',
+    manufacturer: 'Any',
+    categoryKey: 'heavy_fighter',
+    categoryName: 'Heavy Fighter',
+    requiredPositions: 1,
+    optionalPositions: 1,
+    imageUrl: 'https://media.starcitizen.tools/3/30/RSI_Scorpius_on_ArcCorp.png',
+  },
+  {
+    name: 'Medical Support Slot',
+    manufacturer: 'Any',
+    categoryKey: 'medium',
+    categoryName: 'Medium',
+    requiredPositions: 2,
+    optionalPositions: 3,
+    imageUrl: 'https://media.starcitizen.tools/a/ac/Cutlass_Red_Squad_Concept.jpg',
+  },
+  {
+    name: 'Marines/FPS',
+    manufacturer: 'Fleet Infantry',
+    categoryKey: 'marines',
+    categoryName: 'Marines/FPS',
+    requiredPositions: 6,
+    optionalPositions: 2,
+  },
+];
+
+const positionOptions = [
+  'Pilot',
+  'Turret Gunner',
+  'Remote Turret Gunner',
+  'Engineer',
+  'Medic',
+  'Marine Lead',
+  'Rifleman',
+  'Cargo Operator',
+  'Tractor Beam Operator',
+];
+
 function App() {
   const [fleetRequests, setFleetRequests] = useState(fallbackFleetRequests);
   const [members, setMembers] = useState(fallbackMembers);
   const [filter, setFilter] = useState<FilterMode>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [memberSearchTerm, setMemberSearchTerm] = useState('');
   const [masterLocked, setMasterLocked] = useState(false);
   const [lockedTeams, setLockedTeams] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [setupOpen, setSetupOpen] = useState(true);
+  const [setupShipName, setSetupShipName] = useState('Perseus');
+  const [setupTeamKey, setSetupTeamKey] = useState('alpha');
+  const [setupProfile, setSetupProfile] = useState<StaffingProfile>('standard');
+  const [setupCrewTarget, setSetupCrewTarget] = useState(3);
+  const [customCrewOpen, setCustomCrewOpen] = useState(false);
+  const [customPositions, setCustomPositions] = useState<string[]>([
+    'Pilot',
+    'Turret Gunner',
+    'Engineer',
+  ]);
+  const [checkedInMembers, setCheckedInMembers] = useState<Record<string, boolean>>({});
+  const [checkInMemberId, setCheckInMemberId] = useState<string | null>(null);
+  const [changeRequests, setChangeRequests] = useState<ChangeRequest[]>([
+    {
+      id: 'cr-1',
+      memberName: 'Mako',
+      summary: 'Offering Hurricane instead of Scorpius turret seat.',
+      status: 'pending',
+    },
+  ]);
   const [expandedRequests, setExpandedRequests] = useState<Record<string, boolean>>({
     'idris-alpha': true,
   });
@@ -117,7 +220,7 @@ function App() {
   const totals = useMemo(() => {
     return fleetRequests.reduce(
       (total, request) => ({
-        ships: total.ships + request.requestedCount,
+        ships: total.ships + 1,
         required: total.required + request.requiredPositions,
         assigned: total.assigned + request.assignedPositions,
         suggestions: total.suggestions + request.pendingSuggestions,
@@ -127,16 +230,41 @@ function App() {
   }, [fleetRequests]);
 
   const memberGroups = useMemo(() => {
-    const available = members.filter((member) => !member.assignedRequestId);
+    const search = memberSearchTerm.trim().toLowerCase();
+    const filteredMembers = members.filter((member) => {
+      if (search.length === 0) {
+        return true;
+      }
+
+      return [member.name, member.team, member.primaryRole, member.shipOffer ?? '']
+        .join(' ')
+        .toLowerCase()
+        .includes(search);
+    });
+    const available = filteredMembers.filter(
+      (member) => !member.assignedRequestId && !member.shipOffer,
+    );
+    const unassignedShips = filteredMembers.filter(
+      (member) => !member.assignedRequestId && member.shipOffer,
+    );
     const assignedGroups = fleetRequests
       .map((request) => ({
         request,
-        members: members.filter((member) => member.assignedRequestId === request.id),
+        members: filteredMembers.filter((member) => member.assignedRequestId === request.id),
       }))
       .filter((group) => group.members.length > 0);
 
-    return { available, assignedGroups };
-  }, [fleetRequests, members]);
+    return { available, unassignedShips, assignedGroups };
+  }, [fleetRequests, memberSearchTerm, members]);
+
+  const allVisibleExpanded =
+    visibleRequests.length > 0 &&
+    visibleRequests.every((request) => Boolean(expandedRequests[request.id]));
+  const selectedSetupShip = setupShipOptions.find((ship) => ship.name === setupShipName);
+  const checkInMember = members.find((member) => member.id === checkInMemberId);
+  const checkInRequest = fleetRequests.find(
+    (request) => request.id === checkInMember?.assignedRequestId,
+  );
 
   function unlockAll() {
     setMasterLocked(false);
@@ -147,8 +275,95 @@ function App() {
     setExpandedRequests((current) => ({ ...current, [requestId]: !current[requestId] }));
   }
 
+  function toggleAllRosters() {
+    const nextState = !allVisibleExpanded;
+
+    setExpandedRequests((current) => ({
+      ...current,
+      ...Object.fromEntries(visibleRequests.map((request) => [request.id, nextState])),
+    }));
+  }
+
   function showDetails(requestId: string) {
     setExpandedRequests((current) => ({ ...current, [requestId]: true }));
+  }
+
+  function addFleetLine() {
+    if (!selectedSetupShip) {
+      return;
+    }
+
+    const teamName = teamLabel(setupTeamKey);
+    const requiredPositions =
+      setupProfile === 'custom' ? Math.max(1, customPositions.length) : setupCrewTarget;
+    const newRequest: FleetShipRequest = {
+      id: `${selectedSetupShip.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
+      team: teamName,
+      teamKey: setupTeamKey,
+      categoryKey: selectedSetupShip.categoryKey,
+      categoryName: selectedSetupShip.categoryName,
+      shipName: selectedSetupShip.name,
+      manufacturer: selectedSetupShip.manufacturer,
+      requestedCount: 1,
+      staffingProfile: setupProfile,
+      requiredPositions,
+      optionalPositions: selectedSetupShip.optionalPositions,
+      assignedPositions: 0,
+      pendingSuggestions: 0,
+      locked: false,
+      exactRequired: selectedSetupShip.manufacturer !== 'Any',
+      hasMarines: selectedSetupShip.categoryKey === 'marines',
+      isAdmiralShip: false,
+      notes:
+        setupProfile === 'custom'
+          ? `Custom crew target: ${customPositions.join(', ')}.`
+          : `${profileLabels[setupProfile]} crew target created by fleet planning.`,
+      imageUrl: selectedSetupShip.imageUrl,
+      crew: (setupProfile === 'custom' ? customPositions : buildProfilePositions(setupProfile)).map(
+        (role, index) => ({
+          id: `crew-${Date.now()}-${index}`,
+          name: 'Open',
+          role,
+          status: 'requested',
+        }),
+      ),
+    };
+
+    setFleetRequests((current) => [newRequest, ...current]);
+    setExpandedRequests((current) => ({ ...current, [newRequest.id]: true }));
+    setFilter('all');
+  }
+
+  function moveRequestToTeam(requestId: string, teamKey: string) {
+    setFleetRequests((current) =>
+      current.map((request) =>
+        request.id === requestId ? { ...request, teamKey, team: teamLabel(teamKey) } : request,
+      ),
+    );
+  }
+
+  function updateChangeRequest(requestId: string, status: ChangeRequest['status']) {
+    setChangeRequests((current) =>
+      current.map((request) => (request.id === requestId ? { ...request, status } : request)),
+    );
+  }
+
+  function confirmCheckIn(memberId: string) {
+    setCheckedInMembers((current) => ({ ...current, [memberId]: true }));
+    setCheckInMemberId(null);
+  }
+
+  function requestCheckInChange(member: Member) {
+    setChangeRequests((current) => [
+      {
+        id: `cr-${Date.now()}`,
+        memberName: member.name,
+        summary: `${member.name} requested a change to ship, team, or position during check-in.`,
+        status: 'pending',
+      },
+      ...current,
+    ]);
+    setCheckInMemberId(null);
   }
 
   function handleMemberDrop(requestId: string, memberId: string) {
@@ -212,6 +427,7 @@ function App() {
   }
 
   return (
+    <>
     <main className="app-shell">
       <aside className="left-rail">
         <div className="brand-block">
@@ -303,7 +519,7 @@ function App() {
               <Unlock size={18} />
               <span>Unlock All</span>
             </button>
-            <button className="icon-action primary" type="button">
+            <button className="icon-action primary" onClick={() => setSetupOpen(true)} type="button">
               <Plus size={18} />
               <span>Add Slot</span>
             </button>
@@ -313,7 +529,7 @@ function App() {
         <div className="summary-band">
           <div>
             <strong>{totals.ships}</strong>
-            <span>ship slots</span>
+            <span>fleet lines</span>
           </div>
           <div>
             <strong>
@@ -331,6 +547,25 @@ function App() {
           </div>
         </div>
 
+        <div className="planning-grid">
+          <FleetSetupPanel
+            open={setupOpen}
+            selectedShipName={setupShipName}
+            selectedTeamKey={setupTeamKey}
+            selectedProfile={setupProfile}
+            crewTarget={setupCrewTarget}
+            customPositions={customPositions}
+            onToggleOpen={() => setSetupOpen((current) => !current)}
+            onShipChange={setSetupShipName}
+            onTeamChange={setSetupTeamKey}
+            onProfileChange={setSetupProfile}
+            onCrewTargetChange={setSetupCrewTarget}
+            onOpenCustomCrew={() => setCustomCrewOpen(true)}
+            onAddFleetLine={addFleetLine}
+          />
+          <ChangeLogPanel requests={changeRequests} onUpdate={updateChangeRequest} />
+        </div>
+
         <div className="toolbar">
           <div className="search-box">
             <Search size={17} />
@@ -340,6 +575,10 @@ function App() {
               placeholder="Search fleet"
             />
           </div>
+          <button className="icon-action" onClick={toggleAllRosters} type="button">
+            {allVisibleExpanded ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
+            <span>{allVisibleExpanded ? 'Collapse Rosters' : 'Expand Rosters'}</span>
+          </button>
           <div className={`connection-pill ${catalogState}`}>
             {catalogState === 'live' && 'Live catalog'}
             {catalogState === 'loading' && 'Catalog loading'}
@@ -376,6 +615,7 @@ function App() {
               expanded={Boolean(expandedRequests[request.id])}
               onToggleExpanded={() => toggleExpanded(request.id)}
               onShowDetails={() => showDetails(request.id)}
+              onTeamChange={(teamKey) => moveRequestToTeam(request.id, teamKey)}
               onMemberDrop={(memberId) => handleMemberDrop(request.id, memberId)}
             />
           ))}
@@ -391,19 +631,204 @@ function App() {
           <UserRound size={20} />
         </div>
 
+        <div className="member-search">
+          <Search size={15} />
+          <input
+            value={memberSearchTerm}
+            onChange={(event) => setMemberSearchTerm(event.target.value)}
+            placeholder="Search members"
+          />
+        </div>
+
         <div className="member-list">
-          <MemberGroup title="Available" members={memberGroups.available} />
+          <MemberGroup
+            title="Available"
+            checkedInMembers={checkedInMembers}
+            members={memberGroups.available}
+            onCheckIn={setCheckInMemberId}
+          />
+          <MemberGroup
+            title="Unassigned Ships"
+            checkedInMembers={checkedInMembers}
+            members={memberGroups.unassignedShips}
+            onCheckIn={setCheckInMemberId}
+          />
           {memberGroups.assignedGroups.map((group) => (
             <MemberGroup
               key={group.request.id}
               title={group.request.shipName}
               ownerName={group.request.ownerName}
+              checkedInMembers={checkedInMembers}
               members={group.members}
+              onCheckIn={setCheckInMemberId}
             />
           ))}
         </div>
       </aside>
     </main>
+    {customCrewOpen && (
+      <CustomCrewModal
+        positions={customPositions}
+        onClose={() => setCustomCrewOpen(false)}
+        onTogglePosition={(position) =>
+          setCustomPositions((current) =>
+            current.includes(position)
+              ? current.filter((candidate) => candidate !== position)
+              : [...current, position],
+          )
+        }
+      />
+    )}
+    {checkInMember && (
+      <CheckInModal
+        member={checkInMember}
+        request={checkInRequest}
+        onConfirm={() => confirmCheckIn(checkInMember.id)}
+        onRequestChange={() => requestCheckInChange(checkInMember)}
+        onClose={() => setCheckInMemberId(null)}
+      />
+    )}
+    </>
+  );
+}
+
+function FleetSetupPanel({
+  open,
+  selectedShipName,
+  selectedTeamKey,
+  selectedProfile,
+  crewTarget,
+  customPositions,
+  onToggleOpen,
+  onShipChange,
+  onTeamChange,
+  onProfileChange,
+  onCrewTargetChange,
+  onOpenCustomCrew,
+  onAddFleetLine,
+}: {
+  open: boolean;
+  selectedShipName: string;
+  selectedTeamKey: string;
+  selectedProfile: StaffingProfile;
+  crewTarget: number;
+  customPositions: string[];
+  onToggleOpen: () => void;
+  onShipChange: (shipName: string) => void;
+  onTeamChange: (teamKey: string) => void;
+  onProfileChange: (profile: StaffingProfile) => void;
+  onCrewTargetChange: (crewTarget: number) => void;
+  onOpenCustomCrew: () => void;
+  onAddFleetLine: () => void;
+}) {
+  return (
+    <section className="setup-panel">
+      <button className="panel-title" onClick={onToggleOpen} type="button">
+        <span>
+          <SlidersHorizontal size={17} />
+          Fleet Setup
+        </span>
+        {open ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
+      </button>
+
+      {open && (
+        <div className="setup-content">
+          <label>
+            <span>Ship or slot</span>
+            <select value={selectedShipName} onChange={(event) => onShipChange(event.target.value)}>
+              {setupShipOptions.map((ship) => (
+                <option key={ship.name} value={ship.name}>
+                  {ship.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span>Team</span>
+            <select value={selectedTeamKey} onChange={(event) => onTeamChange(event.target.value)}>
+              {teamFilters.map((team) => (
+                <option key={team} value={team.toLowerCase()}>
+                  {team}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="profile-picker" aria-label="Staffing profile">
+            {(Object.keys(profileLabels) as StaffingProfile[]).map((profile) => (
+              <button
+                className={selectedProfile === profile ? 'active' : ''}
+                key={profile}
+                onClick={() => onProfileChange(profile)}
+                type="button"
+              >
+                {profileLabels[profile]}
+              </button>
+            ))}
+          </div>
+
+          <label>
+            <span>Crew target</span>
+            <input
+              min={1}
+              max={30}
+              type="number"
+              value={crewTarget}
+              onChange={(event) => onCrewTargetChange(Number(event.target.value))}
+            />
+          </label>
+
+          <button className="setup-secondary" onClick={onOpenCustomCrew} type="button">
+            <ClipboardList size={16} />
+            <span>{customPositions.length} custom positions</span>
+          </button>
+
+          <button className="setup-submit" onClick={onAddFleetLine} type="button">
+            <Plus size={16} />
+            <span>Add Fleet Line</span>
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ChangeLogPanel({
+  requests,
+  onUpdate,
+}: {
+  requests: ChangeRequest[];
+  onUpdate: (requestId: string, status: ChangeRequest['status']) => void;
+}) {
+  return (
+    <section className="change-log">
+      <div className="change-log-title">
+        <span>
+          <ClipboardList size={17} />
+          Change Requests
+        </span>
+        <strong>{requests.filter((request) => request.status === 'pending').length}</strong>
+      </div>
+      <div className="change-log-list">
+        {requests.map((request) => (
+          <article className={`change-row ${request.status}`} key={request.id}>
+            <div>
+              <strong>{request.memberName}</strong>
+              <span>{request.summary}</span>
+            </div>
+            <div className="change-actions">
+              <button onClick={() => onUpdate(request.id, 'approved')} type="button">
+                <CheckCircle2 size={15} />
+              </button>
+              <button onClick={() => onUpdate(request.id, 'denied')} type="button">
+                <XCircle size={15} />
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -414,6 +839,7 @@ function ShipRequestRow({
   expanded,
   onToggleExpanded,
   onShowDetails,
+  onTeamChange,
   onMemberDrop,
 }: {
   request: FleetShipRequest;
@@ -422,6 +848,7 @@ function ShipRequestRow({
   expanded: boolean;
   onToggleExpanded: () => void;
   onShowDetails: () => void;
+  onTeamChange: (teamKey: string) => void;
   onMemberDrop: (memberId: string) => void;
 }) {
   const fillRate = Math.min(
@@ -481,7 +908,7 @@ function ShipRequestRow({
         </div>
 
         <div className="ship-meta">
-          <span>Count {request.requestedCount}</span>
+          <span>{request.ownerName ? 'Ship provided' : 'Ship needed'}</span>
           <span className={profileClassNames[request.staffingProfile]}>
             {profileLabels[request.staffingProfile]}
           </span>
@@ -489,14 +916,24 @@ function ShipRequestRow({
             {locked ? <Lock size={13} /> : <Unlock size={13} />}
             {locked ? 'Ships locked' : 'Ships open'}
           </span>
+          <label className="team-assignment">
+            <span>Team</span>
+            <select value={request.teamKey} onChange={(event) => onTeamChange(event.target.value)}>
+              {teamFilters.map((team) => (
+                <option key={team} value={team.toLowerCase()}>
+                  {team}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div className="signup-actions" aria-label={`${request.shipName} signup actions`}>
           <button type="button" onClick={onShowDetails}>
             Join Team
           </button>
-          <button type="button" onClick={onShowDetails}>
-            Bring Ship
+          <button type="button" onClick={onShowDetails} disabled={Boolean(request.ownerName)}>
+            {request.ownerName ? 'Ship Provided' : 'Bring Ship'}
           </button>
           <button type="button" onClick={onShowDetails}>
             Fill Position
@@ -554,11 +991,15 @@ function CrewRoster({ request }: { request: FleetShipRequest }) {
 function MemberGroup({
   title,
   ownerName,
+  checkedInMembers,
   members,
+  onCheckIn,
 }: {
   title: string;
   ownerName?: string;
+  checkedInMembers: Record<string, boolean>;
   members: Member[];
+  onCheckIn: (memberId: string) => void;
 }) {
   if (members.length === 0) {
     return null;
@@ -581,13 +1022,113 @@ function MemberGroup({
           <div className="member-copy">
             <strong>{member.name}</strong>
             <span>
-              {member.team} · {member.primaryRole}
+              Online · {member.team} · {member.primaryRole}
             </span>
             {member.shipOffer && <em>{member.shipOffer}</em>}
           </div>
+          <button className="checkin-button" onClick={() => onCheckIn(member.id)} type="button">
+            {checkedInMembers[member.id] ? 'Checked' : 'Check In'}
+          </button>
         </article>
       ))}
     </section>
+  );
+}
+
+function CustomCrewModal({
+  positions,
+  onTogglePosition,
+  onClose,
+}: {
+  positions: string[];
+  onTogglePosition: (position: string) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="modal" role="dialog" aria-modal="true" aria-label="Custom crew positions">
+        <div className="modal-header">
+          <div>
+            <p className="eyebrow">Custom Crew</p>
+            <h2>Select Positions</h2>
+          </div>
+          <button className="modal-close" onClick={onClose} type="button" aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="position-grid">
+          {positionOptions.map((position) => (
+            <label className="position-option" key={position}>
+              <input
+                checked={positions.includes(position)}
+                onChange={() => onTogglePosition(position)}
+                type="checkbox"
+              />
+              <span>{position}</span>
+            </label>
+          ))}
+        </div>
+        <button className="setup-submit modal-submit" onClick={onClose} type="button">
+          Apply Positions
+        </button>
+      </section>
+    </div>
+  );
+}
+
+function CheckInModal({
+  member,
+  request,
+  onConfirm,
+  onRequestChange,
+  onClose,
+}: {
+  member: Member;
+  request?: FleetShipRequest;
+  onConfirm: () => void;
+  onRequestChange: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="modal" role="dialog" aria-modal="true" aria-label="Member check-in">
+        <div className="modal-header">
+          <div>
+            <p className="eyebrow">Check In</p>
+            <h2>{member.name}</h2>
+          </div>
+          <button className="modal-close" onClick={onClose} type="button" aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="checkin-summary">
+          <div>
+            <span>Team</span>
+            <strong>{request?.team ?? member.team}</strong>
+          </div>
+          <div>
+            <span>Ship</span>
+            <strong>{request?.shipName ?? member.shipOffer ?? 'Unassigned'}</strong>
+          </div>
+          <div>
+            <span>Role</span>
+            <strong>{member.primaryRole}</strong>
+          </div>
+          <div>
+            <span>Bring Ship</span>
+            <strong>{member.shipOffer ?? 'No'}</strong>
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button className="setup-submit" onClick={onConfirm} type="button">
+            Confirm Check-In
+          </button>
+          <button className="setup-secondary" onClick={onRequestChange} type="button">
+            Request Change
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -629,6 +1170,37 @@ function rolePriority(role: string) {
   }
 
   return 4;
+}
+
+function teamLabel(teamKey: string) {
+  return teamFilters.find((team) => team.toLowerCase() === teamKey) ?? 'Unassigned';
+}
+
+function buildProfilePositions(profile: StaffingProfile) {
+  if (profile === 'skeleton') {
+    return ['Pilot'];
+  }
+
+  if (profile === 'standard') {
+    return ['Pilot', 'Turret Gunner', 'Engineer'];
+  }
+
+  if (profile === 'full_crew') {
+    return [
+      'Pilot',
+      'Turret Gunner',
+      'Turret Gunner',
+      'Remote Turret Gunner',
+      'Engineer',
+      'Engineer',
+      'Engineer',
+      'Medic',
+      'Marine Lead',
+      'Rifleman',
+    ];
+  }
+
+  return ['Pilot'];
 }
 
 export default App;

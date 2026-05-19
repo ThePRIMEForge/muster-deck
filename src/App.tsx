@@ -38,12 +38,23 @@ import type {
 } from './lib/types';
 
 type ViewMode = 'list' | 'islands';
+type SetupMode = 'ship' | 'type';
 
 type ChangeRequest = {
   id: string;
   memberName: string;
   summary: string;
   status: 'pending' | 'approved' | 'denied';
+};
+
+type FleetMessage = {
+  id: string;
+  title: string;
+  body: string;
+  tags: string[];
+  createdAt: string;
+  audience: 'command' | 'crew';
+  acknowledged?: boolean;
 };
 
 type SetupShipOption = {
@@ -120,6 +131,16 @@ const polarisPositions: PositionRequirement[] = [
   { id: 'marine-rifleman', label: 'Marine Rifleman', quantity: 6 },
 ];
 
+const ironcladPositions: PositionRequirement[] = [
+  { id: 'pilot', label: 'Pilot', quantity: 1 },
+  { id: 'co-pilot', label: 'Co-Pilot', quantity: 1 },
+  { id: 'cargo-master', label: 'Cargo Operations Lead', quantity: 1 },
+  { id: 'tractor-beam', label: 'Tractor Beam Operator', quantity: 2 },
+  { id: 'turret-gunner', label: 'Turret Gunner', quantity: 2 },
+  { id: 'engineer-lead', label: 'Lead Engineer', quantity: 1 },
+  { id: 'engineer-assistant', label: 'Engineering Assistant', quantity: 2 },
+];
+
 const genericHeavyFighterPositions: PositionRequirement[] = [
   { id: 'pilot', label: 'Pilot', quantity: 1 },
   { id: 'turret-gunner', label: 'Turret Gunner', quantity: 1 },
@@ -169,14 +190,14 @@ const setupShipOptions: SetupShipOption[] = [
     positions: polarisPositions,
   },
   {
-    name: 'Heavy Fighter Slot',
-    manufacturer: 'Any',
-    categoryKey: 'heavy_fighter',
-    categoryName: 'Heavy Fighter',
-    requiredPositions: 1,
-    optionalPositions: 1,
-    imageUrl: 'https://media.starcitizen.tools/3/30/RSI_Scorpius_on_ArcCorp.png',
-    positions: genericHeavyFighterPositions,
+    name: 'Ironclad',
+    manufacturer: 'Drake Interplanetary',
+    categoryKey: 'large',
+    categoryName: 'Large',
+    requiredPositions: 4,
+    optionalPositions: 5,
+    imageUrl: 'https://media.starcitizen.tools/8/88/Ironclad_in_space.jpg',
+    positions: ironcladPositions,
   },
   {
     name: 'Medical Support Slot',
@@ -209,10 +230,13 @@ function App() {
   const [lockedTeams, setLockedTeams] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [setupOpen, setSetupOpen] = useState(true);
+  const [setupMode, setSetupMode] = useState<SetupMode>('ship');
   const [setupShipName, setSetupShipName] = useState('Perseus');
+  const [setupTypeKey, setSetupTypeKey] = useState<FleetShipRequest['categoryKey']>('heavy_fighter');
   const [setupTeamKey, setSetupTeamKey] = useState('alpha');
   const [setupProfile, setSetupProfile] = useState<StaffingProfile>('standard');
   const [setupCrewTarget, setSetupCrewTarget] = useState(3);
+  const [setupQuantity, setSetupQuantity] = useState(1);
   const [customCrewOpen, setCustomCrewOpen] = useState(false);
   const [customPositions, setCustomPositions] =
     useState<PositionRequirement[]>(perseusPositions);
@@ -225,6 +249,24 @@ function App() {
       memberName: 'Mako',
       summary: 'Offering Hurricane instead of Scorpius turret seat.',
       status: 'pending',
+    },
+  ]);
+  const [fleetMessages, setFleetMessages] = useState<FleetMessage[]>([
+    {
+      id: 'msg-1',
+      title: 'Initial assignment',
+      body: 'Alpha command roster opened for confirmation.',
+      tags: ['team:alpha', 'ship:idris-alpha'],
+      createdAt: 'Now',
+      audience: 'crew',
+    },
+    {
+      id: 'msg-2',
+      title: 'Roster control',
+      body: 'Ship roster is open for substitutions and late ship offers.',
+      tags: ['fleet', 'command'],
+      createdAt: 'Now',
+      audience: 'command',
     },
   ]);
   const [expandedRequests, setExpandedRequests] = useState<Record<string, boolean>>({
@@ -329,7 +371,22 @@ function App() {
   const allVisibleExpanded =
     visibleRequests.length > 0 &&
     visibleRequests.every((request) => Boolean(expandedRequests[request.id]));
-  const selectedSetupShip = setupShipOptions.find((ship) => ship.name === setupShipName);
+  const setupShipChoices = useMemo(() => {
+    const templateByName = new Map(
+      setupShipOptions.map((option) => [normalizeName(option.name), option]),
+    );
+    const catalogChoices = shipCatalog.map((ship) => optionFromCatalog(ship, templateByName));
+    const catalogNames = new Set(catalogChoices.map((option) => normalizeName(option.name)));
+    const missingTemplates = setupShipOptions.filter(
+      (option) => !catalogNames.has(normalizeName(option.name)) && option.manufacturer !== 'Any',
+    );
+
+    return [...catalogChoices, ...missingTemplates].sort((left, right) =>
+      left.name.localeCompare(right.name),
+    );
+  }, [shipCatalog]);
+  const selectedSetupShip = setupShipChoices.find((ship) => ship.name === setupShipName);
+  const selectedSetupType = categoryFilters.find((category) => category.key === setupTypeKey);
   const removalRequest = fleetRequests.find((request) => request.id === requestPendingRemovalId);
   const checkInMember = members.find((member) => member.id === checkInMemberId);
   const checkInRequest = fleetRequests.find(
@@ -358,8 +415,19 @@ function App() {
     setExpandedRequests((current) => ({ ...current, [requestId]: true }));
   }
 
+  function pushMessage(message: Omit<FleetMessage, 'id' | 'createdAt'>) {
+    setFleetMessages((current) => [
+      {
+        ...message,
+        id: `msg-${Date.now()}`,
+        createdAt: 'Now',
+      },
+      ...current,
+    ]);
+  }
+
   function handleSetupShipChange(shipName: string) {
-    const nextShip = setupShipOptions.find((ship) => ship.name === shipName);
+    const nextShip = setupShipChoices.find((ship) => ship.name === shipName);
 
     setSetupShipName(shipName);
 
@@ -367,6 +435,27 @@ function App() {
       setCustomPositions(nextShip.positions);
       setSetupCrewTarget(Math.max(1, nextShip.requiredPositions));
     }
+  }
+
+  function handleSetupModeChange(mode: SetupMode) {
+    setSetupMode(mode);
+
+    if (mode === 'type') {
+      const positions = buildCategoryTypePositions(setupTypeKey);
+      setCustomPositions(positions);
+      setSetupCrewTarget(totalPositionQuantity(positions));
+    } else if (selectedSetupShip) {
+      setCustomPositions(selectedSetupShip.positions);
+      setSetupCrewTarget(Math.max(1, selectedSetupShip.requiredPositions));
+    }
+  }
+
+  function handleSetupTypeChange(categoryKey: FleetShipRequest['categoryKey']) {
+    const positions = buildCategoryTypePositions(categoryKey);
+
+    setSetupTypeKey(categoryKey);
+    setCustomPositions(positions);
+    setSetupCrewTarget(totalPositionQuantity(positions));
   }
 
   function requestRemoveFleetLine(requestId: string) {
@@ -406,33 +495,61 @@ function App() {
       },
       ...current,
     ]);
+    pushMessage({
+      title: 'Ship offer submitted',
+      body: 'A crew member offered to bring an unplanned ship for officer review.',
+      tags: ['fleet', 'ship_offer', 'command'],
+      audience: 'command',
+    });
   }
 
   function addFleetLine() {
-    if (!selectedSetupShip) {
+    if (setupMode === 'ship' && !selectedSetupShip) {
+      return;
+    }
+
+    if (setupMode === 'type' && !selectedSetupType) {
       return;
     }
 
     const teamName = teamLabel(setupTeamKey);
+    const basePositions =
+      setupMode === 'ship'
+        ? selectedSetupShip?.positions ?? buildCategoryTypePositions('medium')
+        : buildCategoryTypePositions(setupTypeKey);
+    const requestName = setupMode === 'ship' ? selectedSetupShip?.name ?? 'Ship' : `${selectedSetupType?.label} Request`;
+    const manufacturer = setupMode === 'ship' ? selectedSetupShip?.manufacturer ?? 'Unknown' : 'Any';
+    const categoryKey =
+      setupMode === 'ship'
+        ? selectedSetupShip?.categoryKey ?? 'medium'
+        : setupTypeKey;
+    const categoryName =
+      setupMode === 'ship'
+        ? selectedSetupShip?.categoryName ?? 'Medium'
+        : selectedSetupType?.label ?? 'Ship Type';
+    const imageUrl = setupMode === 'ship' ? selectedSetupShip?.imageUrl : undefined;
     const requiredPositions =
       setupProfile === 'custom' ? Math.max(1, totalPositionQuantity(customPositions)) : setupCrewTarget;
-    const newRequest: FleetShipRequest = {
-      id: `${selectedSetupShip.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
+
+    const newRequests: FleetShipRequest[] = Array.from(
+      { length: Math.max(1, setupQuantity) },
+      (_, index) => ({
+      id: `${requestName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}-${index}`,
       team: teamName,
       teamKey: setupTeamKey,
-      categoryKey: selectedSetupShip.categoryKey,
-      categoryName: selectedSetupShip.categoryName,
-      shipName: selectedSetupShip.name,
-      manufacturer: selectedSetupShip.manufacturer,
+      categoryKey,
+      categoryName,
+      shipName: setupQuantity > 1 ? `${requestName} ${index + 1}` : requestName,
+      manufacturer,
       requestedCount: 1,
       staffingProfile: setupProfile,
       requiredPositions,
-      optionalPositions: selectedSetupShip.optionalPositions,
+      optionalPositions: setupMode === 'ship' ? selectedSetupShip?.optionalPositions ?? 0 : 0,
       assignedPositions: 0,
       pendingSuggestions: 0,
       locked: false,
-      exactRequired: selectedSetupShip.manufacturer !== 'Any',
-      hasMarines: selectedSetupShip.categoryKey === 'marines',
+      exactRequired: setupMode === 'ship' && manufacturer !== 'Any',
+      hasMarines: categoryKey === 'marines',
       isAdmiralShip: false,
       notes:
         setupProfile === 'custom'
@@ -440,32 +557,73 @@ function App() {
               .filter((position) => position.quantity > 0)
               .map((position) => `${position.quantity} ${position.label}`)
               .join(', ')}.`
-          : `${profileLabels[setupProfile]} crew target created by fleet planning.`,
-      imageUrl: selectedSetupShip.imageUrl,
+          : setupMode === 'ship'
+            ? `${profileLabels[setupProfile]} crew target created by fleet planning.`
+            : `${profileLabels[setupProfile]} ${categoryName.toLowerCase()} type request. Crew may offer a matching specific ship.`,
+      imageUrl,
       crew: buildCrewAssignments(
         setupProfile === 'custom'
           ? customPositions
-          : buildProfilePositions(setupProfile, selectedSetupShip.positions),
+          : buildProfilePositions(setupProfile, basePositions),
       ),
-    };
+    }));
 
-    setFleetRequests((current) => [newRequest, ...current]);
-    setExpandedRequests((current) => ({ ...current, [newRequest.id]: true }));
+    setFleetRequests((current) => [...newRequests, ...current]);
+    setExpandedRequests((current) => ({
+      ...current,
+      ...Object.fromEntries(newRequests.map((request) => [request.id, true])),
+    }));
     setFilter('all');
+    pushMessage({
+      title: 'Fleet roster updated',
+      body:
+        setupQuantity > 1
+          ? `${setupQuantity} ${requestName} fleet lines added to ${teamName}.`
+          : `${requestName} added to ${teamName}.`,
+      tags: ['fleet', `team:${setupTeamKey}`, setupMode === 'ship' ? `ship:${requestName}` : `type:${categoryKey}`],
+      audience: 'command',
+    });
   }
 
   function moveRequestToTeam(requestId: string, teamKey: string) {
+    const movedRequest = fleetRequests.find((request) => request.id === requestId);
+
     setFleetRequests((current) =>
       current.map((request) =>
         request.id === requestId ? { ...request, teamKey, team: teamLabel(teamKey) } : request,
       ),
     );
+
+    if (movedRequest) {
+      pushMessage({
+        title: 'Team assignment changed',
+        body: `${movedRequest.shipName} moved to ${teamLabel(teamKey)}.`,
+        tags: [`ship:${movedRequest.id}`, `team:${teamKey}`],
+        audience: 'crew',
+      });
+    }
   }
 
   function updateChangeRequest(requestId: string, status: ChangeRequest['status']) {
+    const request = changeRequests.find((candidate) => candidate.id === requestId);
+
     setChangeRequests((current) =>
       current.map((request) => (request.id === requestId ? { ...request, status } : request)),
     );
+
+    if (request) {
+      pushMessage({
+        title: status === 'approved' ? 'Request approved' : status === 'denied' ? 'Request denied' : 'Request updated',
+        body:
+          status === 'approved'
+            ? `${request.memberName}'s change request was approved.`
+            : status === 'denied'
+              ? `${request.memberName}'s change request was denied. Officer follow-up needed.`
+              : `${request.memberName}'s change request was updated.`,
+        tags: [`member:${request.memberName}`, 'change_request'],
+        audience: 'crew',
+      });
+    }
   }
 
   function confirmCheckIn(memberId: string) {
@@ -544,6 +702,12 @@ function App() {
     );
 
     setExpandedRequests((current) => ({ ...current, [requestId]: true }));
+    pushMessage({
+      title: 'Crew assignment changed',
+      body: `${member.name} assigned to ${targetRequest.shipName} in ${targetRequest.team}.`,
+      tags: [`member:${member.name}`, `ship:${targetRequest.id}`, `team:${targetRequest.teamKey}`],
+      audience: 'crew',
+    });
   }
 
   return (
@@ -670,20 +834,30 @@ function App() {
         <div className="planning-grid">
           <FleetSetupPanel
             open={setupOpen}
+            mode={setupMode}
+            shipOptions={setupShipChoices}
             selectedShipName={setupShipName}
+            selectedTypeKey={setupTypeKey}
             selectedTeamKey={setupTeamKey}
             selectedProfile={setupProfile}
             crewTarget={setupCrewTarget}
+            quantity={setupQuantity}
             customPositions={customPositions}
             onToggleOpen={() => setSetupOpen((current) => !current)}
+            onModeChange={handleSetupModeChange}
             onShipChange={handleSetupShipChange}
+            onTypeChange={handleSetupTypeChange}
             onTeamChange={setSetupTeamKey}
             onProfileChange={setSetupProfile}
             onCrewTargetChange={setSetupCrewTarget}
+            onQuantityChange={setSetupQuantity}
             onOpenCustomCrew={() => setCustomCrewOpen(true)}
             onAddFleetLine={addFleetLine}
           />
-          <ChangeLogPanel requests={changeRequests} onUpdate={updateChangeRequest} />
+          <div className="command-stack">
+            <ChangeLogPanel requests={changeRequests} onUpdate={updateChangeRequest} />
+            <MessageHistoryPanel messages={fleetMessages} variant="command" />
+          </div>
         </div>
 
         <div className="toolbar">
@@ -820,36 +994,51 @@ function App() {
         onClose={() => setCheckInMemberId(null)}
       />
     )}
+    <MessageHistoryPanel messages={fleetMessages} variant="crew" />
     </>
   );
 }
 
 function FleetSetupPanel({
   open,
+  mode,
+  shipOptions,
   selectedShipName,
+  selectedTypeKey,
   selectedTeamKey,
   selectedProfile,
   crewTarget,
+  quantity,
   customPositions,
   onToggleOpen,
+  onModeChange,
   onShipChange,
+  onTypeChange,
   onTeamChange,
   onProfileChange,
   onCrewTargetChange,
+  onQuantityChange,
   onOpenCustomCrew,
   onAddFleetLine,
 }: {
   open: boolean;
+  mode: SetupMode;
+  shipOptions: SetupShipOption[];
   selectedShipName: string;
+  selectedTypeKey: FleetShipRequest['categoryKey'];
   selectedTeamKey: string;
   selectedProfile: StaffingProfile;
   crewTarget: number;
+  quantity: number;
   customPositions: PositionRequirement[];
   onToggleOpen: () => void;
+  onModeChange: (mode: SetupMode) => void;
   onShipChange: (shipName: string) => void;
+  onTypeChange: (categoryKey: FleetShipRequest['categoryKey']) => void;
   onTeamChange: (teamKey: string) => void;
   onProfileChange: (profile: StaffingProfile) => void;
   onCrewTargetChange: (crewTarget: number) => void;
+  onQuantityChange: (quantity: number) => void;
   onOpenCustomCrew: () => void;
   onAddFleetLine: () => void;
 }) {
@@ -865,15 +1054,45 @@ function FleetSetupPanel({
 
       {open && (
         <div className="setup-content">
+          <div className="mode-picker" aria-label="Fleet line type">
+            <button
+              className={mode === 'ship' ? 'active' : ''}
+              onClick={() => onModeChange('ship')}
+              type="button"
+            >
+              Specific Ship
+            </button>
+            <button
+              className={mode === 'type' ? 'active' : ''}
+              onClick={() => onModeChange('type')}
+              type="button"
+            >
+              Ship Type
+            </button>
+          </div>
+
           <label>
-            <span>Ship or slot</span>
+            <span>{mode === 'ship' ? 'Specific ship' : 'Ship type'}</span>
+            {mode === 'ship' ? (
             <select value={selectedShipName} onChange={(event) => onShipChange(event.target.value)}>
-              {setupShipOptions.map((ship) => (
+              {shipOptions.map((ship) => (
                 <option key={ship.name} value={ship.name}>
-                  {ship.name}
+                  {ship.name} {ship.manufacturer ? `(${ship.manufacturer})` : ''}
                 </option>
               ))}
             </select>
+            ) : (
+              <select
+                value={selectedTypeKey}
+                onChange={(event) => onTypeChange(event.target.value as FleetShipRequest['categoryKey'])}
+              >
+                {categoryFilters.map((category) => (
+                  <option key={category.key} value={category.key}>
+                    {category.label}
+                  </option>
+                ))}
+              </select>
+            )}
           </label>
 
           <label>
@@ -885,6 +1104,17 @@ function FleetSetupPanel({
                 </option>
               ))}
             </select>
+          </label>
+
+          <label>
+            <span>Quantity</span>
+            <input
+              min={1}
+              max={20}
+              type="number"
+              value={quantity}
+              onChange={(event) => onQuantityChange(Math.max(1, Number(event.target.value)))}
+            />
           </label>
 
           <div className="profile-picker" aria-label="Staffing profile">
@@ -957,6 +1187,39 @@ function ChangeLogPanel({
                 <XCircle size={15} />
               </button>
             </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MessageHistoryPanel({
+  messages,
+  variant,
+}: {
+  messages: FleetMessage[];
+  variant: 'command' | 'crew';
+}) {
+  const visibleMessages =
+    variant === 'crew'
+      ? messages.filter((message) => message.audience === 'crew').slice(0, 6)
+      : messages.slice(0, 5);
+
+  return (
+    <section className={variant === 'crew' ? 'orders-feed' : 'command-history'}>
+      <div className="message-title">
+        <strong>{variant === 'crew' ? 'Orders / Updates' : 'Session History'}</strong>
+        <span>{visibleMessages.length}</span>
+      </div>
+      <div className="message-list">
+        {visibleMessages.map((message) => (
+          <article className="message-row" key={message.id}>
+            <div>
+              <strong>{message.title}</strong>
+              <span>{message.body}</span>
+            </div>
+            <em>{message.createdAt}</em>
           </article>
         ))}
       </div>
@@ -1353,6 +1616,115 @@ function rolePriority(role: string) {
 
 function teamLabel(teamKey: string) {
   return teamFilters.find((team) => team.toLowerCase() === teamKey) ?? 'Unassigned';
+}
+
+function optionFromCatalog(
+  ship: ShipCatalogRow,
+  templateByName: Map<string, SetupShipOption>,
+): SetupShipOption {
+  const template = templateByName.get(normalizeName(ship.name));
+
+  if (template) {
+    return {
+      ...template,
+      manufacturer: ship.manufacturer ?? template.manufacturer,
+      categoryKey: ship.primary_category_key ?? template.categoryKey,
+      categoryName: ship.primary_category_name ?? template.categoryName,
+      imageUrl: ship.primary_image_url ?? ship.thumbnail_image_url ?? template.imageUrl,
+    };
+  }
+
+  const categoryKey = ship.primary_category_key ?? 'medium';
+
+  return {
+    name: ship.name,
+    manufacturer: ship.manufacturer ?? 'Unknown',
+    categoryKey,
+    categoryName: ship.primary_category_name ?? categoryLabel(categoryKey),
+    requiredPositions: Math.max(1, ship.crew_min ?? 1),
+    optionalPositions: Math.max(0, (ship.crew_max ?? ship.crew_min ?? 1) - (ship.crew_min ?? 1)),
+    imageUrl: ship.primary_image_url ?? ship.thumbnail_image_url ?? undefined,
+    positions: inferCatalogPositions(ship),
+  };
+}
+
+function inferCatalogPositions(ship: ShipCatalogRow): PositionRequirement[] {
+  const categoryPositions = buildCategoryTypePositions(ship.primary_category_key ?? 'medium');
+  const minCrew = Math.max(1, ship.crew_min ?? 1);
+  const maxCrew = Math.max(minCrew, ship.crew_max ?? minCrew);
+
+  if (maxCrew <= totalPositionQuantity(categoryPositions)) {
+    return categoryPositions;
+  }
+
+  return [
+    ...categoryPositions,
+    {
+      id: 'crew-specialist',
+      label: 'Crew Specialist',
+      quantity: maxCrew - totalPositionQuantity(categoryPositions),
+    },
+  ];
+}
+
+function buildCategoryTypePositions(categoryKey: FleetShipRequest['categoryKey']): PositionRequirement[] {
+  if (categoryKey === 'marines') {
+    return marinePositions;
+  }
+
+  if (
+    categoryKey === 'light_fighter' ||
+    categoryKey === 'medium_fighter' ||
+    categoryKey === 'small' ||
+    categoryKey === 'snub_fighter'
+  ) {
+    return [{ id: 'pilot', label: 'Pilot', quantity: 1 }];
+  }
+
+  if (categoryKey === 'heavy_fighter') {
+    return genericHeavyFighterPositions;
+  }
+
+  if (categoryKey === 'ground_vehicle') {
+    return [
+      { id: 'driver', label: 'Driver', quantity: 1 },
+      { id: 'gunner', label: 'Gunner', quantity: 1 },
+    ];
+  }
+
+  if (categoryKey === 'capital') {
+    return [
+      { id: 'pilot', label: 'Pilot', quantity: 1 },
+      { id: 'co-pilot', label: 'Co-Pilot', quantity: 1 },
+      { id: 'turret-gunner', label: 'Turret Gunner', quantity: 4 },
+      { id: 'engineer-lead', label: 'Lead Engineer', quantity: 1 },
+      { id: 'engineer-assistant', label: 'Engineering Assistant', quantity: 2 },
+      { id: 'medic', label: 'Medic', quantity: 1 },
+      { id: 'marine-rifleman', label: 'Marine Rifleman', quantity: 4 },
+    ];
+  }
+
+  if (categoryKey === 'subcapital' || categoryKey === 'large') {
+    return [
+      { id: 'pilot', label: 'Pilot', quantity: 1 },
+      { id: 'turret-gunner', label: 'Turret Gunner', quantity: 2 },
+      { id: 'engineer-lead', label: 'Lead Engineer', quantity: 1 },
+      { id: 'marine-rifleman', label: 'Marine Rifleman', quantity: 2 },
+    ];
+  }
+
+  return [
+    { id: 'pilot', label: 'Pilot', quantity: 1 },
+    { id: 'support-crew', label: 'Support Crew', quantity: 1 },
+  ];
+}
+
+function categoryLabel(categoryKey: FleetShipRequest['categoryKey']) {
+  return categoryFilters.find((category) => category.key === categoryKey)?.label ?? 'Ship';
+}
+
+function normalizeName(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
 function buildProfilePositions(profile: StaffingProfile, shipPositions: PositionRequirement[]) {

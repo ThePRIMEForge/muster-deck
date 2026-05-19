@@ -240,6 +240,12 @@ h3 {
   margin-bottom: 14px;
 }
 
+.command-stack {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
 .setup-panel,
 .change-log {
   min-width: 0;
@@ -286,6 +292,13 @@ h3 {
   padding: 12px;
 }
 
+.mode-picker {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
 .setup-content label,
 .team-assignment {
   display: grid;
@@ -326,6 +339,7 @@ h3 {
 }
 
 .profile-picker button,
+.mode-picker button,
 .setup-secondary,
 .setup-submit {
   display: inline-flex;
@@ -342,7 +356,8 @@ h3 {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.profile-picker button.active {
+.profile-picker button.active,
+.mode-picker button.active {
   color: #050505;
   background: #f0b64d;
 }
@@ -411,6 +426,87 @@ h3 {
   color: #f0b64d;
   border: 1px solid rgba(245, 240, 230, 0.1);
   background: transparent;
+}
+
+.command-history {
+  min-width: 0;
+  border: 1px solid rgba(229, 168, 72, 0.16);
+  background: rgba(12, 12, 11, 0.88);
+}
+
+.orders-feed {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  width: min(360px, calc(100vw - 32px));
+  border: 1px solid rgba(229, 168, 72, 0.24);
+  background: rgba(8, 8, 8, 0.94);
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.42);
+}
+
+.message-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(245, 240, 230, 0.08);
+}
+
+.message-title strong {
+  color: #fff8eb;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+}
+
+.message-title span {
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  color: #050505;
+  font-size: 0.7rem;
+  font-weight: 900;
+  background: #f0b64d;
+}
+
+.message-list {
+  display: grid;
+  gap: 5px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.message-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 7px;
+  border: 1px solid rgba(245, 240, 230, 0.07);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.message-row strong,
+.message-row span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-row strong {
+  color: #fff8eb;
+  font-size: 0.78rem;
+}
+
+.message-row span,
+.message-row em {
+  color: #a39a8c;
+  font-size: 0.7rem;
+  font-style: normal;
 }
 
 .header-actions {

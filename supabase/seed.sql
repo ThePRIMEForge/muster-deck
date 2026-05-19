@@ -1,0 +1,1 @@
+-- Reference data is inserted by migrations so local and remote databases match.

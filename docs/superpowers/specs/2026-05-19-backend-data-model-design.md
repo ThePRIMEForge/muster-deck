@@ -125,6 +125,28 @@ Teams may be embarked on a ship. For example:
 
 This gives the behavior of nested teams without making team ownership too rigid.
 
+## Fleet Roster Requests And Locks
+
+The Fleet Admiral can build the fleet from exact ships, category counts, or a mixture of both.
+
+Examples:
+
+- Request `4` Heavy Fighters and let members choose which heavy fighters they can bring.
+- Request `1` Perseus and require that exact ship.
+- Request `2` Capital ships, plus `1` specific Idris, plus `6` Medium Fighters.
+
+Each requested fleet row can either point at a specific ship or at a primary category. When a requested row points at a specific ship and `is_exact_ship_required` is true, members should fill that roster row rather than substituting another ship.
+
+Roster locking has three layers:
+
+- Master event lock: locks the full fleet roster. No substitutions or ship suggestions can be submitted while it is active.
+- Team lock: locks substitutions and ship suggestions for that team only.
+- Request policy: controls whether a specific ship/category request accepts alternatives.
+
+The UI should expose a lock/unlock icon in the fleet header, each team header, and each team row/list section. There should also be an `Unlock All` control that clears the master lock and all team locks for the event.
+
+Locks prevent suggestions and substitutions. They do not prevent already-assigned members from filling open crew positions unless the app later adds a separate position-signup lock.
+
 ## Future Mission Phases
 
 Phase tabs are not part of the first release.
@@ -311,6 +333,7 @@ Fields:
 - `created_by`
 - `created_at`
 - `status`
+- `roster_locked`
 
 ### fleet_event_ship_requests
 
@@ -326,7 +349,14 @@ Fields:
 - `team_id`
 - `staffing_profile_id`
 - `is_exact_ship_required`
+- `substitution_policy`
 - `notes`
+
+`substitution_policy` starts with:
+
+- `allow_alternatives`: members can suggest alternate ships.
+- `exact_only`: members can only bring/fill the requested exact ship.
+- `locked`: this row is locked from substitutions regardless of master/team lock state.
 
 ### fleet_event_positions
 
@@ -369,6 +399,24 @@ Fields:
 - `custom_ship_name`
 - `notes`
 
+### fleet_event_ship_suggestions
+
+Member-submitted suggestions for an alternate ship or substitution.
+
+Fields:
+
+- `id`
+- `fleet_event_id`
+- `fleet_event_ship_request_id`
+- `member_id`
+- `suggested_ship_id`
+- `custom_ship_name`
+- `suggestion_type`
+- `notes`
+- `status`
+- `created_at`
+- `reviewed_at`
+
 ### assignments
 
 Actual member assignments to ships, positions, or teams.
@@ -397,6 +445,7 @@ Fields:
 - `sort_order`
 - `parent_team_id`
 - `embarked_ship_request_id`
+- `roster_locked`
 
 The `parent_team_id` exists for future flexibility, but the first release should prefer explicit embarked-team behavior over deeply nested team trees.
 

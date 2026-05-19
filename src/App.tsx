@@ -13,6 +13,7 @@ import {
   Shield,
   Ship,
   SlidersHorizontal,
+  Trash2,
   Unlock,
   UserRound,
   Users,
@@ -53,6 +54,13 @@ type SetupShipOption = {
   requiredPositions: number;
   optionalPositions: number;
   imageUrl?: string;
+  positions: PositionRequirement[];
+};
+
+type PositionRequirement = {
+  id: string;
+  label: string;
+  quantity: number;
 };
 
 const profileLabels: Record<StaffingProfile, string> = {
@@ -69,6 +77,66 @@ const profileClassNames: Record<StaffingProfile, string> = {
   custom: 'profile-custom',
 };
 
+const idrisPositions: PositionRequirement[] = [
+  { id: 'pilot', label: 'Pilot', quantity: 1 },
+  { id: 'co-pilot', label: 'Co-Pilot', quantity: 1 },
+  { id: 'remote-s4', label: 'S4 Remote Turret', quantity: 4 },
+  { id: 'primary-s7', label: 'Primary S7 Turret', quantity: 1 },
+  { id: 'shoulder-s5', label: 'Shoulder S5 Turret', quantity: 4 },
+  { id: 'keel-s5-forward', label: 'Forward Keel S5 Turret', quantity: 2 },
+  { id: 'keel-s5-aft', label: 'Aft Keel S5 Turret', quantity: 2 },
+  { id: 'aft-turret', label: 'Aft Turret', quantity: 1 },
+  { id: 'doctor', label: 'Doctor', quantity: 1 },
+  { id: 'engineer-lead', label: 'Lead Engineer', quantity: 1 },
+  { id: 'engineer-assistant', label: 'Engineering Assistant', quantity: 3 },
+  { id: 'marine-lead', label: 'Marine Lead', quantity: 1 },
+  { id: 'marine-rifleman', label: 'Marine Rifleman', quantity: 8 },
+  { id: 'flight-deck-lead', label: 'Flight Deck Operations Lead', quantity: 1 },
+];
+
+const perseusPositions: PositionRequirement[] = [
+  { id: 'pilot', label: 'Pilot', quantity: 1 },
+  { id: 'co-pilot', label: 'Co-Pilot', quantity: 1 },
+  { id: 'remote-gunner', label: 'Remote Gunner', quantity: 1 },
+  { id: 'primary-turret-deck', label: 'Primary Turret Deck', quantity: 1 },
+  { id: 'primary-turret-keel', label: 'Primary Turret Keel', quantity: 1 },
+  { id: 'engineer-lead', label: 'Engineer Lead', quantity: 1 },
+  { id: 'engineer-assistant', label: 'Engineer Assistant', quantity: 1 },
+  { id: 'marine-lead', label: 'Marine Lead', quantity: 1 },
+  { id: 'marine-rifleman', label: 'Marine Rifleman', quantity: 4 },
+];
+
+const polarisPositions: PositionRequirement[] = [
+  { id: 'pilot', label: 'Pilot', quantity: 1 },
+  { id: 'co-pilot', label: 'Co-Pilot', quantity: 1 },
+  { id: 'torpedo-operator', label: 'Torpedo Operator', quantity: 1 },
+  { id: 'shoulder-s4', label: 'Quad S4 Shoulder Turret', quantity: 2 },
+  { id: 'midship-turret', label: 'Midship Manned Turret', quantity: 2 },
+  { id: 'remote-turret', label: 'Remote Turret', quantity: 2 },
+  { id: 'engineer-lead', label: 'Lead Engineer', quantity: 1 },
+  { id: 'engineer-assistant', label: 'Engineering Assistant', quantity: 2 },
+  { id: 'medic', label: 'Medic', quantity: 1 },
+  { id: 'marine-lead', label: 'Marine Lead', quantity: 1 },
+  { id: 'marine-rifleman', label: 'Marine Rifleman', quantity: 6 },
+];
+
+const genericHeavyFighterPositions: PositionRequirement[] = [
+  { id: 'pilot', label: 'Pilot', quantity: 1 },
+  { id: 'turret-gunner', label: 'Turret Gunner', quantity: 1 },
+];
+
+const medicalSupportPositions: PositionRequirement[] = [
+  { id: 'pilot', label: 'Pilot', quantity: 1 },
+  { id: 'doctor', label: 'Doctor', quantity: 1 },
+  { id: 'medic', label: 'Medic', quantity: 2 },
+];
+
+const marinePositions: PositionRequirement[] = [
+  { id: 'marine-lead', label: 'Marine Lead', quantity: 1 },
+  { id: 'marine-rifleman', label: 'Marine Rifleman', quantity: 6 },
+  { id: 'medic', label: 'Medic', quantity: 1 },
+];
+
 const setupShipOptions: SetupShipOption[] = [
   {
     name: 'Idris',
@@ -78,6 +146,7 @@ const setupShipOptions: SetupShipOption[] = [
     requiredPositions: 10,
     optionalPositions: 11,
     imageUrl: 'https://media.starcitizen.tools/d/dd/Idris_M_flying_over_world_-_cropped.jpg',
+    positions: idrisPositions,
   },
   {
     name: 'Perseus',
@@ -87,6 +156,17 @@ const setupShipOptions: SetupShipOption[] = [
     requiredPositions: 3,
     optionalPositions: 3,
     imageUrl: 'https://media.starcitizen.tools/6/6c/Perseus_angled_combat.jpg',
+    positions: perseusPositions,
+  },
+  {
+    name: 'Polaris',
+    manufacturer: 'Roberts Space Industries',
+    categoryKey: 'capital',
+    categoryName: 'Capital',
+    requiredPositions: 8,
+    optionalPositions: 10,
+    imageUrl: 'https://media.starcitizen.tools/a/ac/Polaris_flying_over_planet.jpg',
+    positions: polarisPositions,
   },
   {
     name: 'Heavy Fighter Slot',
@@ -96,6 +176,7 @@ const setupShipOptions: SetupShipOption[] = [
     requiredPositions: 1,
     optionalPositions: 1,
     imageUrl: 'https://media.starcitizen.tools/3/30/RSI_Scorpius_on_ArcCorp.png',
+    positions: genericHeavyFighterPositions,
   },
   {
     name: 'Medical Support Slot',
@@ -105,6 +186,7 @@ const setupShipOptions: SetupShipOption[] = [
     requiredPositions: 2,
     optionalPositions: 3,
     imageUrl: 'https://media.starcitizen.tools/a/ac/Cutlass_Red_Squad_Concept.jpg',
+    positions: medicalSupportPositions,
   },
   {
     name: 'Marines/FPS',
@@ -113,19 +195,8 @@ const setupShipOptions: SetupShipOption[] = [
     categoryName: 'Marines/FPS',
     requiredPositions: 6,
     optionalPositions: 2,
+    positions: marinePositions,
   },
-];
-
-const positionOptions = [
-  'Pilot',
-  'Turret Gunner',
-  'Remote Turret Gunner',
-  'Engineer',
-  'Medic',
-  'Marine Lead',
-  'Rifleman',
-  'Cargo Operator',
-  'Tractor Beam Operator',
 ];
 
 function App() {
@@ -143,11 +214,9 @@ function App() {
   const [setupProfile, setSetupProfile] = useState<StaffingProfile>('standard');
   const [setupCrewTarget, setSetupCrewTarget] = useState(3);
   const [customCrewOpen, setCustomCrewOpen] = useState(false);
-  const [customPositions, setCustomPositions] = useState<string[]>([
-    'Pilot',
-    'Turret Gunner',
-    'Engineer',
-  ]);
+  const [customPositions, setCustomPositions] =
+    useState<PositionRequirement[]>(perseusPositions);
+  const [requestPendingRemovalId, setRequestPendingRemovalId] = useState<string | null>(null);
   const [checkedInMembers, setCheckedInMembers] = useState<Record<string, boolean>>({});
   const [checkInMemberId, setCheckInMemberId] = useState<string | null>(null);
   const [changeRequests, setChangeRequests] = useState<ChangeRequest[]>([
@@ -261,6 +330,7 @@ function App() {
     visibleRequests.length > 0 &&
     visibleRequests.every((request) => Boolean(expandedRequests[request.id]));
   const selectedSetupShip = setupShipOptions.find((ship) => ship.name === setupShipName);
+  const removalRequest = fleetRequests.find((request) => request.id === requestPendingRemovalId);
   const checkInMember = members.find((member) => member.id === checkInMemberId);
   const checkInRequest = fleetRequests.find(
     (request) => request.id === checkInMember?.assignedRequestId,
@@ -288,6 +358,56 @@ function App() {
     setExpandedRequests((current) => ({ ...current, [requestId]: true }));
   }
 
+  function handleSetupShipChange(shipName: string) {
+    const nextShip = setupShipOptions.find((ship) => ship.name === shipName);
+
+    setSetupShipName(shipName);
+
+    if (nextShip) {
+      setCustomPositions(nextShip.positions);
+      setSetupCrewTarget(Math.max(1, nextShip.requiredPositions));
+    }
+  }
+
+  function requestRemoveFleetLine(requestId: string) {
+    setRequestPendingRemovalId(requestId);
+  }
+
+  function confirmRemoveFleetLine() {
+    if (!requestPendingRemovalId) {
+      return;
+    }
+
+    setFleetRequests((current) =>
+      current.filter((request) => request.id !== requestPendingRemovalId),
+    );
+    setMembers((current) =>
+      current.map((member) =>
+        member.assignedRequestId === requestPendingRemovalId
+          ? { ...member, assignedRequestId: undefined }
+          : member,
+      ),
+    );
+    setExpandedRequests((current) => {
+      const rest = { ...current };
+      delete rest[requestPendingRemovalId];
+      return rest;
+    });
+    setRequestPendingRemovalId(null);
+  }
+
+  function addBringShipRequest() {
+    setChangeRequests((current) => [
+      {
+        id: `cr-${Date.now()}`,
+        memberName: 'Incoming Crew',
+        summary: 'Crew member wants to bring an unplanned ship for officer approval.',
+        status: 'pending',
+      },
+      ...current,
+    ]);
+  }
+
   function addFleetLine() {
     if (!selectedSetupShip) {
       return;
@@ -295,7 +415,7 @@ function App() {
 
     const teamName = teamLabel(setupTeamKey);
     const requiredPositions =
-      setupProfile === 'custom' ? Math.max(1, customPositions.length) : setupCrewTarget;
+      setupProfile === 'custom' ? Math.max(1, totalPositionQuantity(customPositions)) : setupCrewTarget;
     const newRequest: FleetShipRequest = {
       id: `${selectedSetupShip.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
       team: teamName,
@@ -316,16 +436,16 @@ function App() {
       isAdmiralShip: false,
       notes:
         setupProfile === 'custom'
-          ? `Custom crew target: ${customPositions.join(', ')}.`
+          ? `Custom crew target: ${customPositions
+              .filter((position) => position.quantity > 0)
+              .map((position) => `${position.quantity} ${position.label}`)
+              .join(', ')}.`
           : `${profileLabels[setupProfile]} crew target created by fleet planning.`,
       imageUrl: selectedSetupShip.imageUrl,
-      crew: (setupProfile === 'custom' ? customPositions : buildProfilePositions(setupProfile)).map(
-        (role, index) => ({
-          id: `crew-${Date.now()}-${index}`,
-          name: 'Open',
-          role,
-          status: 'requested',
-        }),
+      crew: buildCrewAssignments(
+        setupProfile === 'custom'
+          ? customPositions
+          : buildProfilePositions(setupProfile, selectedSetupShip.positions),
       ),
     };
 
@@ -556,7 +676,7 @@ function App() {
             crewTarget={setupCrewTarget}
             customPositions={customPositions}
             onToggleOpen={() => setSetupOpen((current) => !current)}
-            onShipChange={setSetupShipName}
+            onShipChange={handleSetupShipChange}
             onTeamChange={setSetupTeamKey}
             onProfileChange={setSetupProfile}
             onCrewTargetChange={setSetupCrewTarget}
@@ -575,6 +695,10 @@ function App() {
               placeholder="Search fleet"
             />
           </div>
+          <button className="icon-action gold" onClick={addBringShipRequest} type="button">
+            <Ship size={17} />
+            <span>Bring Ship</span>
+          </button>
           <button className="icon-action" onClick={toggleAllRosters} type="button">
             {allVisibleExpanded ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
             <span>{allVisibleExpanded ? 'Collapse Rosters' : 'Expand Rosters'}</span>
@@ -616,6 +740,7 @@ function App() {
               onToggleExpanded={() => toggleExpanded(request.id)}
               onShowDetails={() => showDetails(request.id)}
               onTeamChange={(teamKey) => moveRequestToTeam(request.id, teamKey)}
+              onRemove={() => requestRemoveFleetLine(request.id)}
               onMemberDrop={(memberId) => handleMemberDrop(request.id, memberId)}
             />
           ))}
@@ -670,13 +795,20 @@ function App() {
       <CustomCrewModal
         positions={customPositions}
         onClose={() => setCustomCrewOpen(false)}
-        onTogglePosition={(position) =>
+        onQuantityChange={(positionId, quantity) =>
           setCustomPositions((current) =>
-            current.includes(position)
-              ? current.filter((candidate) => candidate !== position)
-              : [...current, position],
+            current.map((position) =>
+              position.id === positionId ? { ...position, quantity: Math.max(0, quantity) } : position,
+            ),
           )
         }
+      />
+    )}
+    {removalRequest && (
+      <ConfirmRemoveModal
+        request={removalRequest}
+        onCancel={() => setRequestPendingRemovalId(null)}
+        onConfirm={confirmRemoveFleetLine}
       />
     )}
     {checkInMember && (
@@ -712,7 +844,7 @@ function FleetSetupPanel({
   selectedTeamKey: string;
   selectedProfile: StaffingProfile;
   crewTarget: number;
-  customPositions: string[];
+  customPositions: PositionRequirement[];
   onToggleOpen: () => void;
   onShipChange: (shipName: string) => void;
   onTeamChange: (teamKey: string) => void;
@@ -781,7 +913,7 @@ function FleetSetupPanel({
 
           <button className="setup-secondary" onClick={onOpenCustomCrew} type="button">
             <ClipboardList size={16} />
-            <span>{customPositions.length} custom positions</span>
+            <span>{totalPositionQuantity(customPositions)} custom seats</span>
           </button>
 
           <button className="setup-submit" onClick={onAddFleetLine} type="button">
@@ -841,6 +973,7 @@ function ShipRequestRow({
   onShowDetails,
   onTeamChange,
   onMemberDrop,
+  onRemove,
 }: {
   request: FleetShipRequest;
   locked: boolean;
@@ -850,6 +983,7 @@ function ShipRequestRow({
   onShowDetails: () => void;
   onTeamChange: (teamKey: string) => void;
   onMemberDrop: (memberId: string) => void;
+  onRemove: () => void;
 }) {
   const fillRate = Math.min(
     100,
@@ -905,6 +1039,14 @@ function ShipRequestRow({
           >
             {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
+          <button
+            className="remove-line-button"
+            onClick={onRemove}
+            type="button"
+            aria-label={`Remove ${request.shipName} from fleet roster`}
+          >
+            <Trash2 size={16} />
+          </button>
         </div>
 
         <div className="ship-meta">
@@ -929,9 +1071,6 @@ function ShipRequestRow({
         </div>
 
         <div className="signup-actions" aria-label={`${request.shipName} signup actions`}>
-          <button type="button" onClick={onShowDetails}>
-            Join Team
-          </button>
           <button type="button" onClick={onShowDetails} disabled={Boolean(request.ownerName)}>
             {request.ownerName ? 'Ship Provided' : 'Bring Ship'}
           </button>
@@ -1037,11 +1176,11 @@ function MemberGroup({
 
 function CustomCrewModal({
   positions,
-  onTogglePosition,
+  onQuantityChange,
   onClose,
 }: {
-  positions: string[];
-  onTogglePosition: (position: string) => void;
+  positions: PositionRequirement[];
+  onQuantityChange: (positionId: string, quantity: number) => void;
   onClose: () => void;
 }) {
   return (
@@ -1057,14 +1196,16 @@ function CustomCrewModal({
           </button>
         </div>
         <div className="position-grid">
-          {positionOptions.map((position) => (
-            <label className="position-option" key={position}>
+          {positions.map((position) => (
+            <label className="position-option quantity" key={position.id}>
+              <span>{position.label}</span>
               <input
-                checked={positions.includes(position)}
-                onChange={() => onTogglePosition(position)}
-                type="checkbox"
+                min={0}
+                max={20}
+                value={position.quantity}
+                onChange={(event) => onQuantityChange(position.id, Number(event.target.value))}
+                type="number"
               />
-              <span>{position}</span>
             </label>
           ))}
         </div>
@@ -1132,6 +1273,44 @@ function CheckInModal({
   );
 }
 
+function ConfirmRemoveModal({
+  request,
+  onConfirm,
+  onCancel,
+}: {
+  request: FleetShipRequest;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="modal confirm-modal" role="dialog" aria-modal="true" aria-label="Remove ship">
+        <div className="modal-header">
+          <div>
+            <p className="eyebrow">Remove Fleet Line</p>
+            <h2>{request.shipName}</h2>
+          </div>
+          <button className="modal-close" onClick={onCancel} type="button" aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+        <p className="confirm-copy">
+          Remove this ship or group from the operation roster? Assigned crew will return to the
+          unassigned member list.
+        </p>
+        <div className="modal-actions">
+          <button className="setup-secondary" onClick={onCancel} type="button">
+            Cancel
+          </button>
+          <button className="danger-action" onClick={onConfirm} type="button">
+            Remove Ship
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function CrewMarker({
   profile,
   hasMarines,
@@ -1176,31 +1355,42 @@ function teamLabel(teamKey: string) {
   return teamFilters.find((team) => team.toLowerCase() === teamKey) ?? 'Unassigned';
 }
 
-function buildProfilePositions(profile: StaffingProfile) {
+function buildProfilePositions(profile: StaffingProfile, shipPositions: PositionRequirement[]) {
   if (profile === 'skeleton') {
-    return ['Pilot'];
+    return shipPositions.filter((position) =>
+      ['pilot', 'co-pilot'].includes(position.id),
+    );
   }
 
   if (profile === 'standard') {
-    return ['Pilot', 'Turret Gunner', 'Engineer'];
+    return shipPositions.filter(
+      (position) =>
+        position.id.includes('pilot') ||
+        position.id.includes('turret') ||
+        position.id.includes('engineer-lead'),
+    );
   }
 
   if (profile === 'full_crew') {
-    return [
-      'Pilot',
-      'Turret Gunner',
-      'Turret Gunner',
-      'Remote Turret Gunner',
-      'Engineer',
-      'Engineer',
-      'Engineer',
-      'Medic',
-      'Marine Lead',
-      'Rifleman',
-    ];
+    return shipPositions;
   }
 
-  return ['Pilot'];
+  return shipPositions.filter((position) => position.id === 'pilot');
+}
+
+function buildCrewAssignments(positions: PositionRequirement[]) {
+  return positions.flatMap((position) =>
+    Array.from({ length: position.quantity }, (_, index) => ({
+      id: `crew-${Date.now()}-${position.id}-${index}`,
+      name: 'Open',
+      role: position.quantity > 1 ? `${position.label} ${index + 1}` : position.label,
+      status: 'requested' as const,
+    })),
+  );
+}
+
+function totalPositionQuantity(positions: PositionRequirement[]) {
+  return positions.reduce((total, position) => total + position.quantity, 0);
 }
 
 export default App;

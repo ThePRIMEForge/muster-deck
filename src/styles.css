@@ -675,6 +675,7 @@ h3 {
 }
 
 .ship-heading {
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -752,7 +753,8 @@ h3 {
 }
 
 .ship-lock,
-.expand-button {
+.expand-button,
+.remove-line-button {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
@@ -765,6 +767,10 @@ h3 {
 
 .expand-button {
   color: #f0b64d;
+}
+
+.remove-line-button {
+  color: #ff6a3a;
 }
 
 .lock-chip {
@@ -915,16 +921,16 @@ h3 {
 .crew-roster-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5px;
+  gap: 4px;
 }
 
 .crew-roster-row {
   display: grid;
-  grid-template-columns: 8px minmax(0, 0.9fr) minmax(0, 1fr);
+  grid-template-columns: 7px minmax(76px, max-content) minmax(0, 1fr);
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   min-width: 0;
-  padding: 5px 7px;
+  padding: 4px 6px;
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(245, 240, 230, 0.07);
 }
@@ -939,12 +945,12 @@ h3 {
 
 .crew-roster-row strong {
   color: #fff8eb;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
 }
 
 .crew-roster-row em {
   color: #a39a8c;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-style: normal;
 }
 
@@ -1063,9 +1069,15 @@ h3 {
 
 .modal {
   width: min(620px, 100%);
+  max-height: calc(100vh - 44px);
+  overflow: auto;
   border: 1px solid rgba(229, 168, 72, 0.28);
   background: #0c0c0b;
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.52);
+}
+
+.confirm-modal {
+  width: min(460px, 100%);
 }
 
 .modal-header {
@@ -1098,11 +1110,21 @@ h3 {
 .position-option {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   min-height: 36px;
   padding: 8px;
   border: 1px solid rgba(245, 240, 230, 0.09);
   background: rgba(255, 255, 255, 0.035);
+}
+
+.position-option.quantity input {
+  width: 64px;
+  min-height: 30px;
+  padding: 4px 6px;
+  color: #fff8eb;
+  border: 1px solid rgba(245, 240, 230, 0.11);
+  background: #10100f;
 }
 
 .checkin-summary > div {
@@ -1133,6 +1155,26 @@ h3 {
 
 .modal-submit {
   margin: 0 16px 16px auto;
+}
+
+.confirm-copy {
+  padding: 16px;
+  color: #d8d0c0;
+  line-height: 1.4;
+}
+
+.danger-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 31px;
+  padding: 6px 10px;
+  color: #fff8eb;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 106, 58, 0.72);
+  background: #8f2a1b;
 }
 
 .member-row[draggable="true"] {

@@ -1,3 +1,5 @@
+import type { OperationRole } from './permissions';
+
 export type ShipCategoryKey =
   | 'capital'
   | 'subcapital'
@@ -13,6 +15,8 @@ export type ShipCategoryKey =
 export type FleetCategoryKey = ShipCategoryKey | 'marines';
 
 export type StaffingProfile = 'skeleton' | 'standard' | 'full_crew' | 'custom';
+
+export type { OperationRole };
 
 export type ShipCatalogRow = {
   id: string;
@@ -67,6 +71,7 @@ export type Member = {
   id: string;
   name: string;
   status: 'ready' | 'filling' | 'suggesting' | 'standby';
+  operationRole: OperationRole;
   team: string;
   primaryRole: string;
   shipOffer?: string;

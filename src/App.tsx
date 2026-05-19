@@ -27,19 +27,27 @@ import {
   teamFilters,
 } from './lib/fallbackData';
 import { getManufacturerLogo, getRequestImage } from './lib/fanKitAssets';
+import {
+  canAccessPage,
+  canManageFleetSetup,
+  canManageOperation,
+  defaultPageForRole,
+  roleLabels,
+  type AppPage,
+} from './lib/permissions';
 import { hasSupabaseConfig, loadShipCatalog } from './lib/supabase';
 import type {
   CrewAssignment,
   FilterMode,
   FleetShipRequest,
   Member,
+  OperationRole,
   ShipCatalogRow,
   StaffingProfile,
 } from './lib/types';
 
 type ViewMode = 'list' | 'islands';
 type SetupMode = 'ship' | 'type';
-type AppPage = 'operation' | 'setup';
 
 type ChangeRequest = {
   id: string;
@@ -56,6 +64,16 @@ type FleetMessage = {
   createdAt: string;
   audience: 'command' | 'crew';
   acknowledged?: boolean;
+};
+
+type RolePrompt = {
+  memberId: string;
+  nextRole: OperationRole;
+};
+
+type AssignmentPrompt = {
+  memberId: string;
+  requestId: string;
 };
 
 type SetupShipOption = {
@@ -221,13 +239,60 @@ const setupShipOptions: SetupShipOption[] = [
   },
 ];
 
+const memberRoleStorageKey = 'scfm-member-roles';
+const currentViewerStorageKey = 'scfm-current-viewer-id';
+
+function readStoredMemberRoles() {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
+  try {
+    return JSON.parse(window.localStorage.getItem(memberRoleStorageKey) ?? '{}') as Record<
+      string,
+      OperationRole
+    >;
+  } catch {
+    return {};
+  }
+}
+
+function applyStoredMemberRoles(members: Member[]) {
+  const storedRoles = readStoredMemberRoles();
+
+  return members.map((member) => ({
+    ...member,
+    operationRole: storedRoles[member.id] ?? member.operationRole,
+  }));
+}
+
+function persistMemberRoles(members: Member[]) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(
+    memberRoleStorageKey,
+    JSON.stringify(Object.fromEntries(members.map((member) => [member.id, member.operationRole]))),
+  );
+}
+
+function readStoredViewerId() {
+  if (typeof window === 'undefined') {
+    return fallbackMembers[0].id;
+  }
+
+  return window.localStorage.getItem(currentViewerStorageKey) ?? fallbackMembers[0].id;
+}
+
 function App() {
   const [fleetRequests, setFleetRequests] = useState(fallbackFleetRequests);
-  const [members, setMembers] = useState(fallbackMembers);
+  const [members, setMembers] = useState(() => applyStoredMemberRoles(fallbackMembers));
+  const [currentViewerId, setCurrentViewerId] = useState(readStoredViewerId);
   const [filter, setFilter] = useState<FilterMode>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [memberSearchTerm, setMemberSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState<AppPage>('operation');
+  const [currentPage, setCurrentPage] = useState<AppPage>('setup');
   const [masterLocked, setMasterLocked] = useState(false);
   const [lockedTeams, setLockedTeams] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -244,6 +309,10 @@ function App() {
   const [customPositions, setCustomPositions] =
     useState<PositionRequirement[]>(perseusPositions);
   const [requestPendingRemovalId, setRequestPendingRemovalId] = useState<string | null>(null);
+  const [editingRequestId, setEditingRequestId] = useState<string | null>(null);
+  const [editingPositions, setEditingPositions] = useState<PositionRequirement[]>([]);
+  const [pendingRoleChanges, setPendingRoleChanges] = useState<Record<string, OperationRole>>({});
+  const [pendingAssignments, setPendingAssignments] = useState<Record<string, string>>({});
   const [checkedInMembers, setCheckedInMembers] = useState<Record<string, boolean>>({});
   const [checkInMemberId, setCheckInMemberId] = useState<string | null>(null);
   const [changeRequests, setChangeRequests] = useState<ChangeRequest[]>([
@@ -310,6 +379,29 @@ function App() {
       active = false;
     };
   }, []);
+
+  const currentViewer = members.find((member) => member.id === currentViewerId) ?? members[0];
+  const currentRole = currentViewer.operationRole;
+  const canUseFleetSetup = canManageFleetSetup(currentRole);
+  const canOperateRoster = canManageOperation(currentRole);
+  const pendingRolePrompt: RolePrompt | null = pendingRoleChanges[currentViewer.id]
+    ? { memberId: currentViewer.id, nextRole: pendingRoleChanges[currentViewer.id] }
+    : null;
+  const pendingAssignmentPrompt: AssignmentPrompt | null = pendingAssignments[currentViewer.id]
+    ? { memberId: currentViewer.id, requestId: pendingAssignments[currentViewer.id] }
+    : null;
+
+  useEffect(() => {
+    if (!canAccessPage(currentRole, currentPage)) {
+      setCurrentPage(defaultPageForRole(currentRole));
+    }
+  }, [currentPage, currentRole]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(currentViewerStorageKey, currentViewerId);
+    }
+  }, [currentViewerId]);
 
   const visibleRequests = useMemo(() => {
     const search = searchTerm.trim().toLowerCase();
@@ -643,6 +735,119 @@ function App() {
     );
   }
 
+  function openPositionEditor(requestId: string) {
+    const request = fleetRequests.find((candidate) => candidate.id === requestId);
+
+    if (!request) {
+      return;
+    }
+
+    setEditingRequestId(requestId);
+    setEditingPositions(positionsFromCrew(request.crew));
+  }
+
+  function applyPositionEdit() {
+    if (!editingRequestId) {
+      return;
+    }
+
+    const activePositions = editingPositions.filter((position) => position.quantity > 0);
+    const requiredPositions = Math.max(1, totalPositionQuantity(activePositions));
+
+    setFleetRequests((current) =>
+      current.map((request) =>
+        request.id === editingRequestId
+          ? {
+              ...request,
+              staffingProfile: 'custom',
+              requiredPositions,
+              optionalPositions: 0,
+              crew: buildCrewAssignments(activePositions),
+              notes: `Custom event crew requirement: ${activePositions
+                .map((position) => `${position.quantity} ${position.label}`)
+                .join(', ')}.`,
+            }
+          : request,
+      ),
+    );
+    setEditingRequestId(null);
+    setEditingPositions([]);
+  }
+
+  function requestRoleChange(memberId: string, nextRole: OperationRole) {
+    const member = members.find((candidate) => candidate.id === memberId);
+
+    if (!member) {
+      return;
+    }
+
+    setPendingRoleChanges((current) => ({ ...current, [memberId]: nextRole }));
+    pushMessage({
+      title: 'Command role invitation sent',
+      body: `${member.name} was invited to accept ${roleLabels[nextRole]} permissions.`,
+      tags: [`member:${member.name}`, `role:${nextRole}`],
+      audience: 'command',
+    });
+  }
+
+  function acceptRoleChange(prompt: RolePrompt) {
+    const nextMembers = members.map((member) => {
+      if (member.id === prompt.memberId) {
+        return { ...member, operationRole: prompt.nextRole };
+      }
+
+      if (prompt.nextRole === 'fleet_admiral' && member.operationRole === 'fleet_admiral') {
+        return { ...member, operationRole: 'officer' as const };
+      }
+
+      return member;
+    });
+
+    setMembers(nextMembers);
+    persistMemberRoles(nextMembers);
+    setPendingRoleChanges((current) => {
+      const rest = { ...current };
+      delete rest[prompt.memberId];
+      return rest;
+    });
+    setCurrentPage(defaultPageForRole(prompt.nextRole));
+
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => window.location.reload(), 250);
+    }
+  }
+
+  function declineRoleChange(memberId: string) {
+    setPendingRoleChanges((current) => {
+      const rest = { ...current };
+      delete rest[memberId];
+      return rest;
+    });
+  }
+
+  function acceptAssignmentPrompt(memberId: string) {
+    setCheckedInMembers((current) => ({ ...current, [memberId]: true }));
+    setPendingAssignments((current) => {
+      const rest = { ...current };
+      delete rest[memberId];
+      return rest;
+    });
+  }
+
+  function requestAssignmentChange(memberId: string) {
+    const member = members.find((candidate) => candidate.id === memberId);
+
+    if (member) {
+      requestCheckInChange(member);
+    }
+
+    setPendingAssignments((current) => {
+      const rest = { ...current };
+      delete rest[memberId];
+      return rest;
+    });
+  }
+
   function updateChangeRequest(requestId: string, status: ChangeRequest['status']) {
     const request = changeRequests.find((candidate) => candidate.id === requestId);
 
@@ -741,6 +946,7 @@ function App() {
     );
 
     setExpandedRequests((current) => ({ ...current, [requestId]: true }));
+    setPendingAssignments((current) => ({ ...current, [memberId]: requestId }));
     pushMessage({
       title: 'Crew assignment changed',
       body: `${member.name} assigned to ${targetRequest.shipName} in ${targetRequest.team}.`,
@@ -764,34 +970,49 @@ function App() {
         </div>
 
         <nav className="filter-stack" aria-label="Fleet filters">
-          <button
-            className={currentPage === 'setup' ? 'filter-button active' : 'filter-button'}
-            onClick={() => setCurrentPage('setup')}
-            type="button"
-          >
-            <SlidersHorizontal size={16} />
-            <span>Fleet Setup</span>
-            <strong>{fleetRequests.length}</strong>
-          </button>
+          {canUseFleetSetup && (
+            <button
+              className={currentPage === 'setup' ? 'filter-button active' : 'filter-button'}
+              onClick={() => setCurrentPage('setup')}
+              type="button"
+            >
+              <SlidersHorizontal size={16} />
+              <span>Fleet Setup</span>
+              <strong>{fleetRequests.length}</strong>
+            </button>
+          )}
+
+          {canOperateRoster && (
+            <button
+              className={currentPage === 'operation' ? 'filter-button active' : 'filter-button'}
+              onClick={() => setCurrentPage('operation')}
+              type="button"
+            >
+              <Ship size={16} />
+              <span>Operation View</span>
+              <strong>{totals.required}</strong>
+            </button>
+          )}
 
           <button
-            className={currentPage === 'operation' ? 'filter-button active' : 'filter-button'}
-            onClick={() => setCurrentPage('operation')}
+            className={currentPage === 'crew' ? 'filter-button active' : 'filter-button'}
+            onClick={() => setCurrentPage('crew')}
             type="button"
           >
-            <Ship size={16} />
-            <span>Operation View</span>
-            <strong>{totals.required}</strong>
+            <UserRound size={16} />
+            <span>Crew View</span>
+            <strong>{members.length}</strong>
           </button>
 
+          <div className="filter-group-label">Ship Category</div>
           <button
             className={
-              currentPage === 'operation' && filter === 'all'
+              currentPage !== 'setup' && filter === 'all'
                 ? 'filter-button active'
                 : 'filter-button'
             }
             onClick={() => {
-              setCurrentPage('operation');
+              setCurrentPage(canOperateRoster ? 'operation' : 'crew');
               setFilter('all');
             }}
             type="button"
@@ -801,7 +1022,6 @@ function App() {
             <strong>{fleetRequests.length}</strong>
           </button>
 
-          <div className="filter-group-label">Ship Category</div>
           {categoryFilters.map((category) => {
             const count = fleetRequests.filter(
               (request) => request.categoryKey === category.key,
@@ -810,13 +1030,13 @@ function App() {
             return (
               <button
                 className={
-                  currentPage === 'operation' && filter === category.key
+                  currentPage !== 'setup' && filter === category.key
                     ? 'filter-button active'
                     : 'filter-button'
                 }
                 key={category.key}
                 onClick={() => {
-                  setCurrentPage('operation');
+                  setCurrentPage(canOperateRoster ? 'operation' : 'crew');
                   setFilter(category.key);
                 }}
                 type="button"
@@ -831,14 +1051,14 @@ function App() {
           <div className="filter-group-label">Teams</div>
           {teamFilters.map((team) => {
             const teamKey = team.toLowerCase();
-            const active = currentPage === 'operation' && filter === `team:${teamKey}`;
+            const active = currentPage !== 'setup' && filter === `team:${teamKey}`;
             const locked = Boolean(lockedTeams[teamKey]);
 
             return (
               <div className={active ? 'team-filter active' : 'team-filter'} key={team}>
                 <button
                   onClick={() => {
-                    setCurrentPage('operation');
+                    setCurrentPage(canOperateRoster ? 'operation' : 'crew');
                     setFilter(`team:${teamKey}`);
                   }}
                   type="button"
@@ -866,33 +1086,43 @@ function App() {
         <header className="fleet-header">
           <div>
             <p className="eyebrow">Tactical Strike Group</p>
-            <h2>Operation Fleet Build</h2>
+            <h2>
+              {currentPage === 'setup'
+                ? 'Fleet Setup'
+                : currentPage === 'operation'
+                  ? 'Operation Command View'
+                  : 'Crew View'}
+            </h2>
           </div>
           <div className="header-actions">
-            <button
-              className={masterLocked ? 'icon-action locked' : 'icon-action'}
-              onClick={() => setMasterLocked((current) => !current)}
-              type="button"
-              title="Master ship roster lock"
-            >
-              {masterLocked ? <Lock size={18} /> : <Unlock size={18} />}
-              <span>{masterLocked ? 'Ship Roster Locked' : 'Ship Roster Open'}</span>
-            </button>
-            <button className="icon-action gold" onClick={unlockAll} type="button">
-              <Unlock size={18} />
-              <span>Unlock All</span>
-            </button>
-            <button
-              className="icon-action primary"
-              onClick={() => {
-                setCurrentPage('setup');
-                setSetupOpen(true);
-              }}
-              type="button"
-            >
-              <Plus size={18} />
-              <span>Fleet Setup</span>
-            </button>
+            {canUseFleetSetup && (
+              <>
+                <button
+                  className={masterLocked ? 'icon-action locked' : 'icon-action'}
+                  onClick={() => setMasterLocked((current) => !current)}
+                  type="button"
+                  title="Master ship roster lock"
+                >
+                  {masterLocked ? <Lock size={18} /> : <Unlock size={18} />}
+                  <span>{masterLocked ? 'Ship Roster Locked' : 'Ship Roster Open'}</span>
+                </button>
+                <button className="icon-action gold" onClick={unlockAll} type="button">
+                  <Unlock size={18} />
+                  <span>Unlock All</span>
+                </button>
+                <button
+                  className="icon-action primary"
+                  onClick={() => {
+                    setCurrentPage('setup');
+                    setSetupOpen(true);
+                  }}
+                  type="button"
+                >
+                  <Plus size={18} />
+                  <span>Fleet Setup</span>
+                </button>
+              </>
+            )}
           </div>
         </header>
 
@@ -917,7 +1147,7 @@ function App() {
           </div>
         </div>
 
-        {currentPage === 'setup' ? (
+        {currentPage === 'setup' && canUseFleetSetup ? (
           <FleetSetupWorkspace
             changeRequests={changeRequests}
             crewTarget={setupCrewTarget}
@@ -931,6 +1161,7 @@ function App() {
             onOpenCustomCrew={() => setCustomCrewOpen(true)}
             onProfileChange={setSetupProfile}
             onQuantityChange={setSetupQuantity}
+            onEditPositions={openPositionEditor}
             onRemoveRequest={requestRemoveFleetLine}
             onRequestCrewTargetChange={updateRequestCrewTarget}
             onRequestProfileChange={updateRequestProfile}
@@ -948,6 +1179,7 @@ function App() {
             setupOpen={setupOpen}
             shipOptions={filteredSetupShipChoices}
             shipSearchTerm={setupShipSearchTerm}
+            canManageSetup={canUseFleetSetup}
             onToggleSetup={() => setSetupOpen((current) => !current)}
           />
         ) : (
@@ -1008,6 +1240,7 @@ function App() {
               onTeamChange={(teamKey) => moveRequestToTeam(request.id, teamKey)}
               onRemove={() => requestRemoveFleetLine(request.id)}
               onMemberDrop={(memberId) => handleMemberDrop(request.id, memberId)}
+              canManage={currentPage === 'operation' && canOperateRoster}
             />
           ))}
         </div>
@@ -1024,6 +1257,20 @@ function App() {
           <UserRound size={20} />
         </div>
 
+        <label className="viewer-switcher">
+          <span>Viewing As</span>
+          <select
+            value={currentViewerId}
+            onChange={(event) => setCurrentViewerId(event.target.value)}
+          >
+            {members.map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.name} - {roleLabels[member.operationRole]}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <div className="member-search">
           <Search size={15} />
           <input
@@ -1037,14 +1284,22 @@ function App() {
           <MemberGroup
             title="Available"
             checkedInMembers={checkedInMembers}
+            canManageRoles={canUseFleetSetup}
+            currentViewerId={currentViewer.id}
             members={memberGroups.available}
             onCheckIn={setCheckInMemberId}
+            onRequestRoleChange={requestRoleChange}
+            pendingRoleChanges={pendingRoleChanges}
           />
           <MemberGroup
             title="Unassigned Ships"
             checkedInMembers={checkedInMembers}
+            canManageRoles={canUseFleetSetup}
+            currentViewerId={currentViewer.id}
             members={memberGroups.unassignedShips}
             onCheckIn={setCheckInMemberId}
+            onRequestRoleChange={requestRoleChange}
+            pendingRoleChanges={pendingRoleChanges}
           />
           {memberGroups.assignedGroups.map((group) => (
             <MemberGroup
@@ -1052,8 +1307,12 @@ function App() {
               title={group.request.shipName}
               ownerName={group.request.ownerName}
               checkedInMembers={checkedInMembers}
+              canManageRoles={canUseFleetSetup}
+              currentViewerId={currentViewer.id}
               members={group.members}
               onCheckIn={setCheckInMemberId}
+              onRequestRoleChange={requestRoleChange}
+              pendingRoleChanges={pendingRoleChanges}
             />
           ))}
         </div>
@@ -1061,10 +1320,30 @@ function App() {
     </main>
     {customCrewOpen && (
       <CustomCrewModal
+        title="Select Positions"
         positions={customPositions}
+        onApply={() => setCustomCrewOpen(false)}
         onClose={() => setCustomCrewOpen(false)}
         onQuantityChange={(positionId, quantity) =>
           setCustomPositions((current) =>
+            current.map((position) =>
+              position.id === positionId ? { ...position, quantity: Math.max(0, quantity) } : position,
+            ),
+          )
+        }
+      />
+    )}
+    {editingRequestId && (
+      <CustomCrewModal
+        title={`Edit ${fleetRequests.find((request) => request.id === editingRequestId)?.shipName ?? 'Fleet Line'} Positions`}
+        positions={editingPositions}
+        onApply={applyPositionEdit}
+        onClose={() => {
+          setEditingRequestId(null);
+          setEditingPositions([]);
+        }}
+        onQuantityChange={(positionId, quantity) =>
+          setEditingPositions((current) =>
             current.map((position) =>
               position.id === positionId ? { ...position, quantity: Math.max(0, quantity) } : position,
             ),
@@ -1088,6 +1367,22 @@ function App() {
         onClose={() => setCheckInMemberId(null)}
       />
     )}
+    {pendingRolePrompt && (
+      <RoleChangeModal
+        member={currentViewer}
+        nextRole={pendingRolePrompt.nextRole}
+        onAccept={() => acceptRoleChange(pendingRolePrompt)}
+        onDecline={() => declineRoleChange(pendingRolePrompt.memberId)}
+      />
+    )}
+    {pendingAssignmentPrompt && (
+      <AssignmentChangeModal
+        member={currentViewer}
+        request={fleetRequests.find((request) => request.id === pendingAssignmentPrompt.requestId)}
+        onAccept={() => acceptAssignmentPrompt(pendingAssignmentPrompt.memberId)}
+        onRequestChange={() => requestAssignmentChange(pendingAssignmentPrompt.memberId)}
+      />
+    )}
     <MessageHistoryPanel messages={fleetMessages} variant="crew" />
     </>
   );
@@ -1106,6 +1401,7 @@ function FleetSetupWorkspace({
   onOpenCustomCrew,
   onProfileChange,
   onQuantityChange,
+  onEditPositions,
   onRemoveRequest,
   onRequestCrewTargetChange,
   onRequestProfileChange,
@@ -1124,6 +1420,7 @@ function FleetSetupWorkspace({
   setupOpen,
   shipOptions,
   shipSearchTerm,
+  canManageSetup,
 }: {
   changeRequests: ChangeRequest[];
   crewTarget: number;
@@ -1137,6 +1434,7 @@ function FleetSetupWorkspace({
   onOpenCustomCrew: () => void;
   onProfileChange: (profile: StaffingProfile) => void;
   onQuantityChange: (quantity: number) => void;
+  onEditPositions: (requestId: string) => void;
   onRemoveRequest: (requestId: string) => void;
   onRequestCrewTargetChange: (requestId: string, crewTarget: number) => void;
   onRequestProfileChange: (requestId: string, profile: StaffingProfile) => void;
@@ -1155,6 +1453,7 @@ function FleetSetupWorkspace({
   setupOpen: boolean;
   shipOptions: SetupShipOption[];
   shipSearchTerm: string;
+  canManageSetup: boolean;
 }) {
   return (
     <section className="setup-page">
@@ -1247,14 +1546,26 @@ function FleetSetupWorkspace({
                 onChange={(event) => onRequestCrewTargetChange(request.id, Number(event.target.value))}
               />
               <span className="setup-position-summary">{summarizeCrew(request.crew)}</span>
-              <button
-                className="remove-line-button"
-                onClick={() => onRemoveRequest(request.id)}
-                type="button"
-                aria-label={`Remove ${request.shipName}`}
-              >
-                <Trash2 size={15} />
-              </button>
+              <div className="setup-row-actions">
+                <button
+                  className="edit-line-button"
+                  onClick={() => onEditPositions(request.id)}
+                  type="button"
+                  disabled={!canManageSetup}
+                  aria-label={`Edit ${request.shipName} positions`}
+                >
+                  <ClipboardList size={15} />
+                </button>
+                <button
+                  className="remove-line-button"
+                  onClick={() => onRemoveRequest(request.id)}
+                  type="button"
+                  disabled={!canManageSetup}
+                  aria-label={`Remove ${request.shipName}`}
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -1515,6 +1826,7 @@ function ShipRequestRow({
   onTeamChange,
   onMemberDrop,
   onRemove,
+  canManage,
 }: {
   request: FleetShipRequest;
   locked: boolean;
@@ -1525,6 +1837,7 @@ function ShipRequestRow({
   onTeamChange: (teamKey: string) => void;
   onMemberDrop: (memberId: string) => void;
   onRemove: () => void;
+  canManage: boolean;
 }) {
   const fillRate = Math.min(
     100,
@@ -1536,8 +1849,15 @@ function ShipRequestRow({
   return (
     <article
       className={`ship-card ${viewMode} ${expanded ? 'expanded' : ''}`}
-      onDragOver={(event) => event.preventDefault()}
+      onDragOver={(event) => {
+        if (canManage) {
+          event.preventDefault();
+        }
+      }}
       onDrop={(event) => {
+        if (!canManage) {
+          return;
+        }
         const memberId = event.dataTransfer.getData('text/plain');
         if (memberId) {
           onMemberDrop(memberId);
@@ -1580,14 +1900,16 @@ function ShipRequestRow({
           >
             {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
-          <button
-            className="remove-line-button"
-            onClick={onRemove}
-            type="button"
-            aria-label={`Remove ${request.shipName} from fleet roster`}
-          >
-            <Trash2 size={16} />
-          </button>
+          {canManage && (
+            <button
+              className="remove-line-button"
+              onClick={onRemove}
+              type="button"
+              aria-label={`Remove ${request.shipName} from fleet roster`}
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
 
         <div className="ship-meta">
@@ -1599,16 +1921,20 @@ function ShipRequestRow({
             {locked ? <Lock size={13} /> : <Unlock size={13} />}
             {locked ? 'Ships locked' : 'Ships open'}
           </span>
-          <label className="team-assignment">
-            <span>Team</span>
-            <select value={request.teamKey} onChange={(event) => onTeamChange(event.target.value)}>
-              {teamFilters.map((team) => (
-                <option key={team} value={team.toLowerCase()}>
-                  {team}
-                </option>
-              ))}
-            </select>
-          </label>
+          {canManage ? (
+            <label className="team-assignment">
+              <span>Team</span>
+              <select value={request.teamKey} onChange={(event) => onTeamChange(event.target.value)}>
+                {teamFilters.map((team) => (
+                  <option key={team} value={team.toLowerCase()}>
+                    {team}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <span>Team {request.team}</span>
+          )}
         </div>
 
         <div className="signup-actions" aria-label={`${request.shipName} signup actions`}>
@@ -1672,14 +1998,22 @@ function MemberGroup({
   title,
   ownerName,
   checkedInMembers,
+  canManageRoles,
+  currentViewerId,
   members,
   onCheckIn,
+  onRequestRoleChange,
+  pendingRoleChanges,
 }: {
   title: string;
   ownerName?: string;
   checkedInMembers: Record<string, boolean>;
+  canManageRoles: boolean;
+  currentViewerId: string;
   members: Member[];
   onCheckIn: (memberId: string) => void;
+  onRequestRoleChange: (memberId: string, nextRole: OperationRole) => void;
+  pendingRoleChanges: Record<string, OperationRole>;
 }) {
   if (members.length === 0) {
     return null;
@@ -1702,13 +2036,42 @@ function MemberGroup({
           <div className="member-copy">
             <strong>{member.name}</strong>
             <span>
-              Online · {member.team} · {member.primaryRole}
+              Online · {member.team} · {roleLabels[member.operationRole]}
             </span>
+            <span>{member.primaryRole}</span>
             {member.shipOffer && <em>{member.shipOffer}</em>}
+            {pendingRoleChanges[member.id] && (
+              <em>Pending {roleLabels[pendingRoleChanges[member.id]]}</em>
+            )}
           </div>
-          <button className="checkin-button" onClick={() => onCheckIn(member.id)} type="button">
-            {checkedInMembers[member.id] ? 'Checked' : 'Check In'}
-          </button>
+          <div className="member-actions">
+            <button className="checkin-button" onClick={() => onCheckIn(member.id)} type="button">
+              {checkedInMembers[member.id] ? 'Checked' : 'Check In'}
+            </button>
+            {canManageRoles && member.id !== currentViewerId && (
+              <>
+                <button
+                  className="mini-command"
+                  onClick={() => onRequestRoleChange(member.id, 'fleet_admiral')}
+                  type="button"
+                >
+                  Make Admiral
+                </button>
+                <button
+                  className="mini-command"
+                  onClick={() =>
+                    onRequestRoleChange(
+                      member.id,
+                      member.operationRole === 'officer' ? 'crew' : 'officer',
+                    )
+                  }
+                  type="button"
+                >
+                  {member.operationRole === 'officer' ? 'Remove Officer' : 'Make Officer'}
+                </button>
+              </>
+            )}
+          </div>
         </article>
       ))}
     </section>
@@ -1716,12 +2079,16 @@ function MemberGroup({
 }
 
 function CustomCrewModal({
+  title,
   positions,
   onQuantityChange,
+  onApply,
   onClose,
 }: {
+  title: string;
   positions: PositionRequirement[];
   onQuantityChange: (positionId: string, quantity: number) => void;
+  onApply: () => void;
   onClose: () => void;
 }) {
   return (
@@ -1730,7 +2097,7 @@ function CustomCrewModal({
         <div className="modal-header">
           <div>
             <p className="eyebrow">Custom Crew</p>
-            <h2>Select Positions</h2>
+            <h2>{title}</h2>
           </div>
           <button className="modal-close" onClick={onClose} type="button" aria-label="Close">
             <X size={18} />
@@ -1750,7 +2117,7 @@ function CustomCrewModal({
             </label>
           ))}
         </div>
-        <button className="setup-submit modal-submit" onClick={onClose} type="button">
+        <button className="setup-submit modal-submit" onClick={onApply} type="button">
           Apply Positions
         </button>
       </section>
@@ -1804,6 +2171,90 @@ function CheckInModal({
         <div className="modal-actions">
           <button className="setup-submit" onClick={onConfirm} type="button">
             Confirm Check-In
+          </button>
+          <button className="setup-secondary" onClick={onRequestChange} type="button">
+            Request Change
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function RoleChangeModal({
+  member,
+  nextRole,
+  onAccept,
+  onDecline,
+}: {
+  member: Member;
+  nextRole: OperationRole;
+  onAccept: () => void;
+  onDecline: () => void;
+}) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="modal command-modal" role="dialog" aria-modal="true" aria-label="Command role invitation">
+        <div className="modal-header">
+          <div>
+            <p className="eyebrow">Command Role</p>
+            <h2>{member.name}</h2>
+          </div>
+        </div>
+        <p className="confirm-copy">
+          You have been asked to accept {roleLabels[nextRole]} permissions for this operation.
+          Accepting will refresh your view so the correct screens are available.
+        </p>
+        <div className="modal-actions">
+          <button className="setup-secondary" onClick={onDecline} type="button">
+            Decline
+          </button>
+          <button className="setup-submit" onClick={onAccept} type="button">
+            Accept & Refresh View
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function AssignmentChangeModal({
+  member,
+  request,
+  onAccept,
+  onRequestChange,
+}: {
+  member: Member;
+  request?: FleetShipRequest;
+  onAccept: () => void;
+  onRequestChange: () => void;
+}) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="modal command-modal" role="dialog" aria-modal="true" aria-label="Assignment update">
+        <div className="modal-header">
+          <div>
+            <p className="eyebrow">New Assignment</p>
+            <h2>{member.name}</h2>
+          </div>
+        </div>
+        <div className="checkin-summary">
+          <div>
+            <span>Team</span>
+            <strong>{request?.team ?? member.team}</strong>
+          </div>
+          <div>
+            <span>Ship / Group</span>
+            <strong>{request?.shipName ?? 'Unassigned'}</strong>
+          </div>
+          <div>
+            <span>Role</span>
+            <strong>{member.primaryRole}</strong>
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button className="setup-submit" onClick={onAccept} type="button">
+            Acknowledge Orders
           </button>
           <button className="setup-secondary" onClick={onRequestChange} type="button">
             Request Change
@@ -2077,6 +2528,24 @@ function buildCrewAssignments(positions: PositionRequirement[]) {
       status: 'requested' as const,
     })),
   );
+}
+
+function positionsFromCrew(crew: CrewAssignment[]) {
+  const counts = crew.reduce<Map<string, PositionRequirement>>((total, seat) => {
+    const label = seat.role.replace(/\s+\d+$/, '');
+    const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const current = total.get(id);
+
+    total.set(id, {
+      id,
+      label,
+      quantity: (current?.quantity ?? 0) + 1,
+    });
+
+    return total;
+  }, new Map());
+
+  return Array.from(counts.values()).sort((left, right) => rolePriority(left.label) - rolePriority(right.label));
 }
 
 function totalPositionQuantity(positions: PositionRequirement[]) {

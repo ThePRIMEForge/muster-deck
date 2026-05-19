@@ -437,7 +437,7 @@ h3 {
 
 .setup-table-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1.25fr) minmax(116px, 0.7fr) minmax(132px, 0.7fr) 70px minmax(220px, 1.4fr) 36px;
+  grid-template-columns: minmax(180px, 1.25fr) minmax(116px, 0.7fr) minmax(132px, 0.7fr) 70px minmax(220px, 1.4fr) 70px;
   gap: 8px;
   align-items: center;
   min-width: 860px;
@@ -495,11 +495,26 @@ h3 {
   font-size: 0.73rem;
 }
 
+.setup-row-actions {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.edit-line-button,
 .remove-line-button {
   display: grid;
   place-items: center;
   width: 30px;
   height: 30px;
+}
+
+.edit-line-button {
+  color: #f0b64d;
+  border: 1px solid rgba(240, 182, 77, 0.28);
+  background: rgba(240, 182, 77, 0.06);
+}
+
+.remove-line-button {
   color: #ff6a3a;
   border: 1px solid rgba(255, 106, 58, 0.28);
   background: rgba(126, 33, 20, 0.2);
@@ -1001,6 +1016,13 @@ h3 {
   color: #ff6a3a;
 }
 
+.edit-line-button:disabled,
+.remove-line-button:disabled,
+.mini-command:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .lock-chip {
   display: inline-flex;
   align-items: center;
@@ -1205,6 +1227,28 @@ h3 {
   margin-bottom: 12px;
 }
 
+.viewer-switcher {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.viewer-switcher span {
+  color: #a39a8c;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.viewer-switcher select {
+  min-width: 0;
+  min-height: 32px;
+  padding: 5px 7px;
+  color: #fff8eb;
+  border: 1px solid rgba(245, 240, 230, 0.11);
+  background: #10100f;
+}
+
 .member-search {
   display: flex;
   align-items: center;
@@ -1283,6 +1327,22 @@ h3 {
   text-transform: uppercase;
   border: 1px solid rgba(240, 182, 77, 0.28);
   background: rgba(240, 182, 77, 0.06);
+}
+
+.member-actions {
+  display: grid;
+  gap: 4px;
+  justify-items: stretch;
+}
+
+.mini-command {
+  padding: 4px 6px;
+  color: #eee3d2;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 1px solid rgba(245, 240, 230, 0.1);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .modal-backdrop {

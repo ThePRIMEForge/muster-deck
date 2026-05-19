@@ -23,7 +23,7 @@ import {
 } from './lib/fallbackData';
 import { getManufacturerLogo, getRequestImage } from './lib/fanKitAssets';
 import { hasSupabaseConfig, loadShipCatalog } from './lib/supabase';
-import type { FilterMode, FleetShipRequest, ShipCatalogRow, StaffingProfile } from './lib/types';
+import type { CrewAssignment, FilterMode, FleetShipRequest, Member, ShipCatalogRow, StaffingProfile } from './lib/types';
 
 type ViewMode = 'list' | 'islands';
 
@@ -42,6 +42,8 @@ const profileClassNames: Record<StaffingProfile, string> = {
 };
 
 function App() {
+  const [fleetRequests, setFleetRequests] = useState(fallbackFleetRequests);
+  const [members, setMembers] = useState(fallbackMembers);
   const [filter, setFilter] = useState<FilterMode>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [masterLocked, setMasterLocked] = useState(false);
@@ -89,7 +91,7 @@ function App() {
   const visibleRequests = useMemo(() => {
     const search = searchTerm.trim().toLowerCase();
 
-    return fallbackFleetRequests.filter((request) => {
+    return fleetRequests.filter((request) => {
       const matchesFilter =
         filter === 'all' ||
         request.categoryKey === filter ||
@@ -104,10 +106,10 @@ function App() {
 
       return matchesFilter && matchesSearch;
     });
-  }, [filter, searchTerm]);
+  }, [fleetRequests, filter, searchTerm]);
 
   const totals = useMemo(() => {
-    return fallbackFleetRequests.reduce(
+    return fleetRequests.reduce(
       (total, request) => ({
         ships: total.ships + request.requestedCount,
         required: total.required + request.requiredPositions,
@@ -116,7 +118,19 @@ function App() {
       }),
       { ships: 0, required: 0, assigned: 0, suggestions: 0 },
     );
-  }, []);
+  }, [fleetRequests]);
+
+  const memberGroups = useMemo(() => {
+    const available = members.filter((member) => !member.assignedRequestId);
+    const assignedGroups = fleetRequests
+      .map((request) => ({
+        request,
+        members: members.filter((member) => member.assignedRequestId === request.id),
+      }))
+      .filter((group) => group.members.length > 0);
+
+    return { available, assignedGroups };
+  }, [fleetRequests, members]);
 
   function unlockAll() {
     setMasterLocked(false);
@@ -125,6 +139,66 @@ function App() {
 
   function toggleExpanded(requestId: string) {
     setExpandedRequests((current) => ({ ...current, [requestId]: !current[requestId] }));
+  }
+
+  function handleMemberDrop(requestId: string, memberId: string) {
+    const member = members.find((candidate) => candidate.id === memberId);
+    const targetRequest = fleetRequests.find((request) => request.id === requestId);
+    const sourceRequestId = member?.assignedRequestId;
+
+    if (!member || !targetRequest) {
+      return;
+    }
+
+    const crewEntry: CrewAssignment = {
+      id: member.id,
+      name: member.name,
+      role: member.primaryRole,
+      status: 'assigned',
+    };
+
+    setMembers((current) =>
+      current.map((candidate) =>
+        candidate.id === memberId
+          ? {
+              ...candidate,
+              assignedRequestId: requestId,
+              team: targetRequest.team,
+              shipOffer: targetRequest.categoryKey === 'marines' ? undefined : targetRequest.shipName,
+            }
+          : candidate,
+      ),
+    );
+
+    setFleetRequests((current) =>
+      current.map((request) => {
+        if (request.id !== requestId) {
+          return {
+            ...request,
+            assignedPositions:
+              request.id === sourceRequestId
+                ? Math.max(0, request.assignedPositions - 1)
+                : request.assignedPositions,
+            crew: request.crew.filter((crew) => crew.id !== memberId),
+          };
+        }
+
+        const alreadyAssignedHere = request.crew.some((crew) => crew.id === memberId);
+        const nextCrew = request.crew.some((crew) => crew.id === memberId)
+          ? request.crew.map((crew) => (crew.id === memberId ? crewEntry : crew))
+          : [...request.crew, crewEntry];
+
+        return {
+          ...request,
+          assignedPositions: alreadyAssignedHere
+            ? request.assignedPositions
+            : Math.min(request.requiredPositions + request.optionalPositions, request.assignedPositions + 1),
+          crew: nextCrew,
+        };
+      }),
+    );
+
+    setExpandedRequests((current) => ({ ...current, [requestId]: true }));
   }
 
   return (
@@ -148,12 +222,12 @@ function App() {
           >
             <CircleDot size={16} />
             <span>All</span>
-            <strong>{fallbackFleetRequests.length}</strong>
+            <strong>{fleetRequests.length}</strong>
           </button>
 
           <div className="filter-group-label">Ship Category</div>
           {categoryFilters.map((category) => {
-            const count = fallbackFleetRequests.filter(
+            const count = fleetRequests.filter(
               (request) => request.categoryKey === category.key,
             ).length;
 
@@ -291,6 +365,7 @@ function App() {
               viewMode={viewMode}
               expanded={Boolean(expandedRequests[request.id])}
               onToggleExpanded={() => toggleExpanded(request.id)}
+              onMemberDrop={(memberId) => handleMemberDrop(request.id, memberId)}
             />
           ))}
         </div>
@@ -300,23 +375,20 @@ function App() {
         <div className="member-header">
           <div>
             <p className="eyebrow">Members</p>
-            <h2>{fallbackMembers.length} online</h2>
+            <h2>{members.length} online</h2>
           </div>
           <UserRound size={20} />
         </div>
 
         <div className="member-list">
-          {fallbackMembers.map((member) => (
-            <article className="member-row" key={member.id}>
-              <div className={`presence ${member.status}`} />
-              <div className="member-copy">
-                <strong>{member.name}</strong>
-                <span>
-                  {member.team} · {member.primaryRole}
-                </span>
-                {member.shipOffer && <em>{member.shipOffer}</em>}
-              </div>
-            </article>
+          <MemberGroup title="Available" members={memberGroups.available} />
+          {memberGroups.assignedGroups.map((group) => (
+            <MemberGroup
+              key={group.request.id}
+              title={group.request.shipName}
+              ownerName={group.request.ownerName}
+              members={group.members}
+            />
           ))}
         </div>
       </aside>
@@ -330,12 +402,14 @@ function ShipRequestRow({
   viewMode,
   expanded,
   onToggleExpanded,
+  onMemberDrop,
 }: {
   request: FleetShipRequest;
   locked: boolean;
   viewMode: ViewMode;
   expanded: boolean;
   onToggleExpanded: () => void;
+  onMemberDrop: (memberId: string) => void;
 }) {
   const fillRate = Math.min(
     100,
@@ -345,7 +419,16 @@ function ShipRequestRow({
   const requestImage = getRequestImage(request);
 
   return (
-    <article className={`ship-card ${viewMode} ${expanded ? 'expanded' : ''}`}>
+    <article
+      className={`ship-card ${viewMode} ${expanded ? 'expanded' : ''}`}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={(event) => {
+        const memberId = event.dataTransfer.getData('text/plain');
+        if (memberId) {
+          onMemberDrop(memberId);
+        }
+      }}
+    >
       <div className="ship-image" style={{ backgroundImage: `url("${requestImage ?? ''}")` }}>
         <CrewMarker
           profile={request.staffingProfile}
@@ -371,6 +454,7 @@ function ShipRequestRow({
                 />
               )}
               <h3>{request.shipName}</h3>
+              {request.ownerName && <span className="owner-chip">{request.ownerName}</span>}
             </div>
           </div>
           <button
@@ -382,8 +466,6 @@ function ShipRequestRow({
             {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
         </div>
-
-        {expanded && <p>{request.notes}</p>}
 
         <div className="ship-meta">
           <span>Count {request.requestedCount}</span>
@@ -412,7 +494,69 @@ function ShipRequestRow({
           <span>{request.pendingSuggestions} suggestions</span>
         </div>
       </div>
+
+      {expanded && <CrewRoster request={request} />}
     </article>
+  );
+}
+
+function CrewRoster({ request }: { request: FleetShipRequest }) {
+  return (
+    <section className="crew-roster" aria-label={`${request.shipName} crew roster`}>
+      <div className="crew-roster-header">
+        <strong>Crew</strong>
+        <span>{request.notes}</span>
+      </div>
+      <div className="crew-roster-grid">
+        {request.crew.map((crew) => (
+          <div className="crew-roster-row" key={crew.id}>
+            <span className={`crew-status ${crew.status}`} />
+            <strong>{crew.name}</strong>
+            <em>{crew.role}</em>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MemberGroup({
+  title,
+  ownerName,
+  members,
+}: {
+  title: string;
+  ownerName?: string;
+  members: Member[];
+}) {
+  if (members.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="member-group">
+      <div className="member-group-title">
+        <strong>{title}</strong>
+        {ownerName && <span>{ownerName}</span>}
+      </div>
+      {members.map((member) => (
+        <article
+          className="member-row"
+          draggable
+          key={member.id}
+          onDragStart={(event) => event.dataTransfer.setData('text/plain', member.id)}
+        >
+          <div className={`presence ${member.status}`} />
+          <div className="member-copy">
+            <strong>{member.name}</strong>
+            <span>
+              {member.team} · {member.primaryRole}
+            </span>
+            {member.shipOffer && <em>{member.shipOffer}</em>}
+          </div>
+        </article>
+      ))}
+    </section>
   );
 }
 
@@ -427,8 +571,8 @@ function CrewMarker({
 }) {
   return (
     <div className={isAdmiralShip ? 'crew-marker admiral' : 'crew-marker'}>
-      {hasMarines && <ChevronUp className="marine-chevron" size={18} />}
-      {isAdmiralShip && <Star className="admiral-star" size={22} />}
+      {hasMarines && <ChevronUp className="marine-chevron" size={24} strokeWidth={4} />}
+      {isAdmiralShip && <Star className="admiral-star" size={30} fill="currentColor" />}
       <span className={profileClassNames[profile]} />
     </div>
   );

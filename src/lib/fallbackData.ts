@@ -31,8 +31,8 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
     team: 'Gamma',
     teamKey: 'gamma',
     categoryKey: 'marines',
-    categoryName: 'Marines',
-    shipName: 'FPS Boarding Team',
+    categoryName: 'Marines/FPS',
+    shipName: 'Marines/FPS',
     manufacturer: 'Fleet Infantry',
     requestedCount: 1,
     staffingProfile: 'custom',
@@ -45,6 +45,12 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
     hasMarines: true,
     isAdmiralShip: false,
     notes: 'Deployable Marines and medics staged aboard Alpha command ships.',
+    crew: [
+      { id: 'm6', name: 'Stack', role: 'Marine Lead', status: 'assigned' },
+      { id: 'm7', name: 'Breach', role: 'Rifleman', status: 'assigned' },
+      { id: 'm8', name: 'DocLine', role: 'Medic', status: 'assigned' },
+      { id: 'm9', name: 'Hush', role: 'Scout', status: 'assigned' },
+    ],
   },
   {
     id: 'idris-alpha',
@@ -66,6 +72,13 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
     isAdmiralShip: true,
     notes: 'Fleet command platform with embarked Gamma boarding team.',
     imageUrl: 'https://media.starcitizen.tools/d/dd/Idris_M_flying_over_world_-_cropped.jpg',
+    ownerName: 'THE_PRIME',
+    crew: [
+      { id: 'm1', name: 'ValkyrieActual', role: 'Fleet Admiral', status: 'assigned' },
+      { id: 'c-idris-1', name: 'Hammer', role: 'Turret Gunner', status: 'assigned' },
+      { id: 'c-idris-2', name: 'Warden', role: 'Engineer', status: 'assigned' },
+      { id: 'c-idris-3', name: 'Relay', role: 'Comms', status: 'assigned' },
+    ],
   },
   {
     id: 'perseus-alpha',
@@ -87,6 +100,11 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
     isAdmiralShip: false,
     notes: 'Heavy gunship for external strike phase.',
     imageUrl: 'https://media.starcitizen.tools/6/6c/Perseus_angled_combat.jpg',
+    ownerName: 'Cinder',
+    crew: [
+      { id: 'm2', name: 'Cinder', role: 'Pilot', status: 'assigned' },
+      { id: 'c-perseus-1', name: 'Graves', role: 'Turret Gunner', status: 'requested' },
+    ],
   },
   {
     id: 'scorpius-beta',
@@ -108,6 +126,11 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
     isAdmiralShip: false,
     notes: 'Pilots may bring equivalent medium or heavy fighter alternatives.',
     imageUrl: 'https://media.starcitizen.tools/3/30/RSI_Scorpius_on_ArcCorp.png',
+    ownerName: 'Rook',
+    crew: [
+      { id: 'm3', name: 'Rook', role: 'Pilot', status: 'assigned' },
+      { id: 'm4', name: 'Mako', role: 'Turret Gunner', status: 'assigned' },
+    ],
   },
   {
     id: 'redeemer-charlie',
@@ -129,6 +152,8 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
     isAdmiralShip: false,
     notes: 'Lean escort with Marines available to transition to FPS.',
     imageUrl: "https://media.starcitizen.tools/5/5c/Redeemer_-_Flying_x2_though_canyon_attacking_Cutlass%27s_-_cropped_and_adjusted.jpg",
+    ownerName: 'Breach',
+    crew: [{ id: 'c-redeemer-1', name: 'Breach', role: 'Pilot', status: 'assigned' }],
   },
   {
     id: 'medical-delta',
@@ -150,6 +175,7 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
     isAdmiralShip: false,
     notes: 'Open category slot for Cutlass Red, Apollo, or equivalent.',
     imageUrl: 'https://media.starcitizen.tools/a/ac/Cutlass_Red_Squad_Concept.jpg',
+    crew: [{ id: 'm5', name: 'Patch', role: 'Medic', status: 'requested' }],
   },
 ];
 
@@ -161,6 +187,7 @@ export const fallbackMembers: Member[] = [
     team: 'Alpha',
     primaryRole: 'Fleet Admiral',
     shipOffer: 'Idris',
+    assignedRequestId: 'idris-alpha',
   },
   {
     id: 'm2',
@@ -169,6 +196,7 @@ export const fallbackMembers: Member[] = [
     team: 'Alpha',
     primaryRole: 'Perseus Pilot',
     shipOffer: 'Perseus',
+    assignedRequestId: 'perseus-alpha',
   },
   {
     id: 'm3',
@@ -177,6 +205,7 @@ export const fallbackMembers: Member[] = [
     team: 'Beta',
     primaryRole: 'Heavy Fighter Pilot',
     shipOffer: 'Scorpius',
+    assignedRequestId: 'scorpius-beta',
   },
   {
     id: 'm4',
@@ -185,6 +214,7 @@ export const fallbackMembers: Member[] = [
     team: 'Beta',
     primaryRole: 'Turret Gunner',
     shipOffer: 'Hurricane',
+    assignedRequestId: 'scorpius-beta',
   },
   {
     id: 'm5',
@@ -200,5 +230,6 @@ export const fallbackMembers: Member[] = [
     status: 'ready',
     team: 'Gamma',
     primaryRole: 'Marine Lead',
+    assignedRequestId: 'gamma-marines',
   },
 ];

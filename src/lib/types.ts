@@ -52,6 +52,15 @@ export type FleetShipRequest = {
   isAdmiralShip: boolean;
   notes: string;
   imageUrl?: string;
+  ownerName?: string;
+  crew: CrewAssignment[];
+};
+
+export type CrewAssignment = {
+  id: string;
+  name: string;
+  role: string;
+  status: 'assigned' | 'requested' | 'available';
 };
 
 export type Member = {
@@ -61,6 +70,7 @@ export type Member = {
   team: string;
   primaryRole: string;
   shipOffer?: string;
+  assignedRequestId?: string;
 };
 
 export type FilterMode = 'all' | FleetCategoryKey | `team:${string}`;

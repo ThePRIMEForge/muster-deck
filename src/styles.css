@@ -359,7 +359,7 @@ h3 {
 
 .fleet-list {
   display: grid;
-  gap: 12px;
+  gap: 7px;
 }
 
 .fleet-list.islands {
@@ -368,8 +368,8 @@ h3 {
 
 .ship-card {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) 170px;
-  gap: 14px;
+  grid-template-columns: 72px minmax(0, 1fr) 136px;
+  gap: 10px;
   min-width: 0;
   border: 1px solid rgba(229, 168, 72, 0.16);
   background: rgba(14, 14, 13, 0.92);
@@ -382,7 +382,7 @@ h3 {
 
 .ship-image {
   position: relative;
-  min-height: 96px;
+  min-height: 70px;
   background-color: #15110b;
   background-position: center;
   background-size: cover;
@@ -402,15 +402,19 @@ h3 {
 .crew-marker {
   position: absolute;
   z-index: 1;
-  right: 12px;
-  bottom: 12px;
+  right: 8px;
+  bottom: 7px;
   display: grid;
+  grid-template-rows: 16px 24px;
   place-items: center;
-  width: 34px;
-  height: 42px;
+  width: 38px;
+  height: 44px;
 }
 
 .crew-marker > span {
+  grid-row: 2;
+  position: relative;
+  z-index: 2;
   width: 18px;
   height: 18px;
   border: 2px solid #070707;
@@ -434,36 +438,30 @@ h3 {
 }
 
 .marine-chevron {
+  grid-row: 1;
+  position: relative;
+  z-index: 3;
   color: #fff8eb;
   filter: drop-shadow(0 1px 2px #050505);
+  margin-bottom: -4px;
 }
 
 .admiral-star {
   position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 1;
   color: #f0b64d;
-  animation: shimmer 1.8s linear infinite;
+  transform: translateX(-50%);
 }
 
 .crew-marker.admiral > span {
-  box-shadow: 0 0 0 3px rgba(240, 182, 77, 0.35), 0 0 18px rgba(240, 182, 77, 0.8);
-}
-
-@keyframes shimmer {
-  0%,
-  100% {
-    opacity: 0.68;
-    transform: rotate(0deg) scale(1);
-  }
-
-  50% {
-    opacity: 1;
-    transform: rotate(10deg) scale(1.08);
-  }
+  box-shadow: 0 0 0 2px rgba(240, 182, 77, 0.28);
 }
 
 .ship-main {
   min-width: 0;
-  padding: 12px 0;
+  padding: 8px 0;
 }
 
 .ship-card.islands .ship-main {
@@ -472,8 +470,8 @@ h3 {
 
 .ship-title-row {
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
 .ship-heading {
@@ -482,14 +480,14 @@ h3 {
 
 .ship-kicker {
   flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 5px;
+  gap: 5px;
+  margin-bottom: 3px;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .ship-kicker span {
-  padding: 3px 7px;
+  padding: 2px 6px;
   background: rgba(255, 255, 255, 0.055);
 }
 
@@ -502,8 +500,8 @@ h3 {
 
 .manufacturer-logo {
   flex: 0 0 auto;
-  max-width: 52px;
-  max-height: 26px;
+  max-width: 44px;
+  max-height: 22px;
   object-fit: contain;
   opacity: 0.86;
 }
@@ -522,14 +520,28 @@ h3 {
   line-height: 1.45;
 }
 
+.owner-chip {
+  flex: 0 0 auto;
+  max-width: 120px;
+  overflow: hidden;
+  padding: 3px 7px;
+  color: #f0b64d;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid rgba(240, 182, 77, 0.44);
+  background: rgba(240, 182, 77, 0.08);
+}
+
 .ship-meta {
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 5px;
+  margin-top: 7px;
 }
 
 .ship-meta span {
-  padding: 5px 8px;
+  padding: 3px 6px;
   color: #eee3d2;
   background: rgba(255, 255, 255, 0.055);
 }
@@ -539,8 +551,8 @@ h3 {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   color: #b7aa98;
   border: 1px solid rgba(245, 240, 230, 0.12);
   background: rgba(255, 255, 255, 0.035);
@@ -563,8 +575,8 @@ h3 {
 .crew-column {
   display: grid;
   align-content: center;
-  gap: 10px;
-  padding: 12px 14px 12px 0;
+  gap: 6px;
+  padding: 8px 10px 8px 0;
 }
 
 .ship-card.islands .crew-column {
@@ -574,7 +586,7 @@ h3 {
 .crew-numbers strong {
   display: block;
   color: #fff8eb;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   line-height: 1;
 }
 
@@ -584,7 +596,7 @@ h3 {
 }
 
 .meter {
-  height: 7px;
+  height: 5px;
   overflow: hidden;
   background: #2a241c;
 }
@@ -597,12 +609,102 @@ h3 {
 
 .crew-flags {
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 
 .crew-flags span {
-  padding: 4px 7px;
+  padding: 3px 6px;
   background: rgba(255, 255, 255, 0.055);
+}
+
+.crew-roster {
+  grid-column: 2 / -1;
+  display: grid;
+  gap: 8px;
+  padding: 0 10px 10px 0;
+}
+
+.ship-card.islands .crew-roster {
+  grid-column: auto;
+  padding: 0 14px 14px;
+}
+
+.crew-roster-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 2px;
+  border-top: 1px solid rgba(245, 240, 230, 0.08);
+}
+
+.crew-roster-header strong {
+  color: #fff8eb;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.crew-roster-header span {
+  min-width: 0;
+  overflow: hidden;
+  color: #a39a8c;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crew-roster-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.crew-roster-row {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 0.9fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 5px 7px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(245, 240, 230, 0.07);
+}
+
+.crew-roster-row strong,
+.crew-roster-row em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crew-roster-row strong {
+  color: #fff8eb;
+  font-size: 0.8rem;
+}
+
+.crew-roster-row em {
+  color: #a39a8c;
+  font-size: 0.76rem;
+  font-style: normal;
+}
+
+.crew-status {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+
+.crew-status.assigned {
+  background: #22c55e;
+}
+
+.crew-status.requested {
+  background: #eab308;
+}
+
+.crew-status.available {
+  background: #a1a1aa;
 }
 
 .member-header {
@@ -612,7 +714,42 @@ h3 {
 
 .member-list {
   display: grid;
+  gap: 12px;
+}
+
+.member-group {
+  display: grid;
+  gap: 6px;
+}
+
+.member-group-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  padding: 0 2px;
+}
+
+.member-group-title strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #f0b64d;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.member-group-title span {
+  flex: 0 0 auto;
+  max-width: 96px;
+  overflow: hidden;
+  padding: 2px 5px;
+  color: #d8d0c0;
+  font-size: 0.66rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid rgba(240, 182, 77, 0.35);
 }
 
 .member-row {
@@ -621,9 +758,13 @@ h3 {
   gap: 10px;
   align-items: start;
   min-width: 0;
-  padding: 10px;
+  padding: 8px;
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(245, 240, 230, 0.08);
+}
+
+.member-row[draggable="true"] {
+  cursor: grab;
 }
 
 .presence {
@@ -680,7 +821,8 @@ h3 {
   }
 
   .member-rail {
-    display: none;
+    grid-column: 1 / -1;
+    border-width: 1px 0 0;
   }
 
   .ship-card {

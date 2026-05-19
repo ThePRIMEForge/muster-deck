@@ -10,6 +10,8 @@ export type ShipCategoryKey =
   | 'snub_fighter'
   | 'ground_vehicle';
 
+export type FleetCategoryKey = ShipCategoryKey | 'marines';
+
 export type StaffingProfile = 'skeleton' | 'standard' | 'full_crew' | 'custom';
 
 export type ShipCatalogRow = {
@@ -34,7 +36,7 @@ export type FleetShipRequest = {
   id: string;
   team: string;
   teamKey: string;
-  categoryKey: ShipCategoryKey;
+  categoryKey: FleetCategoryKey;
   categoryName: string;
   shipName: string;
   manufacturer: string;
@@ -61,4 +63,4 @@ export type Member = {
   shipOffer?: string;
 };
 
-export type FilterMode = 'all' | ShipCategoryKey | `team:${string}`;
+export type FilterMode = 'all' | FleetCategoryKey | `team:${string}`;

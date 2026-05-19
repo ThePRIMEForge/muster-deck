@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  ChevronDown,
   ChevronUp,
   CircleDot,
+  Grid2X2,
+  List,
   Lock,
   Plus,
   Search,
@@ -18,8 +21,11 @@ import {
   fallbackMembers,
   teamFilters,
 } from './lib/fallbackData';
+import { getManufacturerLogo, getRequestImage } from './lib/fanKitAssets';
 import { hasSupabaseConfig, loadShipCatalog } from './lib/supabase';
 import type { FilterMode, FleetShipRequest, ShipCatalogRow, StaffingProfile } from './lib/types';
+
+type ViewMode = 'list' | 'islands';
 
 const profileLabels: Record<StaffingProfile, string> = {
   skeleton: 'Skeleton',
@@ -40,6 +46,10 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [masterLocked, setMasterLocked] = useState(false);
   const [lockedTeams, setLockedTeams] = useState<Record<string, boolean>>({});
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [expandedRequests, setExpandedRequests] = useState<Record<string, boolean>>({
+    'idris-alpha': true,
+  });
   const [shipCatalog, setShipCatalog] = useState<ShipCatalogRow[]>([]);
   const [catalogState, setCatalogState] = useState<'preview' | 'loading' | 'live' | 'error'>(
     hasSupabaseConfig ? 'loading' : 'preview',
@@ -108,15 +118,13 @@ function App() {
     );
   }, []);
 
-  const catalogPreview = useMemo(() => {
-    return shipCatalog
-      .filter((ship) => ship.primary_image_url && ship.primary_category_key)
-      .slice(0, 4);
-  }, [shipCatalog]);
-
   function unlockAll() {
     setMasterLocked(false);
     setLockedTeams({});
+  }
+
+  function toggleExpanded(requestId: string) {
+    setExpandedRequests((current) => ({ ...current, [requestId]: !current[requestId] }));
   }
 
   return (
@@ -254,31 +262,38 @@ function App() {
             {catalogState === 'error' && 'Catalog preview'}
             {catalogState === 'preview' && 'Design preview'}
           </div>
+          <div className="view-switch" aria-label="View mode">
+            <button
+              className={viewMode === 'list' ? 'active' : ''}
+              onClick={() => setViewMode('list')}
+              type="button"
+              title="List view"
+            >
+              <List size={17} />
+            </button>
+            <button
+              className={viewMode === 'islands' ? 'active' : ''}
+              onClick={() => setViewMode('islands')}
+              type="button"
+              title="Island view"
+            >
+              <Grid2X2 size={17} />
+            </button>
+          </div>
         </div>
 
-        <div className="fleet-list" aria-label="Fleet ship requests">
+        <div className={`fleet-list ${viewMode}`} aria-label="Fleet ship requests">
           {visibleRequests.map((request) => (
             <ShipRequestRow
               key={request.id}
               request={request}
               locked={masterLocked || Boolean(lockedTeams[request.teamKey]) || request.locked}
+              viewMode={viewMode}
+              expanded={Boolean(expandedRequests[request.id])}
+              onToggleExpanded={() => toggleExpanded(request.id)}
             />
           ))}
         </div>
-
-        {catalogPreview.length > 0 && (
-          <section className="catalog-strip" aria-label="Live catalog preview">
-            {catalogPreview.map((ship) => (
-              <article className="catalog-thumb" key={ship.id}>
-                <img src={ship.thumbnail_image_url ?? ship.primary_image_url ?? ''} alt="" />
-                <div>
-                  <strong>{ship.name}</strong>
-                  <span>{ship.primary_category_name}</span>
-                </div>
-              </article>
-            ))}
-          </section>
-        )}
       </section>
 
       <aside className="member-rail">
@@ -309,15 +324,29 @@ function App() {
   );
 }
 
-function ShipRequestRow({ request, locked }: { request: FleetShipRequest; locked: boolean }) {
+function ShipRequestRow({
+  request,
+  locked,
+  viewMode,
+  expanded,
+  onToggleExpanded,
+}: {
+  request: FleetShipRequest;
+  locked: boolean;
+  viewMode: ViewMode;
+  expanded: boolean;
+  onToggleExpanded: () => void;
+}) {
   const fillRate = Math.min(
     100,
     Math.round((request.assignedPositions / Math.max(request.requiredPositions, 1)) * 100),
   );
+  const manufacturerLogo = getManufacturerLogo(request.manufacturer);
+  const requestImage = getRequestImage(request);
 
   return (
-    <article className="ship-card">
-      <div className="ship-image" style={{ backgroundImage: `url("${request.imageUrl ?? ''}")` }}>
+    <article className={`ship-card ${viewMode} ${expanded ? 'expanded' : ''}`}>
+      <div className="ship-image" style={{ backgroundImage: `url("${requestImage ?? ''}")` }}>
         <CrewMarker
           profile={request.staffingProfile}
           hasMarines={request.hasMarines}
@@ -327,26 +356,43 @@ function ShipRequestRow({ request, locked }: { request: FleetShipRequest; locked
 
       <div className="ship-main">
         <div className="ship-title-row">
-          <div>
+          <div className="ship-heading">
             <div className="ship-kicker">
               <span>{request.team}</span>
               <span>{request.categoryName}</span>
               {request.exactRequired && <span>Exact</span>}
             </div>
-            <h3>{request.shipName}</h3>
+            <div className="ship-name-line">
+              {manufacturerLogo && (
+                <img
+                  className="manufacturer-logo"
+                  src={manufacturerLogo}
+                  alt={`${request.manufacturer} logo`}
+                />
+              )}
+              <h3>{request.shipName}</h3>
+            </div>
           </div>
-          <div className={locked ? 'ship-lock locked' : 'ship-lock'}>
-            {locked ? <Lock size={16} /> : <Unlock size={16} />}
-          </div>
+          <button
+            className="expand-button"
+            onClick={onToggleExpanded}
+            type="button"
+            aria-label={`${expanded ? 'Hide' : 'Show'} ${request.shipName} details`}
+          >
+            {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
         </div>
 
-        <p>{request.notes}</p>
+        {expanded && <p>{request.notes}</p>}
 
         <div className="ship-meta">
-          <span>{request.manufacturer}</span>
           <span>Count {request.requestedCount}</span>
           <span className={profileClassNames[request.staffingProfile]}>
             {profileLabels[request.staffingProfile]}
+          </span>
+          <span className={locked ? 'lock-chip locked' : 'lock-chip'}>
+            {locked ? <Lock size={13} /> : <Unlock size={13} />}
+            {locked ? 'Ships locked' : 'Ships open'}
           </span>
         </div>
       </div>

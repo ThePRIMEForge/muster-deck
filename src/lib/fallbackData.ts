@@ -1,6 +1,6 @@
-import type { FleetShipRequest, Member, ShipCategoryKey } from './types';
+import type { FleetCategoryKey, FleetShipRequest, Member } from './types';
 
-export const categoryFilters: Array<{ key: ShipCategoryKey; label: string }> = [
+export const categoryFilters: Array<{ key: FleetCategoryKey; label: string }> = [
   { key: 'capital', label: 'Capital' },
   { key: 'subcapital', label: 'Subcapital' },
   { key: 'large', label: 'Large' },
@@ -11,6 +11,7 @@ export const categoryFilters: Array<{ key: ShipCategoryKey; label: string }> = [
   { key: 'heavy_fighter', label: 'Heavy Fighter' },
   { key: 'snub_fighter', label: 'Snub Fighter' },
   { key: 'ground_vehicle', label: 'Ground Vehicle' },
+  { key: 'marines', label: 'Marines' },
 ];
 
 export const teamFilters = [
@@ -25,6 +26,26 @@ export const teamFilters = [
 ];
 
 export const fallbackFleetRequests: FleetShipRequest[] = [
+  {
+    id: 'gamma-marines',
+    team: 'Gamma',
+    teamKey: 'gamma',
+    categoryKey: 'marines',
+    categoryName: 'Marines',
+    shipName: 'FPS Boarding Team',
+    manufacturer: 'Fleet Infantry',
+    requestedCount: 1,
+    staffingProfile: 'custom',
+    requiredPositions: 6,
+    optionalPositions: 2,
+    assignedPositions: 4,
+    pendingSuggestions: 1,
+    locked: false,
+    exactRequired: false,
+    hasMarines: true,
+    isAdmiralShip: false,
+    notes: 'Deployable Marines and medics staged aboard Alpha command ships.',
+  },
   {
     id: 'idris-alpha',
     team: 'Alpha',

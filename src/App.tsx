@@ -10,7 +10,6 @@ import {
   Search,
   Shield,
   Ship,
-  Star,
   Unlock,
   UserRound,
   Users,
@@ -23,7 +22,14 @@ import {
 } from './lib/fallbackData';
 import { getManufacturerLogo, getRequestImage } from './lib/fanKitAssets';
 import { hasSupabaseConfig, loadShipCatalog } from './lib/supabase';
-import type { CrewAssignment, FilterMode, FleetShipRequest, Member, ShipCatalogRow, StaffingProfile } from './lib/types';
+import type {
+  CrewAssignment,
+  FilterMode,
+  FleetShipRequest,
+  Member,
+  ShipCatalogRow,
+  StaffingProfile,
+} from './lib/types';
 
 type ViewMode = 'list' | 'islands';
 
@@ -139,6 +145,10 @@ function App() {
 
   function toggleExpanded(requestId: string) {
     setExpandedRequests((current) => ({ ...current, [requestId]: !current[requestId] }));
+  }
+
+  function showDetails(requestId: string) {
+    setExpandedRequests((current) => ({ ...current, [requestId]: true }));
   }
 
   function handleMemberDrop(requestId: string, memberId: string) {
@@ -365,6 +375,7 @@ function App() {
               viewMode={viewMode}
               expanded={Boolean(expandedRequests[request.id])}
               onToggleExpanded={() => toggleExpanded(request.id)}
+              onShowDetails={() => showDetails(request.id)}
               onMemberDrop={(memberId) => handleMemberDrop(request.id, memberId)}
             />
           ))}
@@ -402,6 +413,7 @@ function ShipRequestRow({
   viewMode,
   expanded,
   onToggleExpanded,
+  onShowDetails,
   onMemberDrop,
 }: {
   request: FleetShipRequest;
@@ -409,6 +421,7 @@ function ShipRequestRow({
   viewMode: ViewMode;
   expanded: boolean;
   onToggleExpanded: () => void;
+  onShowDetails: () => void;
   onMemberDrop: (memberId: string) => void;
 }) {
   const fillRate = Math.min(
@@ -477,17 +490,33 @@ function ShipRequestRow({
             {locked ? 'Ships locked' : 'Ships open'}
           </span>
         </div>
+
+        <div className="signup-actions" aria-label={`${request.shipName} signup actions`}>
+          <button type="button" onClick={onShowDetails}>
+            Join Team
+          </button>
+          <button type="button" onClick={onShowDetails}>
+            Bring Ship
+          </button>
+          <button type="button" onClick={onShowDetails}>
+            Fill Position
+          </button>
+        </div>
       </div>
 
       <div className="crew-column">
+        <div className="fill-heading">
+          <strong>{fillRate}%</strong>
+          <span>Filled</span>
+        </div>
+        <div className="meter" aria-label={`${fillRate}% of required positions filled`}>
+          <span style={{ width: `${fillRate}%` }} />
+        </div>
         <div className="crew-numbers">
           <strong>
             {request.assignedPositions}/{request.requiredPositions}
           </strong>
           <span>Required</span>
-        </div>
-        <div className="meter">
-          <span style={{ width: `${fillRate}%` }} />
         </div>
         <div className="crew-flags">
           <span>{request.optionalPositions} optional</span>
@@ -501,6 +530,8 @@ function ShipRequestRow({
 }
 
 function CrewRoster({ request }: { request: FleetShipRequest }) {
+  const crew = [...request.crew].sort((left, right) => rolePriority(left.role) - rolePriority(right.role));
+
   return (
     <section className="crew-roster" aria-label={`${request.shipName} crew roster`}>
       <div className="crew-roster-header">
@@ -508,7 +539,7 @@ function CrewRoster({ request }: { request: FleetShipRequest }) {
         <span>{request.notes}</span>
       </div>
       <div className="crew-roster-grid">
-        {request.crew.map((crew) => (
+        {crew.map((crew) => (
           <div className="crew-roster-row" key={crew.id}>
             <span className={`crew-status ${crew.status}`} />
             <strong>{crew.name}</strong>
@@ -571,11 +602,33 @@ function CrewMarker({
 }) {
   return (
     <div className={isAdmiralShip ? 'crew-marker admiral' : 'crew-marker'}>
-      {hasMarines && <ChevronUp className="marine-chevron" size={24} strokeWidth={4} />}
-      {isAdmiralShip && <Star className="admiral-star" size={30} fill="currentColor" />}
-      <span className={profileClassNames[profile]} />
+      {hasMarines && <span className="marine-chevron" aria-hidden="true" />}
+      {isAdmiralShip && <span className="admiral-star" aria-hidden="true" />}
+      <span className={`crew-dot ${profileClassNames[profile]}`} />
     </div>
   );
+}
+
+function rolePriority(role: string) {
+  const normalized = role.toLowerCase();
+
+  if (
+    normalized.includes('pilot') ||
+    normalized.includes('admiral') ||
+    normalized.includes('commander')
+  ) {
+    return 1;
+  }
+
+  if (normalized.includes('turret') || normalized.includes('gunner')) {
+    return 2;
+  }
+
+  if (normalized.includes('engineer')) {
+    return 3;
+  }
+
+  return 4;
 }
 
 export default App;

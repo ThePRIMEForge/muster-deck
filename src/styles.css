@@ -2,7 +2,8 @@
   color: #f5f0e6;
   background: #050505;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    Bahnschrift, "DIN Alternate", "Arial Narrow", "Aptos Condensed", "Roboto Condensed",
+    "Segoe UI", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -359,7 +360,7 @@ h3 {
 
 .fleet-list {
   display: grid;
-  gap: 7px;
+  gap: 6px;
 }
 
 .fleet-list.islands {
@@ -368,8 +369,8 @@ h3 {
 
 .ship-card {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) 136px;
-  gap: 10px;
+  grid-template-columns: 68px minmax(0, 1fr) 132px;
+  gap: 8px;
   min-width: 0;
   border: 1px solid rgba(229, 168, 72, 0.16);
   background: rgba(14, 14, 13, 0.92);
@@ -389,7 +390,7 @@ h3 {
 }
 
 .ship-card.islands .ship-image {
-  min-height: 148px;
+  min-height: 112px;
 }
 
 .ship-image::after {
@@ -402,16 +403,16 @@ h3 {
 .crew-marker {
   position: absolute;
   z-index: 1;
-  right: 8px;
-  bottom: 7px;
+  right: 7px;
+  bottom: 6px;
   display: grid;
-  grid-template-rows: 16px 24px;
+  grid-template-rows: 15px 25px;
   place-items: center;
-  width: 38px;
+  width: 42px;
   height: 44px;
 }
 
-.crew-marker > span {
+.crew-marker .crew-dot {
   grid-row: 2;
   position: relative;
   z-index: 2;
@@ -441,37 +442,55 @@ h3 {
   grid-row: 1;
   position: relative;
   z-index: 3;
-  color: #fff8eb;
+  width: 29px;
+  height: 15px;
+  background: #fff8eb;
+  clip-path: polygon(0 72%, 50% 0, 100% 72%, 84% 100%, 50% 43%, 16% 100%);
   filter: drop-shadow(0 1px 2px #050505);
-  margin-bottom: -4px;
+  margin-bottom: -5px;
 }
 
 .admiral-star {
   position: absolute;
   left: 50%;
-  bottom: 0;
+  bottom: -4px;
   z-index: 1;
-  color: #f0b64d;
+  width: 38px;
+  height: 38px;
+  background: #f0b64d;
+  clip-path: polygon(
+    50% 0%,
+    61% 34%,
+    98% 34%,
+    68% 56%,
+    79% 92%,
+    50% 70%,
+    21% 92%,
+    32% 56%,
+    2% 34%,
+    39% 34%
+  );
+  filter: drop-shadow(0 0 4px rgba(240, 182, 77, 0.38));
   transform: translateX(-50%);
 }
 
-.crew-marker.admiral > span {
+.crew-marker.admiral .crew-dot {
   box-shadow: 0 0 0 2px rgba(240, 182, 77, 0.28);
 }
 
 .ship-main {
   min-width: 0;
-  padding: 8px 0;
+  padding: 7px 0;
 }
 
 .ship-card.islands .ship-main {
-  padding: 14px 14px 0;
+  padding: 11px 11px 0;
 }
 
 .ship-title-row {
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .ship-heading {
@@ -537,7 +556,7 @@ h3 {
 .ship-meta {
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 7px;
+  margin-top: 6px;
 }
 
 .ship-meta span {
@@ -572,31 +591,77 @@ h3 {
   color: #ff6a3a;
 }
 
+.signup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.signup-actions button {
+  min-height: 25px;
+  padding: 4px 7px;
+  color: #fff8eb;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 1px solid rgba(229, 168, 72, 0.22);
+  background: rgba(126, 33, 20, 0.32);
+}
+
+.signup-actions button:hover {
+  color: #f0b64d;
+  border-color: rgba(240, 182, 77, 0.52);
+}
+
 .crew-column {
   display: grid;
   align-content: center;
-  gap: 6px;
-  padding: 8px 10px 8px 0;
+  gap: 5px;
+  padding: 7px 8px 7px 0;
 }
 
 .ship-card.islands .crew-column {
-  padding: 12px 14px 14px;
+  padding: 10px 11px 11px;
+}
+
+.fill-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 7px;
+  border: 1px solid rgba(229, 168, 72, 0.2);
+  background: rgba(229, 168, 72, 0.08);
+}
+
+.fill-heading strong {
+  color: #fff8eb;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.fill-heading span {
+  color: #f0b64d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .crew-numbers strong {
-  display: block;
+  display: inline;
   color: #fff8eb;
-  font-size: 1.1rem;
+  font-size: 0.82rem;
   line-height: 1;
 }
 
 .crew-numbers span {
   color: #a39a8c;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
 }
 
 .meter {
-  height: 5px;
+  height: 8px;
   overflow: hidden;
   background: #2a241c;
 }
@@ -609,11 +674,12 @@ h3 {
 
 .crew-flags {
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
 }
 
 .crew-flags span {
-  padding: 3px 6px;
+  padding: 2px 5px;
+  font-size: 0.7rem;
   background: rgba(255, 255, 255, 0.055);
 }
 
@@ -815,6 +881,18 @@ h3 {
   color: #f0b64d;
 }
 
+@media (min-width: 1181px) {
+  .fleet-list.islands {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1500px) {
+  .fleet-list.islands {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1180px) {
   .app-shell {
     grid-template-columns: 230px minmax(0, 1fr);
@@ -830,17 +908,17 @@ h3 {
   }
 
   .fleet-list.islands {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .crew-column {
     grid-column: 2;
-    padding: 0 16px 16px 0;
+    padding: 0 14px 14px 0;
   }
 
   .ship-card.islands .crew-column {
     grid-column: auto;
-    padding: 12px 14px 14px;
+    padding: 10px 11px 11px;
   }
 }
 
@@ -885,6 +963,10 @@ h3 {
   }
 
   .ship-card {
+    grid-template-columns: 1fr;
+  }
+
+  .fleet-list.islands {
     grid-template-columns: 1fr;
   }
 

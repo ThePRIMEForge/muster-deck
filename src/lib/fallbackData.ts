@@ -77,7 +77,7 @@ export const fallbackFleetRequests: FleetShipRequest[] = [
       { id: 'm1', name: 'ValkyrieActual', role: 'Fleet Admiral', status: 'assigned' },
       { id: 'c-idris-1', name: 'Hammer', role: 'Turret Gunner', status: 'assigned' },
       { id: 'c-idris-2', name: 'Warden', role: 'Engineer', status: 'assigned' },
-      { id: 'c-idris-3', name: 'Relay', role: 'Comms', status: 'assigned' },
+      { id: 'c-idris-3', name: 'Bulwark', role: 'Turret Gunner', status: 'assigned' },
     ],
   },
   {

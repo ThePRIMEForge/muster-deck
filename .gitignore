@@ -10,3 +10,4 @@ build/
 .superpowers/
 supabase/.temp/
 supabase/.branches/
+supabase/generated/

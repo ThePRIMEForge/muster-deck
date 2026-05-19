@@ -125,7 +125,7 @@ Teams may be embarked on a ship. For example:
 
 This gives the behavior of nested teams without making team ownership too rigid.
 
-## Fleet Roster Requests And Locks
+## Ship Roster Requests And Locks
 
 The Fleet Admiral can build the fleet from exact ships, category counts, or a mixture of both.
 
@@ -137,15 +137,15 @@ Examples:
 
 Each requested fleet row can either point at a specific ship or at a primary category. When a requested row points at a specific ship and `is_exact_ship_required` is true, members should fill that roster row rather than substituting another ship.
 
-Roster locking has three layers:
+Ship roster locking has three layers:
 
-- Master event lock: locks the full fleet roster. No substitutions or ship suggestions can be submitted while it is active.
+- Master event lock: locks the full ship roster. No substitutions or ship suggestions can be submitted while it is active.
 - Team lock: locks substitutions and ship suggestions for that team only.
 - Request policy: controls whether a specific ship/category request accepts alternatives.
 
 The UI should expose a lock/unlock icon in the fleet header, each team header, and each team row/list section. There should also be an `Unlock All` control that clears the master lock and all team locks for the event.
 
-Locks prevent suggestions and substitutions. They do not prevent already-assigned members from filling open crew positions unless the app later adds a separate position-signup lock.
+Ship roster locks only affect which ships are being taken. They prevent ship suggestions and substitutions. They do not lock crews or people into ships, and they do not prevent crew members from moving between open positions.
 
 ## Future Mission Phases
 
@@ -333,7 +333,7 @@ Fields:
 - `created_by`
 - `created_at`
 - `status`
-- `roster_locked`
+- `ship_roster_locked`
 
 ### fleet_event_ship_requests
 
@@ -445,7 +445,7 @@ Fields:
 - `sort_order`
 - `parent_team_id`
 - `embarked_ship_request_id`
-- `roster_locked`
+- `ship_roster_locked`
 
 The `parent_team_id` exists for future flexibility, but the first release should prefer explicit embarked-team behavior over deeply nested team trees.
 

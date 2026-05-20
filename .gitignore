@@ -11,6 +11,11 @@ vite.config.d.ts
 
 .firecrawl/
 .superpowers/
+outputs/
+
+# Full fan-kit downloads stay local unless specific production assets are explicitly added.
+Fankit_2025_11_19/**
+"RSI Star Citizen Fankit_2025_06_03"/**
 supabase/.temp/
 supabase/.branches/
 supabase/generated/

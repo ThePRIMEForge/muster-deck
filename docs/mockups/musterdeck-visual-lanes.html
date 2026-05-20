@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MusterDeck Visual Lanes</title>
+    <style>
+      :root {
+        color: #f3efe6;
+        background: #070808;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        letter-spacing: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+          #070808;
+        background-size: 18px 18px;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .page {
+        display: grid;
+        gap: 24px;
+        padding: 28px;
+      }
+
+      .intro {
+        max-width: 1160px;
+      }
+
+      .intro h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 4vw, 4.2rem);
+        line-height: 0.95;
+      }
+
+      .intro p {
+        max-width: 760px;
+        margin: 0;
+        color: #bbb2a5;
+        line-height: 1.55;
+      }
+
+      .lane {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        min-height: 720px;
+      }
+
+      .lane::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.55;
+        mix-blend-mode: screen;
+        background:
+          radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.08) 0 1px, transparent 2px),
+          radial-gradient(circle at 76% 42%, rgba(255, 255, 255, 0.07) 0 1px, transparent 2px),
+          radial-gradient(circle at 52% 78%, rgba(255, 255, 255, 0.05) 0 1px, transparent 2px),
+          repeating-linear-gradient(115deg, transparent 0 26px, rgba(255, 255, 255, 0.018) 26px 27px);
+      }
+
+      .lane::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.28;
+        background:
+          linear-gradient(100deg, transparent 0 9%, rgba(255, 255, 255, 0.055) 9.3%, transparent 9.8%),
+          linear-gradient(142deg, transparent 0 44%, rgba(255, 255, 255, 0.04) 44.2%, transparent 44.7%),
+          radial-gradient(circle at 8% 90%, rgba(0, 0, 0, 0.65), transparent 20%);
+      }
+
+      .mock-shell {
+        position: relative;
+        z-index: 1;
+        min-height: 720px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .topbar {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 18px;
+        padding: 16px 20px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        font-weight: 900;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mark::after,
+      .primary-action::after,
+      .nav button::after,
+      .actions button::after,
+      .small-action::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.24;
+        background:
+          linear-gradient(126deg, transparent 0 18%, rgba(255, 255, 255, 0.18) 18.3%, transparent 19%),
+          linear-gradient(84deg, transparent 0 63%, rgba(0, 0, 0, 0.34) 63.2%, transparent 64%),
+          repeating-linear-gradient(0deg, transparent 0 6px, rgba(255, 255, 255, 0.05) 6px 7px);
+      }
+
+      .brand strong,
+      .brand span {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .brand strong {
+        font-size: 1.04rem;
+      }
+
+      .brand span {
+        color: #a99f93;
+        font-size: 0.77rem;
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav button,
+      .actions button,
+      .primary-action,
+      .small-action {
+        position: relative;
+        overflow: hidden;
+        min-height: 40px;
+        border: 0;
+        border-radius: 8px;
+        padding: 0 14px;
+        color: inherit;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.15),
+          inset 0 -3px 0 rgba(0, 0, 0, 0.32),
+          0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .version-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 20px;
+        font-size: 0.76rem;
+      }
+
+      .version-strip span {
+        border-radius: 999px;
+        padding: 6px 10px;
+        white-space: nowrap;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr) 300px;
+        gap: 16px;
+        padding: 18px 20px 20px;
+      }
+
+      .rail,
+      .main,
+      .side,
+      .footer {
+        min-width: 0;
+      }
+
+      .rail,
+      .side {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+
+      .main {
+        display: grid;
+        gap: 16px;
+        align-content: start;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .section-title h2,
+      .section-title h3,
+      .hero h2,
+      .panel h3,
+      .metric strong,
+      .event-title {
+        margin: 0;
+      }
+
+      .section-title h2,
+      .hero h2 {
+        font-size: clamp(1.5rem, 3vw, 2.6rem);
+        line-height: 1;
+      }
+
+      .section-title p,
+      .hero p,
+      .panel p,
+      .event-meta,
+      .footer {
+        margin: 0;
+        color: #b6aea2;
+        line-height: 1.45;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 210px;
+        display: grid;
+        align-content: end;
+        gap: 14px;
+        padding: 24px;
+      }
+
+      .hero::before {
+        content: "CAUTION  /  LIVE OPERATION AREA";
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        padding-left: 18px;
+        color: rgba(18, 14, 8, 0.82);
+        font-size: 0.72rem;
+        font-weight: 900;
+        background:
+          repeating-linear-gradient(135deg, rgba(224, 153, 44, 0.95) 0 12px, rgba(32, 28, 20, 0.95) 12px 24px);
+        opacity: 0.85;
+      }
+
+      .hero > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .pill-row,
+      .metric-grid,
+      .pillar-grid,
+      .role-row,
+      .split-row {
+        display: grid;
+        gap: 10px;
+      }
+
+      .pill-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .rail .pill-row {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pillar-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pill,
+      .metric,
+      .pillar,
+      .panel,
+      .event-card,
+      .roster-item,
+      .loot-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        padding: 14px;
+      }
+
+      .panel::before,
+      .event-card::before,
+      .metric::before,
+      .pill::before,
+      .roster-item::before,
+      .loot-item::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.16;
+        background:
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 34px),
+          radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.16) 0 1px, transparent 2px),
+          radial-gradient(circle at 82% 80%, rgba(0, 0, 0, 0.5), transparent 18%);
+      }
+
+      .panel > *,
+      .event-card > *,
+      .metric > *,
+      .pill > *,
+      .roster-item > *,
+      .loot-item > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .pill,
+      .metric,
+      .roster-item,
+      .loot-item {
+        min-height: 54px;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.45rem;
+      }
+
+      .metric span,
+      .pill span,
+      .pillar span,
+      .roster-item span,
+      .loot-item span {
+        display: block;
+        color: #b6aea2;
+        font-size: 0.8rem;
+      }
+
+      .event-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .event-title {
+        font-size: 1.14rem;
+      }
+
+      .event-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+        font-size: 0.8rem;
+      }
+
+      .tag {
+        border-radius: 999px;
+        padding: 5px 8px;
+      }
+
+      .role-row,
+      .split-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+      }
+
+      .footer {
+        padding: 14px 20px 18px;
+        font-size: 0.76rem;
+      }
+
+      .soft {
+        background:
+          radial-gradient(circle at 12% 0%, rgba(213, 147, 49, 0.15), transparent 28rem),
+          repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 12px),
+          linear-gradient(180deg, #15130f, #0a0b0b);
+      }
+
+      .soft .topbar,
+      .soft .version-strip,
+      .soft .footer {
+        background:
+          linear-gradient(180deg, rgba(31, 29, 23, 0.95), rgba(10, 12, 12, 0.9)),
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 28px);
+      }
+
+      .soft .mark,
+      .soft .primary-action {
+        background:
+          linear-gradient(180deg, #e2a13c, #ba751f),
+          repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 9px);
+        color: #15100a;
+      }
+
+      .soft .nav button,
+      .soft .actions button,
+      .soft .small-action {
+        background:
+          linear-gradient(180deg, #30312c, #191b19),
+          repeating-linear-gradient(135deg, transparent 0 9px, rgba(255, 255, 255, 0.035) 9px 10px);
+        color: #efe8db;
+      }
+
+      .soft .nav .active {
+        background:
+          linear-gradient(180deg, #696b3f, #393a20),
+          repeating-linear-gradient(135deg, rgba(230, 165, 55, 0.18) 0 2px, transparent 2px 8px);
+        color: #f8f3e8;
+      }
+
+      .soft .version-strip span,
+      .soft .tag {
+        background: rgba(212, 147, 59, 0.12);
+        color: #e7bf7d;
+      }
+
+      .soft .panel,
+      .soft .event-card,
+      .soft .pillar,
+      .soft .metric,
+      .soft .pill,
+      .soft .roster-item,
+      .soft .loot-item {
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.012)),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 11px),
+          #171a19;
+        border: 1px solid rgba(224, 153, 44, 0.14);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.075),
+          inset 0 -18px 34px rgba(0, 0, 0, 0.2),
+          0 18px 50px rgba(0, 0, 0, 0.18);
+      }
+
+      .soft .hero {
+        background:
+          linear-gradient(180deg, rgba(9, 10, 10, 0.18), rgba(9, 10, 10, 0.9)),
+          repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 9px),
+          radial-gradient(circle at 85% 15%, rgba(213, 147, 49, 0.16), transparent 16rem),
+          #1b201f;
+        border-radius: 8px;
+        border: 1px solid rgba(224, 153, 44, 0.18);
+      }
+
+      .hangar {
+        background:
+          repeating-linear-gradient(90deg, rgba(240, 210, 148, 0.03) 0 1px, transparent 1px 80px),
+          repeating-linear-gradient(0deg, rgba(240, 210, 148, 0.025) 0 1px, transparent 1px 36px),
+          radial-gradient(circle at 70% 10%, rgba(98, 76, 36, 0.3), transparent 25rem),
+          linear-gradient(180deg, #18160f, #070707);
+      }
+
+      .hangar .topbar,
+      .hangar .version-strip,
+      .hangar .footer {
+        background:
+          linear-gradient(180deg, rgba(38, 37, 24, 0.94), rgba(17, 13, 10, 0.9)),
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.024) 0 2px, transparent 2px 30px);
+        border-bottom: 2px solid rgba(199, 164, 74, 0.24);
+      }
+
+      .hangar .mark,
+      .hangar .primary-action {
+        background:
+          linear-gradient(180deg, #bdad55, #6f6b35),
+          repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.28) 0 2px, transparent 2px 8px);
+        color: #17180f;
+      }
+
+      .hangar .nav button,
+      .hangar .actions button,
+      .hangar .small-action {
+        background:
+          linear-gradient(180deg, #343526, #1d1c14),
+          repeating-linear-gradient(135deg, transparent 0 7px, rgba(255, 255, 255, 0.035) 7px 8px);
+        color: #f3ead4;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.12),
+          inset 0 -3px 0 rgba(0, 0, 0, 0.35),
+          0 10px 22px rgba(0, 0, 0, 0.22);
+      }
+
+      .hangar .nav .active {
+        background:
+          linear-gradient(180deg, #605a33, #302d19),
+          repeating-linear-gradient(135deg, rgba(210, 173, 76, 0.18) 0 2px, transparent 2px 8px);
+      }
+
+      .hangar .version-strip span,
+      .hangar .tag {
+        background: rgba(199, 164, 74, 0.16);
+        color: #ead082;
+      }
+
+      .hangar .panel,
+      .hangar .event-card,
+      .hangar .pillar,
+      .hangar .metric,
+      .hangar .pill,
+      .hangar .roster-item,
+      .hangar .loot-item {
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008)),
+          repeating-linear-gradient(0deg, transparent 0 7px, rgba(255, 255, 255, 0.028) 7px 8px),
+          #18170f;
+        border: 1px solid rgba(199, 164, 74, 0.18);
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.26);
+      }
+
+      .hangar .hero {
+        background:
+          linear-gradient(180deg, rgba(18, 12, 7, 0.1), rgba(18, 12, 7, 0.92)),
+          repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 13px),
+          radial-gradient(circle at 78% 22%, rgba(203, 181, 85, 0.14), transparent 12rem),
+          #262617;
+        border-radius: 8px;
+        border: 1px solid rgba(199, 164, 74, 0.18);
+      }
+
+      .clean {
+        background:
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 54px),
+          linear-gradient(180deg, #0b0d0f, #090a0a);
+      }
+
+      .clean .topbar,
+      .clean .version-strip,
+      .clean .footer {
+        background:
+          linear-gradient(180deg, #171b1d, #101214),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 8px);
+        border-bottom: 2px solid rgba(198, 149, 55, 0.18);
+      }
+
+      .clean .mark,
+      .clean .primary-action {
+        background:
+          linear-gradient(180deg, #d79b3d, #8c5f20),
+          repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0 2px, transparent 2px 9px);
+        color: #120f09;
+      }
+
+      .clean .nav button,
+      .clean .actions button,
+      .clean .small-action {
+        background:
+          linear-gradient(180deg, #202629, #131719),
+          repeating-linear-gradient(135deg, transparent 0 8px, rgba(255, 255, 255, 0.03) 8px 9px);
+        color: #eaf2f0;
+      }
+
+      .clean .nav .active {
+        background:
+          linear-gradient(180deg, #554326, #2a2419),
+          repeating-linear-gradient(135deg, rgba(216, 152, 51, 0.2) 0 2px, transparent 2px 8px);
+      }
+
+      .clean .version-strip span,
+      .clean .tag {
+        background: rgba(216, 152, 51, 0.12);
+        color: #e4bf7b;
+      }
+
+      .clean .panel,
+      .clean .event-card,
+      .clean .pillar,
+      .clean .metric,
+      .clean .pill,
+      .clean .roster-item,
+      .clean .loot-item {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.008)),
+          #121719;
+        border: 1px solid rgba(159, 179, 190, 0.12);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .clean .hero {
+        background:
+          linear-gradient(180deg, rgba(11, 15, 19, 0.05), rgba(11, 15, 19, 0.92)),
+          radial-gradient(circle at 80% 22%, rgba(216, 152, 51, 0.12), transparent 12rem),
+          linear-gradient(120deg, #20211e, #121719);
+        border-radius: 8px;
+        border: 1px solid rgba(159, 179, 190, 0.12);
+      }
+
+      @media (max-width: 1060px) {
+        .topbar,
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+
+        .pillar-grid,
+        .metric-grid,
+        .pill-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          padding: 14px;
+        }
+
+        .lane,
+        .mock-shell {
+          min-height: auto;
+        }
+
+        .topbar,
+        .workspace,
+        .version-strip,
+        .footer {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
+        .nav,
+        .actions {
+          align-items: stretch;
+        }
+
+        .nav button,
+        .actions button {
+          flex: 1 1 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="intro">
+        <h1>MusterDeck Industrial Visual Lanes</h1>
+        <p>
+          Three more physical directions for the app shell: worn mustard paint, caution striping,
+          analog buttons, scuffed panels, and space-industrial operating surfaces.
+        </p>
+      </section>
+
+      <section class="lane soft">
+        <div class="mock-shell">
+          <header>
+            <div class="topbar">
+              <div class="brand">
+                <div class="mark">MD</div>
+                <div>
+                  <strong>MusterDeck</strong>
+                  <span>Mustard Deck Console</span>
+                </div>
+              </div>
+              <nav class="nav" aria-label="Soft tactical console navigation">
+                <button class="active">Home</button>
+                <button>Rally Point</button>
+                <button>Fleet Command</button>
+                <button>S.P.O.I.L.S.</button>
+              </nav>
+              <div class="actions">
+                <button>Alerts</button>
+                <button class="primary-action">New Operation</button>
+              </div>
+            </div>
+            <div class="version-strip">
+              <span>Rally Point v0.1</span>
+              <span>Fleet Command v0.2</span>
+              <span>S.P.O.I.L.S. v0.1</span>
+              <span>SC data 4.8.0 LIVE</span>
+            </div>
+          </header>
+          <section class="workspace">
+            <aside class="rail">
+              <div class="panel">
+                <div class="section-title"><h3>Operations</h3></div>
+                <div class="pill-row">
+                  <div class="pill"><strong>Rally Point</strong><span>Find crews</span></div>
+                  <div class="pill"><strong>Command</strong><span>Run events</span></div>
+                  <div class="pill"><strong>S.P.O.I.L.S.</strong><span>Settle rewards</span></div>
+                  <div class="pill"><strong>Admin</strong><span>Users and trust</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <h3>Filters</h3>
+                <p>System, activity, role needs, ship class, verification.</p>
+              </div>
+            </aside>
+            <section class="main">
+              <div class="hero">
+                <div>
+                  <h2>Plan, crew, and settle from a worn command board.</h2>
+                  <p>
+                    Chipped mustard controls, dark worn panels, caution-bar hierarchy, and compact
+                    operational detail.
+                  </p>
+                </div>
+                <button class="primary-action">Open Rally Point</button>
+              </div>
+              <div class="metric-grid">
+                <div class="metric"><strong>18</strong><span>Open roles</span></div>
+                <div class="metric"><strong>7</strong><span>Ships requested</span></div>
+                <div class="metric"><strong>94%</strong><span>Roster readiness</span></div>
+              </div>
+              <div class="event-card">
+                <div>
+                  <h3 class="event-title">Pyro mining escort and cargo sweep</h3>
+                  <div class="event-meta">
+                    <span class="tag">Mining</span><span class="tag">Pyro</span
+                    ><span class="tag">Moderate risk</span><span class="tag">RSI optional</span>
+                  </div>
+                </div>
+                <button class="small-action">Review</button>
+              </div>
+            </section>
+            <aside class="side">
+              <div class="panel">
+                <div class="section-title"><h3>Assignments</h3></div>
+                <div class="roster-item"><strong>Astra</strong><span>Prospector pilot</span></div>
+                <div class="roster-item"><strong>Javel</strong><span>Escort lead</span></div>
+                <div class="roster-item"><strong>Patch</strong><span>Medical standby</span></div>
+              </div>
+              <div class="panel">
+                <h3>S.P.O.I.L.S.</h3>
+                <div class="loot-item"><strong>Org Bank</strong><span>12% reserve</span></div>
+                <div class="loot-item"><strong>Quantanium</strong><span>Pending sale</span></div>
+              </div>
+            </aside>
+          </section>
+          <footer class="footer">
+            MusterDeck is an independent fan-made tool and is not affiliated with Cloud Imperium
+            Games or Roberts Space Industries.
+          </footer>
+        </div>
+      </section>
+
+      <section class="lane hangar">
+        <div class="mock-shell">
+          <header>
+            <div class="topbar">
+              <div class="brand">
+                <div class="mark">MD</div>
+                <div>
+                  <strong>MusterDeck</strong>
+                  <span>Olive Hangar Board</span>
+                </div>
+              </div>
+              <nav class="nav" aria-label="Hangar operations navigation">
+                <button class="active">Home</button>
+                <button>Rally Point</button>
+                <button>Fleet Command</button>
+                <button>S.P.O.I.L.S.</button>
+              </nav>
+              <div class="actions">
+                <button>Comms</button>
+                <button class="primary-action">Launch Briefing</button>
+              </div>
+            </div>
+            <div class="version-strip">
+              <span>Rally Point v0.1</span>
+              <span>Fleet Command v0.2</span>
+              <span>S.P.O.I.L.S. v0.1</span>
+              <span>SC data 4.8.0 LIVE</span>
+            </div>
+          </header>
+          <section class="workspace">
+            <aside class="rail">
+              <div class="panel">
+                <div class="section-title"><h3>Deck Board</h3></div>
+                <div class="pill-row">
+                  <div class="pill"><strong>Rally</strong><span>Crew calls</span></div>
+                  <div class="pill"><strong>Fleet</strong><span>Ship line</span></div>
+                  <div class="pill"><strong>Spoils</strong><span>Vault</span></div>
+                  <div class="pill"><strong>Status</strong><span>Sync live</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <h3>Bay Filters</h3>
+                <p>Mission loop, crew size, hull type, hangar readiness, risk.</p>
+              </div>
+            </aside>
+            <section class="main">
+              <div class="hero">
+                <div>
+                  <h2>Operations staged from a field-worn hangar board.</h2>
+                  <p>
+                    Olive-drab metal, yellowed markings, heavy analog controls, and more visible
+                    operational wear.
+                  </p>
+                </div>
+                <button class="primary-action">Open Fleet Command</button>
+              </div>
+              <div class="metric-grid">
+                <div class="metric"><strong>04</strong><span>Crews forming</span></div>
+                <div class="metric"><strong>12</strong><span>Hull slots</span></div>
+                <div class="metric"><strong>02</strong><span>Quartermaster holds</span></div>
+              </div>
+              <div class="event-card">
+                <div>
+                  <h3 class="event-title">Stanton salvage chain with escort wing</h3>
+                  <div class="event-meta">
+                    <span class="tag">Salvage</span><span class="tag">Stanton</span
+                    ><span class="tag">Org only</span><span class="tag">Discord required</span>
+                  </div>
+                </div>
+                <button class="small-action">Board</button>
+              </div>
+            </section>
+            <aside class="side">
+              <div class="panel">
+                <div class="section-title"><h3>Deck Crew</h3></div>
+                <div class="roster-item"><strong>Rook</strong><span>Reclaimer captain</span></div>
+                <div class="roster-item"><strong>Switch</strong><span>Cargo hold logistics</span></div>
+                <div class="roster-item"><strong>Vanta</strong><span>Escort gunner</span></div>
+              </div>
+              <div class="panel">
+                <h3>Vault</h3>
+                <div class="loot-item"><strong>RMC sale</strong><span>Awaiting split</span></div>
+                <div class="loot-item"><strong>Org Bank</strong><span>15% reserve</span></div>
+              </div>
+            </aside>
+          </section>
+          <footer class="footer">
+            MusterDeck is an independent fan-made tool and is not affiliated with Cloud Imperium
+            Games or Roberts Space Industries.
+          </footer>
+        </div>
+      </section>
+
+      <section class="lane clean">
+        <div class="mock-shell">
+          <header>
+            <div class="topbar">
+              <div class="brand">
+                <div class="mark">MD</div>
+                <div>
+                  <strong>MusterDeck</strong>
+                  <span>Blackbox Command Panel</span>
+                </div>
+              </div>
+              <nav class="nav" aria-label="Clean command navigation">
+                <button class="active">Home</button>
+                <button>Rally Point</button>
+                <button>Fleet Command</button>
+                <button>S.P.O.I.L.S.</button>
+              </nav>
+              <div class="actions">
+                <button>Status</button>
+                <button class="primary-action">Create Listing</button>
+              </div>
+            </div>
+            <div class="version-strip">
+              <span>Rally Point v0.1</span>
+              <span>Fleet Command v0.2</span>
+              <span>S.P.O.I.L.S. v0.1</span>
+              <span>SC data 4.8.0 LIVE</span>
+            </div>
+          </header>
+          <section class="workspace">
+            <aside class="rail">
+              <div class="panel">
+                <div class="section-title"><h3>Modules</h3></div>
+                <div class="pill-row">
+                  <div class="pill"><strong>Rally Point</strong><span>Recruit</span></div>
+                  <div class="pill"><strong>Fleet Command</strong><span>Operate</span></div>
+                  <div class="pill"><strong>S.P.O.I.L.S.</strong><span>Settle</span></div>
+                  <div class="pill"><strong>Admin</strong><span>Control</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <h3>Smart Filters</h3>
+                <p>Focused, quiet controls for repeated scanning and operational work.</p>
+              </div>
+            </aside>
+            <section class="main">
+              <div class="hero">
+                <div>
+                  <h2>A cleaner blackbox console with analog wear.</h2>
+                  <p>
+                    The most restrained option: clearer scanning, darker instrument panels, scuffed
+                    mustard controls, and less decorative noise.
+                  </p>
+                </div>
+                <button class="primary-action">Open Dashboard</button>
+              </div>
+              <div class="metric-grid">
+                <div class="metric"><strong>31</strong><span>Members online</span></div>
+                <div class="metric"><strong>5</strong><span>Pending approvals</span></div>
+                <div class="metric"><strong>3</strong><span>Open settlements</span></div>
+              </div>
+              <div class="event-card">
+                <div>
+                  <h3 class="event-title">Multi-discipline reputation grind</h3>
+                  <div class="event-meta">
+                    <span class="tag">Mixed loop</span><span class="tag">Stanton</span
+                    ><span class="tag">Open LFG</span><span class="tag">Manual approval</span>
+                  </div>
+                </div>
+                <button class="small-action">Open</button>
+              </div>
+            </section>
+            <aside class="side">
+              <div class="panel">
+                <div class="section-title"><h3>Roster</h3></div>
+                <div class="roster-item"><strong>Nova</strong><span>Mission lead</span></div>
+                <div class="roster-item"><strong>Keel</strong><span>Engineer</span></div>
+                <div class="roster-item"><strong>Sol</strong><span>Scout</span></div>
+              </div>
+              <div class="panel">
+                <h3>Payout Preview</h3>
+                <div class="split-row"><span>Crew share</span><strong>88%</strong></div>
+                <div class="split-row"><span>Org bank</span><strong>12%</strong></div>
+              </div>
+            </aside>
+          </section>
+          <footer class="footer">
+            MusterDeck is an independent fan-made tool and is not affiliated with Cloud Imperium
+            Games or Roberts Space Industries.
+          </footer>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

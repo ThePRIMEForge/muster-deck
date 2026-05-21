@@ -21,6 +21,7 @@ declare
   demo_team_id uuid;
   demo_request_id uuid;
   demo_assignment_id uuid;
+  demo_removed_request_id uuid;
 begin
   select id
   into scorpius_id
@@ -349,6 +350,37 @@ begin
       and assigned_position_count = 1
   ) then
     raise exception 'expected demo assignment to increment assigned position count';
+  end if;
+
+  perform public.move_demo_fleet_ship_request_to_team(demo_request_id, 'beta');
+
+  if not exists (
+    select 1
+    from public.fleet_event_ship_request_summary
+    where id = demo_request_id
+      and team_name = 'Beta'
+  ) then
+    raise exception 'expected demo request to move to Beta';
+  end if;
+
+  demo_removed_request_id := public.create_demo_fleet_ship_request(
+    'rsi-scorpius',
+    null,
+    1,
+    'alpha',
+    'standard',
+    false,
+    'demo request to remove'
+  );
+
+  perform public.remove_demo_fleet_ship_request(demo_removed_request_id);
+
+  if exists (
+    select 1
+    from public.fleet_event_ship_request_summary
+    where id = demo_removed_request_id
+  ) then
+    raise exception 'expected removed demo request to disappear from summary';
   end if;
 end;
 $$;

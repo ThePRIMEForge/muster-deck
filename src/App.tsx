@@ -57,6 +57,8 @@ import {
   loadDemoFleetSetup,
   loadShipCatalog,
   loadShipStaffingTemplates,
+  moveDemoFleetShipRequestToTeam,
+  removeDemoFleetShipRequest,
   replaceFleetEventPositions,
 } from './lib/supabase';
 import type {
@@ -700,26 +702,50 @@ function App() {
     setRequestPendingRemovalId(requestId);
   }
 
-  function confirmRemoveFleetLine() {
-    if (!requestPendingRemovalId) {
-      return;
-    }
-
-    setFleetRequests((current) =>
-      current.filter((request) => request.id !== requestPendingRemovalId),
-    );
+  function applyLocalRemoveFleetLine(requestId: string) {
+    setFleetRequests((current) => current.filter((request) => request.id !== requestId));
     setMembers((current) =>
       current.map((member) =>
-        member.assignedRequestId === requestPendingRemovalId
-          ? { ...member, assignedRequestId: undefined }
-          : member,
+        member.assignedRequestId === requestId ? { ...member, assignedRequestId: undefined } : member,
       ),
     );
     setExpandedRequests((current) => {
       const rest = { ...current };
-      delete rest[requestPendingRemovalId];
+      delete rest[requestId];
       return rest;
     });
+  }
+
+  async function confirmRemoveFleetLine() {
+    if (!requestPendingRemovalId) {
+      return;
+    }
+
+    const removalId = requestPendingRemovalId;
+
+    if (persistedFleetSetupActive) {
+      try {
+        await removeDemoFleetShipRequest(removalId);
+        await reloadPersistedFleetSetup();
+        setMembers((current) =>
+          current.map((member) =>
+            member.assignedRequestId === removalId ? { ...member, assignedRequestId: undefined } : member,
+          ),
+        );
+        setExpandedRequests((current) => {
+          const rest = { ...current };
+          delete rest[removalId];
+          return rest;
+        });
+        setRequestPendingRemovalId(null);
+        return;
+      } catch {
+        setCatalogState('error');
+        setPersistedFleetSetupActive(false);
+      }
+    }
+
+    applyLocalRemoveFleetLine(removalId);
     setRequestPendingRemovalId(null);
   }
 
@@ -906,14 +932,39 @@ function App() {
     }
   }
 
-  function moveRequestToTeam(requestId: string, teamKey: string) {
-    const movedRequest = fleetRequests.find((request) => request.id === requestId);
-
+  function applyLocalRequestTeamMove(requestId: string, teamKey: string) {
     setFleetRequests((current) =>
       current.map((request) =>
         request.id === requestId ? { ...request, teamKey, team: teamLabel(teamKey) } : request,
       ),
     );
+    setMembers((current) =>
+      current.map((member) =>
+        member.assignedRequestId === requestId ? { ...member, team: teamLabel(teamKey) } : member,
+      ),
+    );
+  }
+
+  async function moveRequestToTeam(requestId: string, teamKey: string) {
+    const movedRequest = fleetRequests.find((request) => request.id === requestId);
+
+    if (persistedFleetSetupActive) {
+      try {
+        await moveDemoFleetShipRequestToTeam({ requestId, teamKey });
+        await reloadPersistedFleetSetup();
+        setMembers((current) =>
+          current.map((member) =>
+            member.assignedRequestId === requestId ? { ...member, team: teamLabel(teamKey) } : member,
+          ),
+        );
+      } catch {
+        setCatalogState('error');
+        setPersistedFleetSetupActive(false);
+        applyLocalRequestTeamMove(requestId, teamKey);
+      }
+    } else {
+      applyLocalRequestTeamMove(requestId, teamKey);
+    }
 
     if (movedRequest) {
       pushMessage({

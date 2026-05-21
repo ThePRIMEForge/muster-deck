@@ -294,9 +294,99 @@ $$;
 comment on function public.assign_demo_member_to_fleet_position(uuid, text, text) is
   'Assigns a demo member to the first matching open position on a prototype Fleet Command request.';
 
+create or replace function public.move_demo_fleet_ship_request_to_team(
+  target_fleet_event_ship_request_id uuid,
+  target_team_key text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+  request_event_id uuid;
+  resolved_team_id uuid;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+
+  select request.fleet_event_id
+  into request_event_id
+  from public.fleet_event_ship_requests as request
+  where request.id = target_fleet_event_ship_request_id;
+
+  if request_event_id is null then
+    raise exception 'unknown fleet ship request: %', target_fleet_event_ship_request_id;
+  end if;
+
+  if request_event_id <> demo_event_id then
+    raise exception 'request % does not belong to the demo draft event', target_fleet_event_ship_request_id;
+  end if;
+
+  select id
+  into resolved_team_id
+  from public.teams
+  where fleet_event_id = demo_event_id
+    and lower(name) = lower(replace(coalesce(target_team_key, 'Unassigned'), '_', ' '));
+
+  if resolved_team_id is null then
+    raise exception 'unknown demo team key: %', target_team_key;
+  end if;
+
+  update public.fleet_event_ship_requests
+  set team_id = resolved_team_id,
+      updated_at = now()
+  where id = target_fleet_event_ship_request_id;
+
+  update public.assignments
+  set team_id = resolved_team_id
+  where fleet_event_id = demo_event_id
+    and fleet_event_ship_request_id = target_fleet_event_ship_request_id
+    and status = 'assigned';
+end;
+$$;
+
+comment on function public.move_demo_fleet_ship_request_to_team(uuid, text) is
+  'Moves a prototype Fleet Command request to another standard demo team and keeps assigned crew team references aligned.';
+
+create or replace function public.remove_demo_fleet_ship_request(target_fleet_event_ship_request_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+  request_event_id uuid;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+
+  select request.fleet_event_id
+  into request_event_id
+  from public.fleet_event_ship_requests as request
+  where request.id = target_fleet_event_ship_request_id;
+
+  if request_event_id is null then
+    raise exception 'unknown fleet ship request: %', target_fleet_event_ship_request_id;
+  end if;
+
+  if request_event_id <> demo_event_id then
+    raise exception 'request % does not belong to the demo draft event', target_fleet_event_ship_request_id;
+  end if;
+
+  delete from public.fleet_event_ship_requests
+  where id = target_fleet_event_ship_request_id;
+end;
+$$;
+
+comment on function public.remove_demo_fleet_ship_request(uuid) is
+  'Removes a prototype Fleet Command request from the demo draft event.';
+
 grant execute on function public.ensure_demo_fleet_event() to anon, authenticated;
 grant execute on function public.create_demo_fleet_ship_request(text, text, integer, text, text, boolean, text) to anon, authenticated;
 grant execute on function public.ensure_demo_fleet_member(text) to anon, authenticated;
 grant execute on function public.assign_demo_member_to_fleet_position(uuid, text, text) to anon, authenticated;
+grant execute on function public.move_demo_fleet_ship_request_to_team(uuid, text) to anon, authenticated;
+grant execute on function public.remove_demo_fleet_ship_request(uuid) to anon, authenticated;
 grant execute on function public.create_fleet_event_ship_request_with_positions(uuid, uuid, uuid, integer, uuid, text, boolean, text, text) to anon, authenticated;
 grant execute on function public.replace_fleet_event_positions(uuid, jsonb) to anon, authenticated;

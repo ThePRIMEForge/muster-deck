@@ -2,6 +2,15 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Fleet Command Demo Line Edit Persistence
+
+- Decision: Persist saved Fleet Setup line team changes and removals against the prototype `DEMO-DRAFT` event.
+- Decision: Add demo-only helpers for moving a fleet ship request to a standard team and removing a saved request.
+- Decision: Defer existing-line position/profile edits because replacing copied positions can remove assignment-linked position rows.
+- Reason: Officers need basic saved-line cleanup before deeper assignment-preserving roster edit behavior is designed.
+- Files affected: `supabase/migrations/20260521220000_demo_fleet_setup_persistence.sql`, `supabase/tests/fleet_request_helpers_smoke.sql`, `src/lib/supabase.ts`, `src/App.tsx`, `docs/superpowers/plans/2026-05-21-fleet-command-line-edit-persistence.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Design assignment-preserving updates for existing line profile, crew target, and custom position edits.
+
 ## 2026-05-21 - Fleet Command Demo Assignment Persistence
 
 - Decision: Persist prototype officer drag-and-drop crew assignments against the saved `DEMO-DRAFT` Fleet Command event.

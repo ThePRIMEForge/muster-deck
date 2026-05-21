@@ -330,3 +330,38 @@ export async function assignDemoMemberToFleetPosition({
 
   return data as string;
 }
+
+export async function moveDemoFleetShipRequestToTeam({
+  requestId,
+  teamKey,
+}: {
+  requestId: string;
+  teamKey: string;
+}): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const { error } = await supabase.rpc('move_demo_fleet_ship_request_to_team', {
+    target_fleet_event_ship_request_id: requestId,
+    target_team_key: teamKey,
+  });
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function removeDemoFleetShipRequest(requestId: string): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const { error } = await supabase.rpc('remove_demo_fleet_ship_request', {
+    target_fleet_event_ship_request_id: requestId,
+  });
+
+  if (error) {
+    throw error;
+  }
+}

@@ -10,7 +10,7 @@ export const appRoutes: FoundationRoute[] = [
   },
   {
     id: 'rally-browse',
-    label: 'Browse Rally Point',
+    label: 'Rally Point',
     module: 'rally_point',
     public: true,
     requiresAuth: false,

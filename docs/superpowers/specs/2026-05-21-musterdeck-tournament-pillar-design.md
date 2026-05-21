@@ -120,6 +120,36 @@ Fields:
 - Tournament status.
 - Admin notes.
 
+### Prize Pool
+
+A tournament-attached S.P.O.I.L.S. settlement for competitive awards.
+
+Prize categories:
+
+- Cash prizes.
+- Physical prizes.
+- In-game items.
+- Star Citizen hangar-attributed equipment.
+- Star Citizen hangar-attributed ships.
+- aUEC or in-game payout equivalents when allowed by event rules.
+
+Prize states:
+
+- Announced.
+- Sponsored/pledged.
+- Received by organizer.
+- Assigned to placement.
+- Claimed by winner.
+- Fulfilled.
+- Disputed.
+- Cancelled.
+
+Important boundary:
+
+- MusterDeck can track announced prizes, assignment decisions, claim status, and fulfillment notes.
+- MusterDeck should not imply custody, escrow, legal guarantee, official Star Citizen support, or Cloud Imperium Games involvement.
+- Cash prizes and physical prizes need plain disclaimer language and organizer responsibility notes.
+
 ### Participant
 
 An individual user or invited external entrant.
@@ -460,6 +490,8 @@ S.P.O.I.L.S.:
 
 - Prize payouts, entry pools, donations, and post-event rewards can flow into S.P.O.I.L.S.
 - Tournament winners and placements can become payout recipients.
+- Tournament prize S.P.O.I.L.S. can track cash prizes, physical prizes, in-game items, hangar-attributed equipment, and hangar-attributed ships.
+- The prize ledger should record fulfillment state separately from score/bracket state.
 
 Shared foundation:
 
@@ -524,6 +556,92 @@ Required:
 - Lock bracket once tournament begins.
 - Audit log for score and advancement changes.
 
+## Tournament Prize S.P.O.I.L.S.
+
+Proving Ground should be able to open a dedicated S.P.O.I.L.S. settlement for tournament winnings.
+
+This differs from operation loot:
+
+- Winners are determined by placement, bracket result, leaderboard rank, or admin award.
+- Prizes may be real-world, in-game, or account/hangar-attributed.
+- Fulfillment may happen outside the app through Discord, email, shipping, cash transfer, in-game transfer, or Star Citizen hangar gifting.
+- The organizer may need to track proof, contact notes, claim deadlines, and fulfillment status.
+
+### Prize Types
+
+First prize categories:
+
+- Cash.
+- Physical item.
+- In-game item.
+- Hangar equipment.
+- Hangar ship.
+- aUEC / in-game currency equivalent.
+- Sponsor credit or custom award.
+
+Fields:
+
+- Prize name.
+- Prize type.
+- Description.
+- Sponsor/source.
+- Estimated value.
+- Currency when applicable.
+- Quantity.
+- Placement or award rule.
+- Assigned recipient/team.
+- Claim instructions.
+- Fulfillment method.
+- Fulfillment status.
+- Admin notes.
+- Public/private visibility.
+
+### Award Rules
+
+Prize assignment modes:
+
+- Placement-based: first, second, third, top eight.
+- Bracket result: tournament champion, finalist, losers bracket winner.
+- Leaderboard rank: top score, fastest time, highest yield, most kills, most cargo moved.
+- Category award: best sportsmanship, best industrial crew, best rescue, best team name.
+- Manual award: admin-selected recipient.
+
+### Claim And Fulfillment
+
+Claim flow:
+
+1. Admin publishes prize assignments.
+2. Winner receives notification.
+3. Winner confirms claim details.
+4. Admin marks prize as ready, fulfilled, disputed, or expired.
+5. Settlement is finalized and locked after all prize states are resolved or intentionally left pending.
+
+Fulfillment notes should support:
+
+- Discord contact.
+- Email contact.
+- Shipping note for physical prizes.
+- Payment note for cash prizes.
+- In-game delivery note.
+- Hangar gift or pledge transfer note.
+- Proof attachment later.
+
+### Safety Language
+
+Tournament prize pages should state:
+
+- Prizes are organizer-managed.
+- MusterDeck records the prize ledger and fulfillment status.
+- MusterDeck does not guarantee prize delivery.
+- Star Citizen names, ships, items, and related assets belong to their owners.
+- Hangar-attributed ships/equipment are tracked as user-entered prize records, not verified official inventory.
+
+### Data Boundary
+
+Do not store sensitive payment details, tax data, bank data, private addresses, or government IDs in the first version.
+
+For physical prizes, store only minimal organizer notes unless a future privacy/legal design explicitly approves more.
+
 ## First Build Recommendation
 
 The first implementation should be a planning and admin foundation, not a full Challonge replacement.
@@ -550,6 +668,16 @@ Recommended algorithm priority after the draft shell:
 5. Leaderboard/custom scoring.
 6. Two-stage group-to-finals.
 
+Recommended tournament S.P.O.I.L.S. priority:
+
+1. Prize catalog/list attached to tournament.
+2. Placement-based assignment.
+3. Manual award assignment.
+4. Claim status.
+5. Fulfillment status.
+6. Winner notification.
+7. Finalize and lock prize settlement.
+
 ## Open Decisions
 
 1. Confirm the pillar name: Proving Ground, The Circuit, Arena Deck, or another name.
@@ -559,3 +687,5 @@ Recommended algorithm priority after the draft shell:
 5. Decide whether in-person tournament entrants can be external guests without MusterDeck accounts.
 6. Decide whether participant self-reporting is allowed in the first build or admin-only score entry.
 7. Decide whether prizes/payouts connect to S.P.O.I.L.S. in the first version or later.
+8. Decide whether cash and physical prize tracking is private-admin-only at first or visible to participants.
+9. Decide what minimum claim/contact information is acceptable to store for physical prize fulfillment.

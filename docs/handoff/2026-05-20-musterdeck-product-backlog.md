@@ -279,6 +279,8 @@ Initial scope should include only:
 - Metals and pristine metals.
 - Wicklow favors and similar special reward items.
 - Sale proceeds from mining, salvage, cargo, contraband, or mixed activity.
+- Tournament prize records from Proving Ground.
+- Cash, physical, in-game, hangar equipment, and hangar ship prizes as organizer-managed award records.
 
 Out of initial scope:
 
@@ -306,6 +308,9 @@ Out of initial scope:
 - Preview final payout.
 - Finalize and lock/version the settlement.
 - Record payout history per user.
+- Create tournament prize settlements from Proving Ground.
+- Assign prizes by placement, leaderboard rank, category award, or admin selection.
+- Track prize claim and fulfillment status.
 
 ### S.P.O.I.L.S. Mockup Needs
 
@@ -334,6 +339,15 @@ Out of initial scope:
   - Virtual participant.
   - Percentage or fixed reserve.
   - Notes.
+- Tournament prize section:
+  - Prize.
+  - Type.
+  - Sponsor/source.
+  - Placement or award rule.
+  - Assigned winner/team.
+  - Claim status.
+  - Fulfillment status.
+  - Admin notes.
 
 ### S.P.O.I.L.S. Research Needed
 
@@ -344,6 +358,7 @@ Out of initial scope:
 - Valakar and Yormandi harvestable/reward items.
 - Wicklow favor and similar special items.
 - Which items have stable public value sources and which need manual value estimates.
+- Safe disclaimer language for organizer-managed cash, physical, and hangar-attributed tournament prizes.
 
 ## Proving Ground Tasks
 
@@ -430,7 +445,7 @@ Proving Ground journey:
 7. Scores are reported and confirmed.
 8. Winners advance, losers drop or move to the losers bracket.
 9. Standings publish during or after the event.
-10. Prizes or payouts can later flow into S.P.O.I.L.S.
+10. Tournament winnings can use a custom S.P.O.I.L.S. prize settlement for cash prizes, physical prizes, in-game items, hangar equipment, and hangar ships.
 
 ## Decisions To Make Next
 

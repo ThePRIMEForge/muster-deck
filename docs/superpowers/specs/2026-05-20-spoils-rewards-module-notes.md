@@ -62,6 +62,11 @@ The module should support:
 - Salvage operations.
 - Multiple ships or crew selling separately and reporting totals back.
 - Pooling proceeds and splitting them evenly or according to leadership rules.
+- Tournament winnings from Proving Ground.
+- Cash prizes.
+- Physical prizes.
+- In-game tournament prizes.
+- Star Citizen hangar-attributed equipment and ships recorded as organizer-managed awards.
 
 ## Initial Item Scope
 
@@ -73,6 +78,8 @@ Initial scope includes:
 - Rare items, including Apex Valakar Pearls and Apex Valakar Teeth.
 - Yormondi-related drops/items.
 - Mining and salvage sale totals.
+- Tournament prize records attached to Proving Ground.
+- Tournament prize fulfillment status.
 
 Out of scope for the first version:
 
@@ -133,6 +140,55 @@ The system should track:
 - Leadership approval decisions.
 - Approved/denied state, likely with an approval column or checkmark.
 
+## Tournament Prize Variant
+
+S.P.O.I.L.S. should support a tournament prize settlement created from Proving Ground.
+
+Unlike normal operation loot, tournament prize S.P.O.I.L.S. is driven by bracket/leaderboard placement or admin awards, not crew contribution.
+
+Prize categories:
+
+- Cash.
+- Physical item.
+- In-game item.
+- Hangar equipment.
+- Hangar ship.
+- aUEC / in-game currency equivalent.
+- Sponsor credit or custom award.
+
+Prize fields:
+
+- Prize name.
+- Prize category.
+- Description.
+- Sponsor/source.
+- Estimated value.
+- Quantity.
+- Placement or award rule.
+- Assigned winner/team.
+- Claim instructions.
+- Fulfillment method.
+- Fulfillment status.
+- Admin notes.
+
+Fulfillment states:
+
+- Announced.
+- Sponsored/pledged.
+- Received by organizer.
+- Assigned.
+- Claimed.
+- Fulfilled.
+- Disputed.
+- Cancelled.
+
+Safety boundary:
+
+- MusterDeck tracks organizer-entered prize records and fulfillment status.
+- MusterDeck should not guarantee prize delivery or imply custody/escrow.
+- Cash, physical prize, and hangar-attributed prize records should use careful disclaimer language.
+- The first version should not store sensitive payment details, tax data, bank data, private addresses, or government IDs.
+
 ## Payout Splits
 
 The module should calculate money splits from sold loot.
@@ -166,10 +222,11 @@ Likely integration points with the existing Fleet Manager app:
 - `assignments` for ship/team/role participation context.
 - Future authenticated profiles for cross-event reward history.
 - Ship catalog and source systems for ship-related item metadata and pricing references.
+- Proving Ground tournaments for placement-based prize assignments.
+- Proving Ground teams and participants for winner/recipient records.
 
 ## Recommended Next Step
 
 Continue design discovery with the unresolved pricing question:
 
 Should the spoils module use a shared leadership-maintained price catalog, per-list editable prices, or both?
-

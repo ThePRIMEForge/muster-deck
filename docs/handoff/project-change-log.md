@@ -2,6 +2,16 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Tournament Prize S.P.O.I.L.S.
+
+- Decision: Extend S.P.O.I.L.S. with a tournament prize settlement variant connected to Proving Ground.
+- Decision: Track cash prizes, physical prizes, in-game items, hangar-attributed equipment, hangar-attributed ships, claim status, and fulfillment status as organizer-managed award records.
+- Decision: Do not imply custody, escrow, prize delivery guarantee, official Star Citizen support, or Cloud Imperium Games involvement.
+- Decision: Do not store sensitive payment details, tax data, bank data, private addresses, or government IDs in the first version.
+- Reason: Proving Ground tournaments may award real-world and Star Citizen-related prizes, but prize tracking needs stronger legal/privacy boundaries than normal operation loot.
+- Files affected: `docs/superpowers/specs/2026-05-21-musterdeck-tournament-pillar-design.md`, `docs/superpowers/specs/2026-05-20-spoils-rewards-module-notes.md`, `docs/handoff/2026-05-20-musterdeck-product-backlog.md`, `docs/handoff/2026-05-20-start-here-next-chat.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Decide whether cash and physical prize tracking is private-admin-only at first or visible to participants, and define the minimum safe claim/contact data policy.
+
 ## 2026-05-21 - Tournament Pillar Draft
 
 - Decision: Draft a fourth MusterDeck pillar for tournament and competitive event management.

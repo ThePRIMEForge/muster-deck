@@ -124,6 +124,7 @@ Notifications:
 - Treat notifications as a first-class product system for phone/tablet use during live events.
 - Targets: individual, team, ship, role group, officers/command, entire event.
 - Channels: in-app notification center, PWA/mobile push, event message feed, optional Discord bridge later, email only for account/security events.
+- Tournament prize claim and fulfillment notifications should be added when Proving Ground connects to S.P.O.I.L.S.
 
 ## Pillar Notes
 
@@ -179,6 +180,7 @@ Initial scope:
 - Metals and pristine metals.
 - Wicklow favors and similar special reward items.
 - Sale proceeds from mining, salvage, cargo, contraband, or mixed activity.
+- Tournament winnings from Proving Ground, including cash prizes, physical prizes, in-game items, hangar equipment, and hangar ships as organizer-managed award records.
 
 Out of initial scope:
 
@@ -196,6 +198,7 @@ Core flows:
 - Crew can request specific items.
 - Quartermaster can approve item rewards and payout shares.
 - Support equal split, org-bank reserve, percent adjustments, fixed aUEC overrides, preview, finalize, lock/version, and payout history.
+- Support tournament prize settlements with placement-based awards, custom awards, claim status, and fulfillment status.
 
 Open pricing direction:
 

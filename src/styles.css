@@ -2150,8 +2150,7 @@ h3 {
   background: rgba(255, 255, 255, 0.035);
 }
 
-.identity-row-linked::after {
-  content: "Linked";
+.identity-status-chip {
   border: 1px solid rgba(74, 222, 128, 0.3);
   border-radius: 999px;
   padding: 3px 8px;

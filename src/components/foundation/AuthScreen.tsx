@@ -12,8 +12,12 @@ export function AuthScreen({ mode }: AuthScreenProps) {
       <p className="eyebrow">Account access</p>
       <h1>{title}</h1>
       <div className="foundation-form-panel">
-        <button type="button">{foundationCopy.auth.discord}</button>
-        <button type="button">{foundationCopy.auth.google}</button>
+        <button className="foundation-provider-button" type="button">
+          {foundationCopy.auth.discord}
+        </button>
+        <button className="foundation-provider-button" type="button">
+          {foundationCopy.auth.google}
+        </button>
         <label>
           <span>Email</span>
           <input type="email" placeholder="you@example.com" />

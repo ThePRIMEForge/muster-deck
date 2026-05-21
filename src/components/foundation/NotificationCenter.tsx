@@ -23,7 +23,10 @@ export function NotificationCenter() {
       </button>
       <div className="notification-list">
         {demoNotifications.map((notification) => (
-          <article className={notification.read ? 'notification-card read' : 'notification-card'} key={notification.id}>
+          <article
+            className={`notification-card ${notification.read ? 'read' : 'unread'} notification-${notification.category}`}
+            key={notification.id}
+          >
             <small>{categoryLabels[notification.category]}</small>
             <strong>{notification.title}</strong>
             <span>{notification.body}</span>

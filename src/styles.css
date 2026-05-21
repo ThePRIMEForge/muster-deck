@@ -2100,20 +2100,57 @@ h3 {
 .foundation-form-panel label {
   display: grid;
   gap: 6px;
+  color: var(--md-text-secondary);
+  font-size: 0.86rem;
+  font-weight: 800;
 }
 
 .foundation-form-panel input {
   width: 100%;
   border: 1px solid var(--md-border-strong);
   border-radius: 7px;
-  padding: 10px 12px;
+  padding: 11px 12px;
   background: var(--md-bg-elevated);
+  color: var(--md-text);
+}
+
+.foundation-form-panel input:focus {
+  border-color: var(--md-border-caution);
+  box-shadow: 0 0 0 3px var(--md-focus);
+  outline: 0;
+}
+
+.foundation-provider-button {
+  border: 1px solid var(--md-border-subtle);
+  background: rgba(255, 255, 255, 0.045);
   color: var(--md-text);
 }
 
 .form-note,
 .identity-row {
   color: var(--md-text-secondary);
+}
+
+.identity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  border: 1px solid var(--md-border-subtle);
+  border-radius: 7px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.identity-row-linked::after {
+  content: "Linked";
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: var(--md-success);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .admin-table {
@@ -2127,12 +2164,23 @@ h3 {
   gap: 10px;
   padding: 12px;
   border-top: 1px solid rgba(245, 240, 230, 0.08);
+  color: var(--md-text-secondary);
+}
+
+.admin-row strong {
+  color: var(--md-text);
 }
 
 .admin-row.header {
   border-top: 0;
   color: var(--md-mustard-hot);
   font-weight: 900;
+  text-transform: uppercase;
+}
+
+.admin-row-restricted,
+.admin-row-suspended {
+  box-shadow: inset 4px 0 0 var(--md-caution-orange);
 }
 
 .notification-list {
@@ -2145,6 +2193,13 @@ h3 {
   display: grid;
   gap: 5px;
   padding: 14px;
+}
+
+.notification-card.unread {
+  border-color: var(--md-border-caution);
+  box-shadow:
+    inset 4px 0 0 var(--md-mustard),
+    var(--md-inset-highlight);
 }
 
 .notification-card.read {

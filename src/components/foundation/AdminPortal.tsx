@@ -17,7 +17,7 @@ export function AdminPortal() {
           <span>Notes</span>
         </div>
         {demoAdminUsers.map((user) => (
-          <div className="admin-row" role="row" key={user.id}>
+          <div className={`admin-row admin-row-${user.accountStatus}`} role="row" key={user.id}>
             <strong>{user.displayName}</strong>
             <span>{user.accountStatus}</span>
             <span>{user.discordLinked ? 'Linked' : 'Not linked'}</span>

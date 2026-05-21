@@ -24,8 +24,12 @@ export function AccountSettings({ viewer }: AccountSettingsProps) {
           <span>RSI handle</span>
           <input placeholder="RSI handle" />
         </label>
-        <div className="identity-row">Discord linked</div>
-        <div className="identity-row">Google linked</div>
+        <div className="identity-row identity-row-linked">
+          <span>Discord linked</span>
+        </div>
+        <div className="identity-row identity-row-linked">
+          <span>Google linked</span>
+        </div>
         <button className="foundation-primary" type="button">
           Save changes
         </button>

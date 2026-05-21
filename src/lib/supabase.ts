@@ -7,6 +7,7 @@ import {
   type FleetEventShipRequestSummaryRow,
   type FleetSetupPosition,
 } from './fleetSetup';
+import type { PersistedMemberAssignment } from './fleetMembers';
 import type { FleetShipRequest, StaffingProfile, ShipCatalogRow, ShipStaffingTemplateSummaryRow } from './types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -257,6 +258,104 @@ export async function loadDemoFleetLockState(): Promise<DemoFleetLockState> {
   }
 
   return data as DemoFleetLockState;
+}
+
+export async function loadDemoMemberAssignments(): Promise<PersistedMemberAssignment[]> {
+  if (!supabase) {
+    return [];
+  }
+
+  const fleetEventId = await ensureDemoFleetEvent();
+
+  if (!fleetEventId) {
+    return [];
+  }
+
+  const { data: assignments, error: assignmentError } = await supabase
+    .from('assignments')
+    .select(
+      [
+        'id',
+        'fleet_event_ship_request_id',
+        'fleet_event_position_id',
+        'member_id',
+        'status',
+      ].join(','),
+    )
+    .eq('fleet_event_id', fleetEventId)
+    .eq('assignment_type', 'ship_position')
+    .eq('status', 'assigned');
+
+  if (assignmentError) {
+    throw assignmentError;
+  }
+
+  const assignmentRows = (assignments ?? []) as unknown as FleetEventAssignmentRow[];
+  const memberIds = [...new Set(assignmentRows.map((assignment) => assignment.member_id).filter(Boolean))];
+  const requestIds = [
+    ...new Set(assignmentRows.map((assignment) => assignment.fleet_event_ship_request_id).filter(Boolean)),
+  ];
+
+  if (memberIds.length === 0 || requestIds.length === 0) {
+    return [];
+  }
+
+  const [{ data: members, error: memberError }, { data: requests, error: requestError }] =
+    await Promise.all([
+      supabase.from('members').select(['id', 'display_name'].join(',')).in('id', memberIds),
+      supabase
+        .from('fleet_event_ship_request_summary')
+        .select(
+          [
+            'id',
+            'team_name',
+            'ship_name',
+            'resolved_primary_category_key',
+            'resolved_primary_category_name',
+          ].join(','),
+        )
+        .in('id', requestIds),
+    ]);
+
+  if (memberError) {
+    throw memberError;
+  }
+
+  if (requestError) {
+    throw requestError;
+  }
+
+  const membersById = new Map(
+    ((members ?? []) as unknown as FleetEventMemberRow[]).map((member) => [member.id, member]),
+  );
+  const requestsById = new Map(
+    ((requests ?? []) as unknown as Array<{
+      id: string;
+      team_name: string | null;
+      ship_name: string | null;
+      resolved_primary_category_key: string | null;
+      resolved_primary_category_name: string | null;
+    }>).map((request) => [request.id, request]),
+  );
+
+  return assignmentRows.flatMap((assignment) => {
+    const member = membersById.get(assignment.member_id ?? '');
+    const request = requestsById.get(assignment.fleet_event_ship_request_id);
+
+    if (!member || !request) {
+      return [];
+    }
+
+    return [
+      {
+        displayName: member.display_name,
+        requestId: assignment.fleet_event_ship_request_id,
+        team: request.team_name ?? 'Unassigned',
+        shipName: request.ship_name ?? `${request.resolved_primary_category_name ?? 'Ship'} Request`,
+        categoryKey: (request.resolved_primary_category_key ?? 'medium') as PersistedMemberAssignment['categoryKey'],
+      },
+    ];
+  });
 }
 
 export async function createDemoFleetShipRequest({

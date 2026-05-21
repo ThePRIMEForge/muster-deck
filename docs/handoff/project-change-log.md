@@ -20,6 +20,14 @@ Use this file for concise product, architecture, naming, visual, and organizatio
 - Files affected: `supabase/migrations/20260521220000_demo_fleet_setup_persistence.sql`, `supabase/tests/fleet_request_helpers_smoke.sql`, `src/lib/supabase.ts`, `src/App.tsx`, `docs/superpowers/plans/2026-05-21-fleet-command-lock-persistence.md`, `docs/handoff/project-change-log.md`.
 - Follow-up: Add officer-scoped policies and audit/message records when real authenticated event permissions replace demo helpers.
 
+## 2026-05-21 - Fleet Command Persisted Member Rail Hydration
+
+- Decision: Hydrate fallback demo members from persisted ship-position assignments by display name when the saved demo event is active.
+- Decision: Clear stale fallback assignment ids when persisted assignment data is loaded.
+- Reason: Saved crew assignments need to appear consistently in both the ship roster and the member rail after reload.
+- Files affected: `src/lib/fleetMembers.ts`, `scripts/fleet-command/fleetMembers.test.ts`, `src/lib/supabase.ts`, `src/App.tsx`, `docs/superpowers/plans/2026-05-21-fleet-command-member-assignment-hydration.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Replace display-name matching with real authenticated member/profile IDs when account-backed event membership is connected.
+
 ## 2026-05-21 - Fleet Command Demo Assignment Persistence
 
 - Decision: Persist prototype officer drag-and-drop crew assignments against the saved `DEMO-DRAFT` Fleet Command event.

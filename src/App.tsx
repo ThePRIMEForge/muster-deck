@@ -40,6 +40,7 @@ import {
   buildPresetPositions,
   crewTargetForPositions,
 } from './lib/fleetSetup';
+import { hydrateMembersFromPersistedAssignments } from './lib/fleetMembers';
 import { demoFoundationViewer } from './lib/foundationData';
 import type { FoundationRouteId } from './lib/foundationTypes';
 import {
@@ -55,6 +56,7 @@ import {
   createDemoFleetShipRequest,
   hasSupabaseConfig,
   loadDemoFleetLockState,
+  loadDemoMemberAssignments,
   loadDemoFleetSetup,
   loadShipCatalog,
   loadShipStaffingTemplates,
@@ -401,8 +403,9 @@ function App() {
       loadShipStaffingTemplates(),
       loadDemoFleetSetup(),
       loadDemoFleetLockState(),
+      loadDemoMemberAssignments(),
     ])
-      .then(([catalogRows, staffingRows, persistedRequests, lockState]) => {
+      .then(([catalogRows, staffingRows, persistedRequests, lockState, persistedAssignments]) => {
         if (!active) {
           return;
         }
@@ -410,6 +413,9 @@ function App() {
         setShipCatalog(catalogRows);
         setShipStaffingTemplates(staffingRows);
         setFleetRequests(persistedRequests);
+        setMembers((current) =>
+          hydrateMembersFromPersistedAssignments(current, persistedAssignments),
+        );
         setMasterLocked(lockState.masterLocked);
         setLockedTeams(
           Object.fromEntries(lockState.teams.map((team) => [team.teamKey, team.locked])),
@@ -808,12 +814,7 @@ function App() {
     if (persistedFleetSetupActive) {
       try {
         await removeDemoFleetShipRequest(removalId);
-        await reloadPersistedFleetSetup();
-        setMembers((current) =>
-          current.map((member) =>
-            member.assignedRequestId === removalId ? { ...member, assignedRequestId: undefined } : member,
-          ),
-        );
+        await reloadPersistedFleetRosterState();
         setExpandedRequests((current) => {
           const rest = { ...current };
           delete rest[removalId];
@@ -852,6 +853,16 @@ function App() {
   async function reloadPersistedFleetSetup() {
     const persistedRequests = await loadDemoFleetSetup();
     setFleetRequests(persistedRequests);
+  }
+
+  async function reloadPersistedFleetRosterState() {
+    const [persistedRequests, persistedAssignments] = await Promise.all([
+      loadDemoFleetSetup(),
+      loadDemoMemberAssignments(),
+    ]);
+
+    setFleetRequests(persistedRequests);
+    setMembers((current) => hydrateMembersFromPersistedAssignments(current, persistedAssignments));
   }
 
   function localAddFleetLine() {
@@ -996,7 +1007,7 @@ function App() {
         }
       }
 
-      await reloadPersistedFleetSetup();
+      await reloadPersistedFleetRosterState();
       setFilter('all');
       pushMessage({
         title: 'Fleet roster saved',
@@ -1033,12 +1044,7 @@ function App() {
     if (persistedFleetSetupActive) {
       try {
         await moveDemoFleetShipRequestToTeam({ requestId, teamKey });
-        await reloadPersistedFleetSetup();
-        setMembers((current) =>
-          current.map((member) =>
-            member.assignedRequestId === requestId ? { ...member, team: teamLabel(teamKey) } : member,
-          ),
-        );
+        await reloadPersistedFleetRosterState();
       } catch {
         setCatalogState('error');
         setPersistedFleetSetupActive(false);
@@ -1316,19 +1322,7 @@ function App() {
         primaryRole: member.primaryRole,
       });
 
-      setMembers((current) =>
-        current.map((candidate) =>
-          candidate.id === memberId
-            ? {
-                ...candidate,
-                assignedRequestId: requestId,
-                team: targetRequest.team,
-                shipOffer: targetRequest.categoryKey === 'marines' ? undefined : targetRequest.shipName,
-              }
-            : candidate,
-        ),
-      );
-      await reloadPersistedFleetSetup();
+      await reloadPersistedFleetRosterState();
       setExpandedRequests((current) => ({ ...current, [requestId]: true }));
       setPendingAssignments((current) => ({ ...current, [memberId]: requestId }));
       pushMessage({

@@ -2262,6 +2262,11 @@ h3 {
 @media (max-width: 760px) {
   .foundation-header {
     align-items: flex-start;
+    gap: 10px;
+  }
+
+  .foundation-brand {
+    max-width: calc(100vw - 190px);
   }
 
   .foundation-nav {
@@ -2272,7 +2277,19 @@ h3 {
     display: inline-flex;
   }
 
+  .foundation-status-strip {
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .foundation-status-chip {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .foundation-page {
+    width: min(100% - 24px, 1180px);
     padding: 28px 0;
   }
 
@@ -2286,6 +2303,10 @@ h3 {
   }
 
   .pillar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-row {
     grid-template-columns: 1fr;
   }
 

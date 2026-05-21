@@ -91,7 +91,7 @@ These are needed early for navigation and mockups.
 
 ### Tier 2: Action And Decision Icons
 
-These are shared across all three pillars.
+These are shared across all four pillars.
 
 - Check mark.
 - X/close.

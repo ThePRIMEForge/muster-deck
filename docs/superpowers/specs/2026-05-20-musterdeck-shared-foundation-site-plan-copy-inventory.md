@@ -6,11 +6,12 @@ Date: 2026-05-20
 
 This document defines the first shared foundation workstream for MusterDeck. It covers the site/app structure, first-build screens, major user flows, and copy inventory needed before implementation begins.
 
-MusterDeck is a Star Citizen operations platform with three connected product pillars:
+MusterDeck is a Star Citizen operations platform with four connected product pillars:
 
 - Rally Point: event discovery and LFG.
 - Fleet Command: operation planning, staffing, and live command.
 - S.P.O.I.L.S.: settlement, payouts, inventory, loot, and shares.
+- Proving Ground: tournament signup, brackets, waves, standings, and score reporting.
 
 The selected planning approach is a hybrid map: define the full platform, but mark each area as Build Now, Draft Now, or Later. The first build focuses on the shared foundation and Fleet Command because those unlock persistent users, permissions, operations, and later Rally Point/S.P.O.I.L.S. flows.
 
@@ -32,6 +33,7 @@ flowchart TD
   Hub --> Rally["Rally Point"]
   Hub --> Fleet["Fleet Command"]
   Hub --> Spoils["S.P.O.I.L.S."]
+  Hub --> Proving["Proving Ground"]
   Fleet --> EventSettings["Event Settings"]
   EventSettings --> Templates["Templates / Duplicate Event"]
   Templates --> Setup["Fleet Setup"]
@@ -51,7 +53,7 @@ Purpose: explain MusterDeck quickly, create trust, and route users to login, sig
 Primary content:
 
 - Brand name and short product promise.
-- Three pillar summary.
+- Four pillar summary.
 - Calls to action for Sign up, Log in, and Browse Rally Point.
 - Fan-project disclaimer in footer.
 - Version/status strip for module and Star Citizen data versions.
@@ -80,13 +82,14 @@ Primary content:
 
 ### Logged-In Hub
 
-Purpose: route authenticated users into the three pillars and summarize urgent activity.
+Purpose: route authenticated users into the four pillars and summarize urgent activity.
 
 Primary content:
 
 - Rally Point entry.
 - Fleet Command entry.
 - S.P.O.I.L.S. entry.
+- Proving Ground entry.
 - Recent activity.
 - Pending approvals/invites.
 - Joined/hosted operations.
@@ -144,6 +147,7 @@ Primary content:
 - Rally Point application status.
 - Fleet Command roster/status changes.
 - S.P.O.I.L.S. settlement and payout updates.
+- Proving Ground registration, match, score, and advancement updates.
 - Notification preferences link.
 
 ### Footer / Legal Shell
@@ -258,6 +262,19 @@ Screens to draft:
 
 S.P.O.I.L.S. should be drafted now because its terms, roles, notification events, and profile history fields affect the shared foundation.
 
+### Proving Ground
+
+Screens to draft:
+
+- Tournament Overview.
+- Tournament Signup.
+- Tournament Admin Setup.
+- Bracket / Waves.
+- Score Desk.
+- Standings.
+
+Proving Ground should be drafted now because tournament registration, team identities, match notifications, score reporting, and prize/payout handoff affect the shared account, notification, admin, and S.P.O.I.L.S. foundation.
+
 ### Cross-App Supporting Screens
 
 Screens to draft:
@@ -300,6 +317,7 @@ Initial labels:
 - Rally Point
 - Fleet Command
 - S.P.O.I.L.S.
+- Proving Ground
 - Log in
 - Sign up
 - Account
@@ -318,7 +336,7 @@ Required copy:
 - Primary CTA.
 - Secondary CTA.
 - Browse CTA.
-- Three pillar descriptions.
+- Four pillar descriptions.
 - Cross-pillar workflow explanation.
 - Trust/disclaimer block.
 - Footer legal links.
@@ -366,7 +384,7 @@ Initial labels:
 Required copy:
 
 - Welcome heading.
-- Three pillar card titles and descriptions.
+- Four pillar card titles and descriptions.
 - Recent activity labels.
 - Empty states.
 - Pending invite labels.
@@ -636,13 +654,13 @@ Recommended next threads:
 3. Fleet Command implementation: event settings, templates, setup, operation, crew views.
 4. Rally Point design.
 5. S.P.O.I.L.S. design.
+6. Proving Ground tournament design.
 6. Notifications, chat, and access rules.
 
 ## Acceptance Checklist
 
 - The first build includes shared foundation, admin portal foundation, Fleet Command event settings, and event templates.
-- Rally Point and S.P.O.I.L.S. are represented but not forced into the first implementation slice.
+- Rally Point, S.P.O.I.L.S., and Proving Ground are represented but not forced into the first implementation slice.
 - Copy inventory identifies all major copy surfaces needed before writing production copy.
 - Legal/fan-project copy is visible across public and authenticated screens.
 - Brand guide and brand voice are treated as the next required artifact before final copywriting.
-

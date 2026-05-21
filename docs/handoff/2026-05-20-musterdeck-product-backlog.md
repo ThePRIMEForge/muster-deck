@@ -4,12 +4,12 @@ Date: 2026-05-20
 
 ## Recommended Starting Point
 
-Start with the shared shell and identity foundation before building the three pillars deeply.
+Start with the shared shell and identity foundation before building the four pillars deeply.
 
 Reason:
 
-- Landing page, welcome screen, signup/login, account settings, admin portal, footer/legal, and the post-login pillar selector are shared by Rally Point, Fleet Command, and S.P.O.I.L.S.
-- Rally Point and S.P.O.I.L.S. both need profiles, permissions, verification, and notification preferences.
+- Landing page, welcome screen, signup/login, account settings, admin portal, footer/legal, and the post-login pillar selector are shared by Rally Point, Fleet Command, S.P.O.I.L.S., and Proving Ground.
+- Rally Point, S.P.O.I.L.S., and Proving Ground all need profiles, permissions, verification, and notification preferences.
 - Fleet Command already has the most backend/prototype work, so the biggest missing unlock is persistent users and navigation.
 
 Project hygiene reference:
@@ -28,7 +28,8 @@ Recommended first build sequence:
 6. Admin portal foundation.
 7. Rally Point design and data model.
 8. S.P.O.I.L.S. mockup and data model.
-9. Flow between Rally Point, Fleet Command, and S.P.O.I.L.S.
+9. Proving Ground tournament design and data model.
+10. Flow between Rally Point, Fleet Command, S.P.O.I.L.S., and Proving Ground.
 
 ## Foundation Tasks
 
@@ -41,6 +42,7 @@ Recommended first build sequence:
   - Rally Point version.
   - Fleet Command version.
   - S.P.O.I.L.S. version.
+  - Proving Ground version.
   - Star Citizen patch/data version the app has been updated to.
   - Optional last catalog sync timestamp.
 - Add responsive app shell for desktop, tablet, and phone.
@@ -50,15 +52,16 @@ Recommended first build sequence:
 ### Landing And Welcome
 
 - Public landing page explaining MusterDeck.
-- Short descriptions of the three pillars:
+- Short descriptions of the four pillars:
   - Rally Point: find or publish operations.
   - Fleet Command: plan and run organization events.
   - S.P.O.I.L.S.: settle loot, payouts, and rewards.
+  - Proving Ground: run tournaments, brackets, scores, and standings.
 - Calls to action:
   - Sign in.
   - Create account.
   - Browse public Rally Point listings.
-  - Learn how the three pillars connect.
+  - Learn how the four pillars connect.
 
 ### Authentication
 
@@ -111,15 +114,17 @@ Recommended first build sequence:
 ### Logged-In Home
 
 - Main hub after login.
-- Three large but operational pillar entries:
+- Four large but operational pillar entries:
   - Rally Point.
   - Fleet Command.
   - S.P.O.I.L.S.
+  - Proving Ground.
 - Short descriptions of each pillar.
 - Explain how they connect:
   - Rally Point recruits participants.
   - Fleet Command runs the operation.
   - S.P.O.I.L.S. settles rewards after completion.
+  - Proving Ground runs structured competitive events and can feed prizes or results into S.P.O.I.L.S.
 - Show recent activity:
   - Joined operations.
   - Hosted operations.
@@ -340,6 +345,63 @@ Out of initial scope:
 - Wicklow favor and similar special items.
 - Which items have stable public value sources and which need manual value estimates.
 
+## Proving Ground Tasks
+
+Current design spec:
+
+- `docs/superpowers/specs/2026-05-21-musterdeck-tournament-pillar-design.md`
+
+Purpose:
+
+- Tournament signup, bracket/wave management, score reporting, standings, and competitive event administration.
+
+Recommended pillar name:
+
+- Proving Ground.
+
+Core tournament modes:
+
+- 1v1.
+- 2v2.
+- 3v3.
+- 4v4.
+- 5v5.
+- Custom team size.
+
+Core formats:
+
+- Single elimination.
+- Double elimination with losers bracket and optional grand-final reset.
+- Round robin.
+- Swiss.
+- Leaderboard/custom scoring.
+- Two-stage group-to-finals later.
+
+Core flows:
+
+- Create tournament.
+- Open signup.
+- Register individuals or teams.
+- Approve, waitlist, reject, drop, or disqualify entrants.
+- Check in teams.
+- Seed randomly, manually, or by configured rules.
+- Generate match waves.
+- Assign station, room, table, or Discord voice channel.
+- Enter and confirm scores.
+- Advance winners and move losers when the format supports it.
+- Publish brackets, standings, and announcements.
+
+Admin panel needs:
+
+- Setup.
+- Registration.
+- Seeding.
+- Bracket / Waves.
+- Score Desk.
+- Standings.
+- Announcements.
+- Settings.
+
 ## Cross-Pillar Flow
 
 Recommended product journey:
@@ -357,10 +419,25 @@ Recommended product journey:
 11. Crew request items or receive payout shares.
 12. Settlement is finalized and saved to user history.
 
+Proving Ground journey:
+
+1. Organizer creates a tournament.
+2. Organizer chooses team size, format, venue type, registration rules, and score rules.
+3. Players or teams sign up.
+4. Admin approves and checks in entrants.
+5. Admin seeds or randomizes the bracket.
+6. Admin publishes waves, stations, rooms, or Discord channels.
+7. Scores are reported and confirmed.
+8. Winners advance, losers drop or move to the losers bracket.
+9. Standings publish during or after the event.
+10. Prizes or payouts can later flow into S.P.O.I.L.S.
+
 ## Decisions To Make Next
 
 1. Should guests be allowed to apply to Rally Point listings by default, or only when the host allows it?
 2. Should Rally Point allow public community listings immediately, or only organization-owned listings at first?
 3. Should the first S.P.O.I.L.S. mockup use equal split plus org bank only, or include per-user percentage/fixed adjustments immediately?
 4. Should the admin portal be site-owner only at first, or support organization admins too?
-5. Should the next visual mockup be the logged-in hub, Rally Point listing detail, or S.P.O.I.L.S. settlement screen?
+5. Should the next visual mockup be the logged-in hub, Rally Point listing detail, S.P.O.I.L.S. settlement screen, or Proving Ground tournament admin?
+6. Should the tournament pillar be called Proving Ground, The Circuit, Arena Deck, or another name?
+7. Should first-version tournament score reporting be admin-only, or allow participant self-reporting with admin confirmation?

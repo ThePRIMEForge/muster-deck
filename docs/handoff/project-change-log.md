@@ -2,6 +2,15 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Tournament Pillar Draft
+
+- Decision: Draft a fourth MusterDeck pillar for tournament and competitive event management.
+- Decision: Use `Proving Ground` as the recommended working name pending review.
+- Decision: Scope the pillar around tournament signup, individual/team registration, 1v1 through 5v5 and custom team sizes, single elimination, double elimination, round robin, Swiss, leaderboard scoring, match waves, standings, and admin score/progression tools.
+- Reason: Tournament management complements Rally Point, Fleet Command, and S.P.O.I.L.S. by covering structured competitive events, Discord-hosted brackets, in-person events, and leaderboard-driven competitions.
+- Files affected: `docs/superpowers/specs/2026-05-21-musterdeck-tournament-pillar-design.md`, `docs/handoff/2026-05-20-start-here-next-chat.md`, `docs/handoff/2026-05-20-musterdeck-product-backlog.md`, `docs/handoff/2026-05-21-day-3-plan.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Confirm the pillar name and whether Proving Ground is a top-level pillar or an Event Management sub-module before adding it to the implementation plan.
+
 ## 2026-05-21 - Project Operating Rules
 
 - Decision: Add operating rules for anti-AI copy review, documentation folder discipline, version-history hygiene, archive/reference handling, chat handoffs, periodic context review, major decision logging, and deployable package cleanliness.

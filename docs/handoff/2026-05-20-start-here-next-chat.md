@@ -13,17 +13,18 @@ Read this first tomorrow, then use the linked docs only when deeper detail is ne
 
 MusterDeck is a Star Citizen operations platform for players and larger organizations.
 
-It has three connected but independently useful pillars:
+It has four connected but independently useful pillars:
 
 - Rally Point: public/private LFG, event discovery, applications, ship offers, and role-based joining.
 - Fleet Command: operation planning, ship requests, staffing, teams, assignments, live command, and officer tools.
 - S.P.O.I.L.S.: Settlement, Payouts, Operations, Inventory, Loot, and Shares.
+- Proving Ground: tournament signup, brackets, waves, standings, score reporting, and competitive event administration.
 
 The S.P.O.I.L.S. manager role is Quartermaster.
 
 The current domain direction is `www.muster-deck.com`.
 
-The recommended architecture remains one shared identity, profile, permission, notification, and ship/catalog foundation feeding all three pillars.
+The recommended architecture remains one shared identity, profile, permission, notification, and catalog foundation feeding all four pillars.
 
 ## Current Repo Baseline
 
@@ -114,6 +115,7 @@ Header/version strip:
 - Show Rally Point version.
 - Show Fleet Command version.
 - Show S.P.O.I.L.S. version.
+- Show Proving Ground version.
 - Show Star Citizen patch/data version.
 - Later, show ship catalog sync timestamp and S.P.O.I.L.S. item/catalog sync timestamp.
 
@@ -198,6 +200,31 @@ Core flows:
 Open pricing direction:
 
 - Use both a shared default catalog and per-list overrides.
+
+### Proving Ground
+
+Purpose: tournament and competitive event management for Discord-hosted, in-person, hybrid, and community events.
+
+Initial scope:
+
+- Tournament signup page.
+- Individual and team registration.
+- Team sizes: 1v1, 2v2, 3v3, 4v4, 5v5, and custom.
+- Formats: single elimination, double elimination, round robin, Swiss, leaderboard, and later two-stage group-to-finals.
+- Admin score desk for reporting, confirming, correcting, and disputing scores.
+- Match waves for scheduling groups of matches.
+- Random, manual, and seeded pairings.
+- Optional losers bracket through double elimination.
+- Standings and tie-break rules.
+- Discord and physical venue fields.
+
+Current design spec:
+
+- `docs/superpowers/specs/2026-05-21-musterdeck-tournament-pillar-design.md`
+
+Recommended naming direction:
+
+- Use `Proving Ground` unless a later review chooses a stronger fourth-pillar name.
 
 ## Visual Direction
 
@@ -329,12 +356,15 @@ Recommended implementation branch when coding starts:
 ## Open Decisions To Keep
 
 - Should the logged-in home be called Operations Hub or Command Deck?
+- Should the tournament pillar name be Proving Ground, The Circuit, Arena Deck, or another name?
+- Should tournaments be a fourth top-level pillar or a sub-module under Rally Point/Event Management?
 - Should the first app shell mockup focus on the hub, Rally Point listing detail, or S.P.O.I.L.S. settlement screen?
 - Should public Rally Point listings support non-org community events immediately, or only approved org-hosted listings at first?
 - Should RSI verification be required for officers and restricted events, or only available as a trust signal?
 - Should S.P.O.I.L.S. first build support equal split plus org bank only, or include per-user percentage/fixed adjustments immediately?
 - Should Quartermaster be available to any event owner, or only to users with special Quartermaster/officer permission?
 - Should push notifications be implemented early as a PWA requirement, or after core event flows are wired to Supabase?
+- Should first-version tournament score reporting be admin-only or allow participant self-reporting with admin confirmation?
 
 ## Source Docs For Deeper Detail
 
@@ -351,4 +381,5 @@ Recommended implementation branch when coding starts:
 - `docs/superpowers/specs/2026-05-20-account-access-notifications-chat-design.md`
 - `docs/superpowers/specs/2026-05-20-musterdeck-shared-foundation-site-plan-copy-inventory.md`
 - `docs/superpowers/specs/2026-05-20-musterdeck-brand-voice-guide.md`
+- `docs/superpowers/specs/2026-05-21-musterdeck-tournament-pillar-design.md`
 - `docs/superpowers/plans/2026-05-20-shared-foundation-implementation.md`

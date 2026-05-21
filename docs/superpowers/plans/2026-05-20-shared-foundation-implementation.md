@@ -30,6 +30,7 @@ Separate follow-up plans should cover:
 - Real Supabase auth integration and OAuth callback behavior.
 - Rally Point production screens.
 - S.P.O.I.L.S. production screens.
+- Proving Ground tournament production screens.
 - Push notifications and activity chat.
 
 ## File Structure
@@ -166,9 +167,10 @@ export type FoundationRouteId =
   | 'admin'
   | 'rally-browse'
   | 'fleet-command'
-  | 'spoils';
+  | 'spoils'
+  | 'proving-ground';
 
-export type FoundationModuleKey = 'rally_point' | 'fleet_command' | 'spoils';
+export type FoundationModuleKey = 'rally_point' | 'fleet_command' | 'spoils' | 'proving_ground';
 
 export type AccountState =
   | 'guest'
@@ -281,6 +283,14 @@ export const appRoutes: FoundationRoute[] = [
     requiresAuth: true,
     buildPriority: 'draft_now',
   },
+  {
+    id: 'proving-ground',
+    label: 'Proving Ground',
+    module: 'proving_ground',
+    public: false,
+    requiresAuth: true,
+    buildPriority: 'draft_now',
+  },
 ];
 
 export function isSignedIn(viewer: FoundationViewer) {
@@ -361,10 +371,11 @@ import {
   prohibitedOfficialPhrases,
 } from '../../src/lib/foundationCopy.ts';
 
-test('foundation copy includes all three product pillars', () => {
+test('foundation copy includes all four product pillars', () => {
   assert.equal(moduleSummaries.rallyPoint.title, 'Rally Point');
   assert.equal(moduleSummaries.fleetCommand.title, 'Fleet Command');
   assert.equal(moduleSummaries.spoils.title, 'S.P.O.I.L.S.');
+  assert.equal(moduleSummaries.provingGround.title, 'Proving Ground');
 });
 
 test('landing copy respects broad combat and non-combat positioning', () => {
@@ -432,12 +443,17 @@ export const moduleSummaries = {
     action: 'Settle rewards',
     description: 'Log the haul, approve claims, and settle shares after the job is done.',
   },
+  provingGround: {
+    title: 'Proving Ground',
+    action: 'Run a tournament',
+    description: 'Open signups, seed brackets, report scores, and publish standings.',
+  },
 } as const;
 
 export const foundationCopy = {
   landing: {
     heroTitle: 'Rally, command, settle.',
-    heroSubtitle: "Coordinate crews, cargo, combat, and payouts across the 'verse.",
+    heroSubtitle: "Coordinate crews, cargo, combat, tournaments, and payouts across the 'verse.",
     primaryCta: 'Create account',
     secondaryCta: 'Browse Rally Point',
     loginCta: 'Log in',
@@ -892,6 +908,7 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
         <span>Rally Point v0.1</span>
         <span>Fleet Command v0.1</span>
         <span>S.P.O.I.L.S. v0.1</span>
+        <span>Proving Ground v0.1</span>
         <span>Star Citizen data: 4.8.0-LIVE.11825000</span>
       </div>
 
@@ -917,7 +934,7 @@ export const foundationRouteIds = appRoutes.map((route) => route.id);
 Create `src/components/foundation/PublicLanding.tsx`:
 
 ```tsx
-import { ArrowRight, ClipboardList, Coins, Radio } from 'lucide-react';
+import { ArrowRight, ClipboardList, Coins, Radio, Trophy } from 'lucide-react';
 import { foundationCopy, moduleSummaries } from '../../lib/foundationCopy';
 import type { FoundationRouteId } from '../../lib/foundationTypes';
 
@@ -958,6 +975,11 @@ export function PublicLanding({ onRouteChange }: PublicLandingProps) {
           <Coins size={22} />
           <h2>{moduleSummaries.spoils.title}</h2>
           <p>{moduleSummaries.spoils.description}</p>
+        </article>
+        <article>
+          <Trophy size={22} />
+          <h2>{moduleSummaries.provingGround.title}</h2>
+          <p>{moduleSummaries.provingGround.description}</p>
         </article>
       </div>
     </section>
@@ -1009,7 +1031,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 `src/components/foundation/OperationsHub.tsx`:
 
 ```tsx
-import { ClipboardList, Coins, Radio } from 'lucide-react';
+import { ClipboardList, Coins, Radio, Trophy } from 'lucide-react';
 import { foundationCopy, moduleSummaries } from '../../lib/foundationCopy';
 import type { FoundationRouteId, FoundationViewer } from '../../lib/foundationTypes';
 
@@ -1039,6 +1061,11 @@ export function OperationsHub({ viewer, onRouteChange }: OperationsHubProps) {
           <Coins size={22} />
           <strong>{moduleSummaries.spoils.action}</strong>
           <span>{moduleSummaries.spoils.description}</span>
+        </button>
+        <button type="button" onClick={() => onRouteChange('proving-ground')}>
+          <Trophy size={22} />
+          <strong>{moduleSummaries.provingGround.action}</strong>
+          <span>{moduleSummaries.provingGround.description}</span>
         </button>
       </div>
       <div className="activity-grid">
@@ -1286,12 +1313,19 @@ with:
 Before the final Fleet Command return, add:
 
 ```tsx
-  if (foundationRoute === 'rally-browse' || foundationRoute === 'spoils') {
+  if (foundationRoute === 'rally-browse' || foundationRoute === 'spoils' || foundationRoute === 'proving-ground') {
+    const draftTitle =
+      foundationRoute === 'rally-browse'
+        ? 'Rally Point'
+        : foundationRoute === 'spoils'
+          ? 'S.P.O.I.L.S.'
+          : 'Proving Ground';
+
     return (
       <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
         <section className="foundation-page narrow-page">
           <p className="eyebrow">Draft Now</p>
-          <h1>{foundationRoute === 'rally-browse' ? 'Rally Point' : 'S.P.O.I.L.S.'}</h1>
+          <h1>{draftTitle}</h1>
           <p className="foundation-subtitle">
             This module is planned and will be built after the shared foundation and Fleet Command core are stable.
           </p>

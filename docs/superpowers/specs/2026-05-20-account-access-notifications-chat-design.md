@@ -4,11 +4,12 @@ Date: 2026-05-20
 
 ## Goal
 
-Build the shared backend foundation for MusterDeck accounts across the three product pillars:
+Build the shared backend foundation for MusterDeck accounts across the four product pillars:
 
 - Rally Point: looking for group, activity discovery, recruiting, and applications.
 - Fleet Command: operations events, fleet setup, crew assignments, and live command tools.
 - S.P.O.I.L.S.: Settlement, Payouts, Operations, Inventory, Loot, and Shares.
+- Proving Ground: tournament signup, brackets, waves, scores, standings, and competitive event administration.
 
 This design covers the first implementation slice for account identity, profile trust tags, activity access rules, blocked players, notifications, browser/device push, and lightweight chat. It extends the existing Supabase fleet schema instead of replacing it.
 
@@ -54,7 +55,7 @@ Signup supports:
 
 Users must acknowledge the privacy policy and terms of service during signup. Email/password accounts require email verification.
 
-Logged-in users who visit the root route go directly to the three-pillar hub unless the frontend is explicitly showing the public landing page for a logged-out session. Profile completion is encouraged but not a hard gate.
+Logged-in users who visit the root route go directly to the four-pillar hub unless the frontend is explicitly showing the public landing page for a logged-out session. Profile completion is encouraged but not a hard gate.
 
 First-time users should be guided toward account settings to complete:
 
@@ -189,6 +190,7 @@ Allowed activity types for this slice:
 - `rally_point`
 - `fleet_command`
 - `spoils`
+- `proving_ground`
 
 Default behavior:
 

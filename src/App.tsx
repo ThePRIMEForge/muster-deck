@@ -26,7 +26,17 @@ import {
   fallbackMembers,
   teamFilters,
 } from './lib/fallbackData';
+import { AccountSettings } from './components/foundation/AccountSettings';
+import { AdminPortal } from './components/foundation/AdminPortal';
+import { AppFrame } from './components/foundation/AppFrame';
+import { AuthScreen } from './components/foundation/AuthScreen';
+import { NotificationCenter } from './components/foundation/NotificationCenter';
+import { OperationsHub } from './components/foundation/OperationsHub';
+import { PublicLanding } from './components/foundation/PublicLanding';
+import { defaultFoundationRouteForViewer } from './lib/appNavigation';
 import { getManufacturerLogo, getRequestImage } from './lib/fanKitAssets';
+import { demoFoundationViewer } from './lib/foundationData';
+import type { FoundationRouteId } from './lib/foundationTypes';
 import {
   canAccessPage,
   canManageFleetSetup,
@@ -286,6 +296,10 @@ function readStoredViewerId() {
 }
 
 function App() {
+  const [foundationRoute, setFoundationRoute] = useState<FoundationRouteId>(() =>
+    defaultFoundationRouteForViewer(demoFoundationViewer),
+  );
+  const foundationViewer = demoFoundationViewer;
   const [fleetRequests, setFleetRequests] = useState(fallbackFleetRequests);
   const [members, setMembers] = useState(() => applyStoredMemberRoles(fallbackMembers));
   const [currentViewerId, setCurrentViewerId] = useState(readStoredViewerId);
@@ -955,9 +969,78 @@ function App() {
     });
   }
 
+  if (foundationRoute === 'landing') {
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <PublicLanding onRouteChange={setFoundationRoute} />
+      </AppFrame>
+    );
+  }
+
+  if (foundationRoute === 'login' || foundationRoute === 'signup') {
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <AuthScreen mode={foundationRoute === 'login' ? 'login' : 'signup'} />
+      </AppFrame>
+    );
+  }
+
+  if (foundationRoute === 'hub') {
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <OperationsHub viewer={foundationViewer} onRouteChange={setFoundationRoute} />
+      </AppFrame>
+    );
+  }
+
+  if (foundationRoute === 'account') {
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <AccountSettings viewer={foundationViewer} />
+      </AppFrame>
+    );
+  }
+
+  if (foundationRoute === 'notifications') {
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <NotificationCenter />
+      </AppFrame>
+    );
+  }
+
+  if (foundationRoute === 'admin') {
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <AdminPortal />
+      </AppFrame>
+    );
+  }
+
+  if (foundationRoute === 'rally-browse' || foundationRoute === 'spoils' || foundationRoute === 'proving-ground') {
+    const draftTitle =
+      foundationRoute === 'rally-browse'
+        ? 'Rally Point'
+        : foundationRoute === 'spoils'
+          ? 'S.P.O.I.L.S.'
+          : 'Proving Ground';
+
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <section className="foundation-page narrow-page">
+          <p className="eyebrow">Draft Now</p>
+          <h1>{draftTitle}</h1>
+          <p className="foundation-subtitle">
+            This module is planned and will be built after the shared foundation and Fleet Command core are stable.
+          </p>
+        </section>
+      </AppFrame>
+    );
+  }
+
   return (
-    <>
-    <main className="app-shell">
+    <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+    <div className="app-shell">
       <aside className="left-rail">
         <div className="brand-block">
           <div className="brand-mark">
@@ -1317,7 +1400,7 @@ function App() {
           ))}
         </div>
       </aside>
-    </main>
+    </div>
     {customCrewOpen && (
       <CustomCrewModal
         title="Select Positions"
@@ -1384,7 +1467,7 @@ function App() {
       />
     )}
     <MessageHistoryPanel messages={fleetMessages} variant="crew" />
-    </>
+    </AppFrame>
   );
 }
 

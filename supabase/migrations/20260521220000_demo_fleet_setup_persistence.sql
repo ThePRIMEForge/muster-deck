@@ -22,6 +22,12 @@ for select
 to anon, authenticated
 using (true);
 
+create policy "prototype read members"
+on public.members
+for select
+to anon, authenticated
+using (true);
+
 create policy "prototype read assignments"
 on public.assignments
 for select
@@ -163,7 +169,134 @@ comment on function public.create_demo_fleet_ship_request(
 ) is
   'Creates a prototype draft fleet line in the demo Fleet Command event and copies reviewed positions for non-custom ship requests.';
 
+create or replace function public.ensure_demo_fleet_member(target_display_name text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+  resolved_display_name text;
+  demo_member_id uuid;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+  resolved_display_name := nullif(btrim(coalesce(target_display_name, '')), '');
+
+  if resolved_display_name is null then
+    raise exception 'demo member display name is required';
+  end if;
+
+  insert into public.members (fleet_event_id, display_name)
+  values (demo_event_id, resolved_display_name)
+  on conflict (fleet_event_id, display_name) do update
+  set last_active_at = now()
+  returning id into demo_member_id;
+
+  return demo_member_id;
+end;
+$$;
+
+comment on function public.ensure_demo_fleet_member(text) is
+  'Creates or refreshes a member row for the prototype Fleet Command draft event.';
+
+create or replace function public.assign_demo_member_to_fleet_position(
+  target_fleet_event_ship_request_id uuid,
+  target_display_name text,
+  target_primary_role text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+  request_event_id uuid;
+  request_team_id uuid;
+  demo_member_id uuid;
+  target_position_id uuid;
+  created_assignment_id uuid;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+
+  select request.fleet_event_id, request.team_id
+  into request_event_id, request_team_id
+  from public.fleet_event_ship_requests as request
+  where request.id = target_fleet_event_ship_request_id;
+
+  if request_event_id is null then
+    raise exception 'unknown fleet ship request: %', target_fleet_event_ship_request_id;
+  end if;
+
+  if request_event_id <> demo_event_id then
+    raise exception 'request % does not belong to the demo draft event', target_fleet_event_ship_request_id;
+  end if;
+
+  demo_member_id := public.ensure_demo_fleet_member(target_display_name);
+
+  update public.assignments
+  set status = 'removed'
+  where fleet_event_id = demo_event_id
+    and member_id = demo_member_id
+    and assignment_type = 'ship_position'
+    and status = 'assigned';
+
+  select position.id
+  into target_position_id
+  from public.fleet_event_positions as position
+  left join public.assignments as assignment
+    on assignment.fleet_event_position_id = position.id
+    and assignment.assignment_type = 'ship_position'
+    and assignment.status = 'assigned'
+  where position.fleet_event_ship_request_id = target_fleet_event_ship_request_id
+  group by position.id
+  having count(assignment.id) < greatest(coalesce(position.max_count, position.min_count), 0)
+  order by
+    case
+      when nullif(btrim(coalesce(target_primary_role, '')), '') is null then 1
+      when lower(target_primary_role) like '%' || lower(position.label) || '%' then 0
+      when lower(target_primary_role) like '%' || lower(replace(position.role_type, '_', ' ')) || '%' then 0
+      else 1
+    end,
+    position.sort_order,
+    position.label
+  limit 1;
+
+  if target_position_id is null then
+    raise exception 'no open positions remain for fleet ship request %', target_fleet_event_ship_request_id;
+  end if;
+
+  insert into public.assignments (
+    fleet_event_id,
+    member_id,
+    fleet_event_ship_request_id,
+    fleet_event_position_id,
+    team_id,
+    assignment_type,
+    status
+  )
+  values (
+    demo_event_id,
+    demo_member_id,
+    target_fleet_event_ship_request_id,
+    target_position_id,
+    request_team_id,
+    'ship_position',
+    'assigned'
+  )
+  returning id into created_assignment_id;
+
+  return created_assignment_id;
+end;
+$$;
+
+comment on function public.assign_demo_member_to_fleet_position(uuid, text, text) is
+  'Assigns a demo member to the first matching open position on a prototype Fleet Command request.';
+
 grant execute on function public.ensure_demo_fleet_event() to anon, authenticated;
 grant execute on function public.create_demo_fleet_ship_request(text, text, integer, text, text, boolean, text) to anon, authenticated;
+grant execute on function public.ensure_demo_fleet_member(text) to anon, authenticated;
+grant execute on function public.assign_demo_member_to_fleet_position(uuid, text, text) to anon, authenticated;
 grant execute on function public.create_fleet_event_ship_request_with_positions(uuid, uuid, uuid, integer, uuid, text, boolean, text, text) to anon, authenticated;
 grant execute on function public.replace_fleet_event_positions(uuid, jsonb) to anon, authenticated;

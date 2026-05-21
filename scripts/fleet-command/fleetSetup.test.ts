@@ -231,3 +231,82 @@ test('maps persisted request summaries and positions to fleet setup rows', () =>
     },
   ]);
 });
+
+test('maps persisted assignments onto crew position slots', () => {
+  const summaries: FleetEventShipRequestSummaryRow[] = [
+    {
+      id: 'request-2',
+      fleet_event_id: 'event-1',
+      fleet_event_code: 'DEMO-DRAFT',
+      fleet_event_name: 'Tactical Strike Group',
+      ship_id: 'ship-scorpius',
+      ship_slug: 'rsi-scorpius',
+      ship_name: 'Scorpius',
+      primary_category_id: null,
+      requested_primary_category_key: null,
+      requested_primary_category_name: null,
+      resolved_primary_category_key: 'heavy_fighter',
+      resolved_primary_category_name: 'Heavy Fighter',
+      requested_count: 1,
+      team_id: 'team-beta',
+      team_name: 'Beta',
+      parent_team_id: null,
+      staffing_profile_id: 'profile-standard',
+      staffing_profile_key: 'standard',
+      staffing_profile_name: 'Standard',
+      staffing_profile_color: '#eab308',
+      is_exact_ship_required: false,
+      substitution_policy: 'allow_alternatives',
+      effective_ship_roster_locked: false,
+      notes: 'one Scorpius fighter',
+      required_positions_min: 2,
+      required_positions_max: 2,
+      optional_positions_min: 0,
+      optional_positions_max: 0,
+      position_type_count: 2,
+      assigned_position_count: 1,
+      pending_ship_suggestion_count: 0,
+      created_at: '2026-05-21T00:00:00Z',
+      updated_at: '2026-05-21T00:00:00Z',
+    },
+  ];
+  const positions: FleetEventPositionRow[] = [
+    {
+      id: 'position-pilot',
+      fleet_event_ship_request_id: 'request-2',
+      role_type: 'pilot',
+      label: 'Pilot',
+      required: true,
+      min_count: 1,
+      max_count: 1,
+      can_transition_to_fps: false,
+      sort_order: 20,
+    },
+    {
+      id: 'position-turret',
+      fleet_event_ship_request_id: 'request-2',
+      role_type: 'turret_gunner',
+      label: 'Turret Gunner',
+      required: true,
+      min_count: 1,
+      max_count: 1,
+      can_transition_to_fps: false,
+      sort_order: 70,
+    },
+  ];
+  const assignments = [
+    {
+      id: 'assignment-1',
+      fleet_event_ship_request_id: 'request-2',
+      fleet_event_position_id: 'position-pilot',
+      member_id: 'member-rook',
+      status: 'assigned',
+    },
+  ];
+  const members = [{ id: 'member-rook', display_name: 'Rook' }];
+
+  assert.deepEqual(mapPersistedFleetRequests(summaries, positions, assignments, members)[0].crew, [
+    { id: 'assignment-1', name: 'Rook', role: 'Pilot', status: 'assigned' },
+    { id: 'position-turret-0', name: 'Open', role: 'Turret Gunner', status: 'requested' },
+  ]);
+});

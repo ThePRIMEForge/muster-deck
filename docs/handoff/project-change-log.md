@@ -2,6 +2,15 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Fleet Command Demo Assignment Persistence
+
+- Decision: Persist prototype officer drag-and-drop crew assignments against the saved `DEMO-DRAFT` Fleet Command event.
+- Decision: Add demo member and assignment helper functions that assign a member to the first matching open saved position, preferring role-label matches.
+- Decision: Load persisted ship-position assignments and member display names into the Fleet Command crew roster while keeping the local fallback path.
+- Reason: Fleet Command needs saved setup lines and saved crew assignments before live operation views, check-ins, and message acknowledgements can become reliable.
+- Files affected: `supabase/migrations/20260521220000_demo_fleet_setup_persistence.sql`, `supabase/tests/fleet_request_helpers_smoke.sql`, `src/lib/supabase.ts`, `src/lib/fleetSetup.ts`, `scripts/fleet-command/fleetSetup.test.ts`, `src/App.tsx`, `docs/superpowers/plans/2026-05-21-fleet-command-assignment-persistence.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Replace prototype demo assignment helpers with authenticated officer-scoped write policies and persistent member/profile role data.
+
 ## 2026-05-21 - Fleet Setup Draft Persistence
 
 - Decision: Persist the Fleet Command setup table to a single prototype draft operation named `DEMO-DRAFT`.

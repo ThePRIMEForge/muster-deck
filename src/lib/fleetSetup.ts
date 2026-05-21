@@ -1,4 +1,4 @@
-import type { FleetCategoryKey, FleetShipRequest, StaffingProfile } from './types';
+import type { CrewAssignment, FleetCategoryKey, FleetShipRequest, StaffingProfile } from './types';
 
 export type FleetSetupPosition = {
   id: string;
@@ -68,6 +68,19 @@ export type FleetEventPositionRow = {
   max_count: number | null;
   can_transition_to_fps: boolean;
   sort_order: number;
+};
+
+export type FleetEventAssignmentRow = {
+  id: string;
+  fleet_event_ship_request_id: string;
+  fleet_event_position_id: string | null;
+  member_id: string | null;
+  status: 'requested' | 'assigned' | 'declined' | 'removed';
+};
+
+export type FleetEventMemberRow = {
+  id: string;
+  display_name: string;
 };
 
 const emptySummary: Record<StaffingProfile, number> = {
@@ -142,6 +155,8 @@ export function crewTargetForPositions(positions: FleetSetupPosition[]) {
 export function mapPersistedFleetRequests(
   summaries: FleetEventShipRequestSummaryRow[],
   positions: FleetEventPositionRow[],
+  assignments: FleetEventAssignmentRow[] = [],
+  members: FleetEventMemberRow[] = [],
 ): FleetShipRequest[] {
   const positionsByRequest = positions.reduce<Map<string, FleetEventPositionRow[]>>((groups, position) => {
     const current = groups.get(position.fleet_event_ship_request_id) ?? [];
@@ -149,6 +164,20 @@ export function mapPersistedFleetRequests(
     groups.set(position.fleet_event_ship_request_id, current);
     return groups;
   }, new Map());
+  const membersById = new Map(members.map((member) => [member.id, member]));
+  const assignmentsByPosition = assignments.reduce<Map<string, FleetEventAssignmentRow[]>>(
+    (groups, assignment) => {
+      if (!assignment.fleet_event_position_id || assignment.status !== 'assigned') {
+        return groups;
+      }
+
+      const current = groups.get(assignment.fleet_event_position_id) ?? [];
+      current.push(assignment);
+      groups.set(assignment.fleet_event_position_id, current);
+      return groups;
+    },
+    new Map(),
+  );
 
   return summaries.map((summary) => {
     const categoryKey = (summary.resolved_primary_category_key ?? 'medium') as FleetCategoryKey;
@@ -174,7 +203,11 @@ export function mapPersistedFleetRequests(
       hasMarines: categoryKey === 'marines',
       isAdmiralShip: false,
       notes: summary.notes,
-      crew: buildCrewFromPersistedPositions(positionsByRequest.get(summary.id) ?? []),
+      crew: buildCrewFromPersistedPositions(
+        positionsByRequest.get(summary.id) ?? [],
+        assignmentsByPosition,
+        membersById,
+      ),
     };
   });
 }
@@ -200,18 +233,36 @@ function teamKey(teamName: string | null) {
   return (teamName ?? 'Unassigned').toLowerCase().replace(/\s+/g, '_');
 }
 
-function buildCrewFromPersistedPositions(positions: FleetEventPositionRow[]) {
+function buildCrewFromPersistedPositions(
+  positions: FleetEventPositionRow[],
+  assignmentsByPosition: Map<string, FleetEventAssignmentRow[]>,
+  membersById: Map<string, FleetEventMemberRow>,
+) {
   return positions
     .slice()
     .sort((left, right) => left.sort_order - right.sort_order || left.label.localeCompare(right.label))
     .flatMap((position) => {
       const quantity = Math.max(0, position.max_count ?? position.min_count);
+      const assignedCrew: CrewAssignment[] = (assignmentsByPosition.get(position.id) ?? [])
+        .slice(0, quantity)
+        .map((assignment, index) => ({
+          id: assignment.id,
+          name: membersById.get(assignment.member_id ?? '')?.display_name ?? 'Assigned',
+          role: quantity > 1 ? `${position.label} ${index + 1}` : position.label,
+          status: 'assigned' as const,
+        }));
+      const openSlots = Math.max(0, quantity - assignedCrew.length);
 
-      return Array.from({ length: quantity }, (_, index) => ({
+      const openCrew: CrewAssignment[] = Array.from({ length: openSlots }, (_, index) => ({
         id: `${position.id}-${index}`,
         name: 'Open',
-        role: quantity > 1 ? `${position.label} ${index + 1}` : position.label,
+        role:
+          quantity > 1
+            ? `${position.label} ${assignedCrew.length + index + 1}`
+            : position.label,
         status: 'requested' as const,
       }));
+
+      return assignedCrew.concat(openCrew);
     });
 }

@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import {
+  type FleetEventAssignmentRow,
+  type FleetEventMemberRow,
   mapPersistedFleetRequests,
   type FleetEventPositionRow,
   type FleetEventShipRequestSummaryRow,
@@ -190,7 +192,49 @@ export async function loadDemoFleetSetup(): Promise<FleetShipRequest[]> {
     throw positionError;
   }
 
-  return mapPersistedFleetRequests(summaryRows, (positions ?? []) as unknown as FleetEventPositionRow[]);
+  const { data: assignments, error: assignmentError } = await supabase
+    .from('assignments')
+    .select(
+      [
+        'id',
+        'fleet_event_ship_request_id',
+        'fleet_event_position_id',
+        'member_id',
+        'status',
+      ].join(','),
+    )
+    .eq('fleet_event_id', fleetEventId)
+    .eq('assignment_type', 'ship_position')
+    .eq('status', 'assigned')
+    .in('fleet_event_ship_request_id', requestIds);
+
+  if (assignmentError) {
+    throw assignmentError;
+  }
+
+  const assignmentRows = (assignments ?? []) as unknown as FleetEventAssignmentRow[];
+  const memberIds = [...new Set(assignmentRows.map((assignment) => assignment.member_id).filter(Boolean))];
+  let memberRows: FleetEventMemberRow[] = [];
+
+  if (memberIds.length > 0) {
+    const { data: members, error: memberError } = await supabase
+      .from('members')
+      .select(['id', 'display_name'].join(','))
+      .in('id', memberIds);
+
+    if (memberError) {
+      throw memberError;
+    }
+
+    memberRows = (members ?? []) as unknown as FleetEventMemberRow[];
+  }
+
+  return mapPersistedFleetRequests(
+    summaryRows,
+    (positions ?? []) as unknown as FleetEventPositionRow[],
+    assignmentRows,
+    memberRows,
+  );
 }
 
 export async function createDemoFleetShipRequest({
@@ -259,4 +303,30 @@ export async function replaceFleetEventPositions(
   if (error) {
     throw error;
   }
+}
+
+export async function assignDemoMemberToFleetPosition({
+  requestId,
+  memberName,
+  primaryRole,
+}: {
+  requestId: string;
+  memberName: string;
+  primaryRole: string;
+}): Promise<string> {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const { data, error } = await supabase.rpc('assign_demo_member_to_fleet_position', {
+    target_fleet_event_ship_request_id: requestId,
+    target_display_name: memberName,
+    target_primary_role: primaryRole,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data as string;
 }

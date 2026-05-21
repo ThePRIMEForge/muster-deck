@@ -20,6 +20,7 @@ declare
   demo_event_id uuid;
   demo_team_id uuid;
   demo_request_id uuid;
+  demo_assignment_id uuid;
 begin
   select id
   into scorpius_id
@@ -318,6 +319,36 @@ begin
       and required_positions_max = 2
   ) then
     raise exception 'expected demo persisted Scorpius request with copied reviewed positions';
+  end if;
+
+  demo_assignment_id := public.assign_demo_member_to_fleet_position(
+    demo_request_id,
+    'Rook',
+    'Heavy Fighter Pilot'
+  );
+
+  if not exists (
+    select 1
+    from public.assignments as assignment
+    join public.members as member
+      on member.id = assignment.member_id
+    where assignment.id = demo_assignment_id
+      and assignment.fleet_event_id = demo_event_id
+      and assignment.fleet_event_ship_request_id = demo_request_id
+      and assignment.assignment_type = 'ship_position'
+      and assignment.status = 'assigned'
+      and member.display_name = 'Rook'
+  ) then
+    raise exception 'expected demo member assignment to be created';
+  end if;
+
+  if not exists (
+    select 1
+    from public.fleet_event_ship_request_summary
+    where id = demo_request_id
+      and assigned_position_count = 1
+  ) then
+    raise exception 'expected demo assignment to increment assigned position count';
   end if;
 end;
 $$;

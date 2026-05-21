@@ -51,6 +51,7 @@ import {
   type AppPage,
 } from './lib/permissions';
 import {
+  assignDemoMemberToFleetPosition,
   createDemoFleetShipRequest,
   hasSupabaseConfig,
   loadDemoFleetSetup,
@@ -1095,7 +1096,7 @@ function App() {
     setCheckInMemberId(null);
   }
 
-  function handleMemberDrop(requestId: string, memberId: string) {
+  function applyLocalMemberDrop(requestId: string, memberId: string) {
     const member = members.find((candidate) => candidate.id === memberId);
     const targetRequest = fleetRequests.find((request) => request.id === requestId);
     const sourceRequestId = member?.assignedRequestId;
@@ -1160,6 +1161,54 @@ function App() {
       tags: [`member:${member.name}`, `ship:${targetRequest.id}`, `team:${targetRequest.teamKey}`],
       audience: 'crew',
     });
+  }
+
+  async function handleMemberDrop(requestId: string, memberId: string) {
+    if (!persistedFleetSetupActive) {
+      applyLocalMemberDrop(requestId, memberId);
+      return;
+    }
+
+    const member = members.find((candidate) => candidate.id === memberId);
+    const targetRequest = fleetRequests.find((request) => request.id === requestId);
+
+    if (!member || !targetRequest) {
+      return;
+    }
+
+    try {
+      await assignDemoMemberToFleetPosition({
+        requestId,
+        memberName: member.name,
+        primaryRole: member.primaryRole,
+      });
+
+      setMembers((current) =>
+        current.map((candidate) =>
+          candidate.id === memberId
+            ? {
+                ...candidate,
+                assignedRequestId: requestId,
+                team: targetRequest.team,
+                shipOffer: targetRequest.categoryKey === 'marines' ? undefined : targetRequest.shipName,
+              }
+            : candidate,
+        ),
+      );
+      await reloadPersistedFleetSetup();
+      setExpandedRequests((current) => ({ ...current, [requestId]: true }));
+      setPendingAssignments((current) => ({ ...current, [memberId]: requestId }));
+      pushMessage({
+        title: 'Crew assignment saved',
+        body: `${member.name} assigned to ${targetRequest.shipName} in ${targetRequest.team}.`,
+        tags: [`member:${member.name}`, `ship:${targetRequest.id}`, `team:${targetRequest.teamKey}`],
+        audience: 'crew',
+      });
+    } catch {
+      setCatalogState('error');
+      setPersistedFleetSetupActive(false);
+      applyLocalMemberDrop(requestId, memberId);
+    }
   }
 
   if (foundationRoute === 'landing') {

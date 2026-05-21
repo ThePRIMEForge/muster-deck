@@ -266,12 +266,21 @@ Recommended fields:
 
 First categories:
 
-- `messages`
+- `general_messages`
+- `direct_messages`
+- `group_messages`
 - `activity_invitations`
 - `fleet_command`
 - `spoils`
+- `proving_ground`
 
 `activity_invitations` covers invitations to any activity in any pillar.
+
+Global message boundary:
+
+- General MusterDeck messages, player-to-player direct messages, and personal group messages appear in the shared notification window.
+- Fleet Command chat stays inside the Fleet Command pillar. Fleet-wide, team, ship, and command message threads should not appear in the shared notification window.
+- Fleet Command can still create non-chat notifications later, such as assignment changes or roster status updates, but the message thread remains event-scoped.
 
 ### notification_preferences
 
@@ -375,6 +384,8 @@ Message caps:
 When a channel exceeds its cap, the oldest messages should be deleted as new messages are added.
 
 Fleet Command chat is event-scoped. When a Fleet Command event is closed and no members are active inside it, event chat history can be cleared.
+
+Fleet Command message channels are not part of the shared global notification window. Users should read and respond to Fleet Command messages inside the active Fleet Command event where the roster, teams, ships, and command context are visible.
 
 ## Activity Access Rules
 
@@ -528,6 +539,8 @@ Notification tests:
 - Push delivery is skipped when push preference is disabled.
 - Push delivery is skipped when no active subscription exists.
 - Fleet Command notification category is separate from message notification category.
+- Global notification data includes general, direct-message, and group-message categories.
+- Global notification data does not include Fleet Command chat as a shared message category.
 
 Build verification:
 

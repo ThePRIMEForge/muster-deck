@@ -11,8 +11,15 @@ select id, 'discord', '12345', 'decktester'
 from public.profiles
 where display_name = 'Deck Tester';
 
-insert into public.notification_preferences (profile_id, browser_push_enabled, tournaments_enabled)
-select id, true, true
+insert into public.notification_preferences (
+  profile_id,
+  browser_push_enabled,
+  general_messages_enabled,
+  direct_messages_enabled,
+  group_messages_enabled,
+  tournaments_enabled
+)
+select id, true, true, true, true, true
 from public.profiles
 where display_name = 'Deck Tester';
 
@@ -26,6 +33,9 @@ select
   p.rsi_verification_status,
   i.provider,
   n.browser_push_enabled,
+  n.general_messages_enabled,
+  n.direct_messages_enabled,
+  n.group_messages_enabled,
   n.tournaments_enabled
 from public.profiles p
 join public.profile_identities i on i.profile_id = p.id

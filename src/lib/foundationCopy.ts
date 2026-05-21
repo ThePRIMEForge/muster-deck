@@ -60,8 +60,8 @@ export const foundationCopy = {
     subtitle: 'Review accounts, manage access, and keep the deck in order.',
   },
   notifications: {
-    title: 'Notifications',
-    empty: 'No notifications. Orders will appear here.',
+    title: 'Messages and Notifications',
+    empty: 'No messages or alerts yet.',
     markAllRead: 'Mark all as read',
   },
   account: {

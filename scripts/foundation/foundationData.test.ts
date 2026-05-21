@@ -10,11 +10,15 @@ test('demo viewer can access admin tools for local planning', () => {
 
 test('demo notifications include expected foundation categories', () => {
   const categories = new Set(demoNotifications.map((notification) => notification.category));
+  assert.equal(categories.has('general'), true);
+  assert.equal(categories.has('direct_message'), true);
+  assert.equal(categories.has('group_message'), true);
   assert.equal(categories.has('assignment'), true);
   assert.equal(categories.has('application'), true);
   assert.equal(categories.has('settlement'), true);
   assert.equal(categories.has('tournament'), true);
   assert.equal(categories.has('admin'), true);
+  assert.equal(categories.has('fleet_command_message'), false);
 });
 
 test('demo admin users include at least one restricted state', () => {

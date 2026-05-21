@@ -1947,8 +1947,19 @@ h3 {
 }
 
 .notification-card span,
-.notification-card em {
+.notification-card em,
+.notification-card small {
   color: #cbd0bd;
+}
+
+.notification-card small {
+  width: fit-content;
+  border: 1px solid rgba(209, 166, 74, 0.24);
+  padding: 3px 7px;
+  color: #d1a64a;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .foundation-footer {

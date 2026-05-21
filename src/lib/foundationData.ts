@@ -2,7 +2,15 @@ import type { FoundationViewer } from './foundationTypes';
 
 export type FoundationNotification = {
   id: string;
-  category: 'assignment' | 'application' | 'settlement' | 'tournament' | 'admin';
+  category:
+    | 'general'
+    | 'direct_message'
+    | 'group_message'
+    | 'assignment'
+    | 'application'
+    | 'settlement'
+    | 'tournament'
+    | 'admin';
   title: string;
   body: string;
   createdAt: string;
@@ -30,6 +38,30 @@ export const demoFoundationViewer: FoundationViewer = {
 };
 
 export const demoNotifications: FoundationNotification[] = [
+  {
+    id: 'note-general',
+    category: 'general',
+    title: 'Deck notice',
+    body: 'Ship position review is locked for this patch.',
+    createdAt: 'Just now',
+    read: false,
+  },
+  {
+    id: 'note-direct-message',
+    category: 'direct_message',
+    title: 'Message from Cargo Lead Vale',
+    body: 'Can you review the hauling crew before signups open?',
+    createdAt: '1 min ago',
+    read: false,
+  },
+  {
+    id: 'note-group-message',
+    category: 'group_message',
+    title: 'Logistics group',
+    body: "Three pilots confirmed for tonight's supply run.",
+    createdAt: '2 min ago',
+    read: false,
+  },
   {
     id: 'note-assignment',
     category: 'assignment',

@@ -2,6 +2,17 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Global Messages And Ship Position Baseline
+
+- Decision: Rename the shared notification surface to `Messages and Notifications`.
+- Decision: Include general MusterDeck messages, player-to-player direct messages, and personal group messages in the shared notification window.
+- Decision: Keep Fleet Command fleet-wide, team, ship, and command message threads inside the Fleet Command pillar.
+- Decision: Allow future non-chat Fleet Command alerts, such as assignment or roster changes, to appear in the shared notification window without exposing the Fleet Command message thread.
+- Decision: Treat the Ship Position Review Spreadsheet as locked for this patch.
+- Reason: The shared shell needs a place for platform-wide and social messages, but Fleet Command chat depends on live event context and should stay with the active roster and command tools.
+- Files affected: `src/lib/foundationCopy.ts`, `src/lib/foundationData.ts`, `src/components/foundation/NotificationCenter.tsx`, `supabase/migrations/20260520190000_shared_foundation_accounts.sql`, `docs/superpowers/specs/2026-05-20-account-access-notifications-chat-design.md`, `docs/superpowers/specs/2026-05-20-musterdeck-shared-foundation-site-plan-copy-inventory.md`, `docs/handoff/2026-05-21-day-3-plan.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Build persistent direct/group messaging and chat channel storage in a dedicated messaging slice after shared account/auth behavior is ready.
+
 ## 2026-05-21 - Confirmed Shared Foundation Direction
 
 - Decision: Save the public investor/collaborator summary as reusable external-facing project material.

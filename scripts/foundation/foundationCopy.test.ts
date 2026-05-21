@@ -36,3 +36,9 @@ test('copy avoids official-status language', () => {
     assert.equal(allCopy.includes(phrase.toLowerCase()), false, `Unexpected phrase: ${phrase}`);
   }
 });
+
+test('notification copy makes room for global messages without claiming fleet chat', () => {
+  assert.equal(foundationCopy.notifications.title, 'Messages and Notifications');
+  assert.match(foundationCopy.notifications.empty, /No messages or alerts/);
+  assert.doesNotMatch(foundationCopy.notifications.empty, /Fleet Command/i);
+});

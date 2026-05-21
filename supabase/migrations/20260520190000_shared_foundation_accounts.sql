@@ -37,6 +37,9 @@ create table public.profile_identities (
 
 create table public.notification_preferences (
   profile_id uuid primary key references public.profiles(id) on delete cascade,
+  general_messages_enabled boolean not null default true,
+  direct_messages_enabled boolean not null default true,
+  group_messages_enabled boolean not null default true,
   assignments_enabled boolean not null default true,
   applications_enabled boolean not null default true,
   settlements_enabled boolean not null default true,

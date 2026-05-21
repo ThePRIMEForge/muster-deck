@@ -135,20 +135,28 @@ Later admin depth:
 - Organization-level admin controls.
 - Bulk actions.
 
-### Notification Center
+### Messages And Notification Center
 
-Purpose: collect assignments, invites, approvals, roster updates, and settlement updates in one place.
+Purpose: collect general MusterDeck messages, player-to-player messages, personal group messages, assignments, invites, approvals, roster updates, settlement updates, and tournament updates in one place.
 
 Primary content:
 
 - Unread/read states.
+- General system messages.
+- Player-to-player direct messages.
+- Personal group messages.
 - Assignment changes.
 - Role promotions.
 - Rally Point application status.
-- Fleet Command roster/status changes.
+- Fleet Command roster/status changes, but not Fleet Command chat threads.
 - S.P.O.I.L.S. settlement and payout updates.
 - Proving Ground registration, match, score, and advancement updates.
 - Notification preferences link.
+
+Boundary:
+
+- Fleet Command fleet-wide, team, ship, and command messages stay inside Fleet Command.
+- The shared window may show a Fleet Command assignment or roster alert later, but the conversation itself should remain inside the active Fleet Command event.
 
 ### Footer / Legal Shell
 

@@ -35,6 +35,11 @@ import { OperationsHub } from './components/foundation/OperationsHub';
 import { PublicLanding } from './components/foundation/PublicLanding';
 import { defaultFoundationRouteForViewer } from './lib/appNavigation';
 import { getManufacturerLogo, getRequestImage } from './lib/fanKitAssets';
+import {
+  buildCustomizablePositions,
+  buildPresetPositions,
+  crewTargetForPositions,
+} from './lib/fleetSetup';
 import { demoFoundationViewer } from './lib/foundationData';
 import type { FoundationRouteId } from './lib/foundationTypes';
 import {
@@ -45,7 +50,7 @@ import {
   roleLabels,
   type AppPage,
 } from './lib/permissions';
-import { hasSupabaseConfig, loadShipCatalog } from './lib/supabase';
+import { hasSupabaseConfig, loadShipCatalog, loadShipStaffingTemplates } from './lib/supabase';
 import type {
   CrewAssignment,
   FilterMode,
@@ -53,6 +58,7 @@ import type {
   Member,
   OperationRole,
   ShipCatalogRow,
+  ShipStaffingTemplateSummaryRow,
   StaffingProfile,
 } from './lib/types';
 
@@ -87,6 +93,8 @@ type AssignmentPrompt = {
 };
 
 type SetupShipOption = {
+  shipId?: string;
+  slug?: string;
   name: string;
   manufacturer: string;
   categoryKey: FleetShipRequest['categoryKey'];
@@ -359,6 +367,7 @@ function App() {
     'idris-alpha': true,
   });
   const [shipCatalog, setShipCatalog] = useState<ShipCatalogRow[]>([]);
+  const [shipStaffingTemplates, setShipStaffingTemplates] = useState<ShipStaffingTemplateSummaryRow[]>([]);
   const [catalogState, setCatalogState] = useState<'preview' | 'loading' | 'live' | 'error'>(
     hasSupabaseConfig ? 'loading' : 'preview',
   );
@@ -372,13 +381,14 @@ function App() {
       };
     }
 
-    loadShipCatalog()
-      .then((rows) => {
+    Promise.all([loadShipCatalog(), loadShipStaffingTemplates()])
+      .then(([catalogRows, staffingRows]) => {
         if (!active) {
           return;
         }
 
-        setShipCatalog(rows);
+        setShipCatalog(catalogRows);
+        setShipStaffingTemplates(staffingRows);
         setCatalogState('live');
       })
       .catch(() => {
@@ -513,12 +523,34 @@ function App() {
     return matches;
   }, [setupShipChoices, setupShipName, setupShipSearchTerm]);
   const selectedSetupShip = setupShipChoices.find((ship) => ship.name === setupShipName);
+  const selectedSetupShipTemplates = templatesForSetupShip(selectedSetupShip);
   const selectedSetupType = categoryFilters.find((category) => category.key === setupTypeKey);
   const removalRequest = fleetRequests.find((request) => request.id === requestPendingRemovalId);
   const checkInMember = members.find((member) => member.id === checkInMemberId);
   const checkInRequest = fleetRequests.find(
     (request) => request.id === checkInMember?.assignedRequestId,
   );
+
+  useEffect(() => {
+    if (setupProfile === 'custom') {
+      return;
+    }
+
+    const positions =
+      setupMode === 'ship' && selectedSetupShip
+        ? presetPositionsForShip(selectedSetupShip, setupProfile)
+        : buildProfilePositions(setupProfile, buildCategoryTypePositions(setupTypeKey));
+
+    setCustomPositions(positions);
+    setSetupCrewTarget(Math.max(1, crewTargetForPositions(positions)));
+  }, [
+    selectedSetupShip?.name,
+    selectedSetupShip?.shipId,
+    selectedSetupShipTemplates.length,
+    setupMode,
+    setupProfile,
+    setupTypeKey,
+  ]);
 
   function unlockAll() {
     setMasterLocked(false);
@@ -553,14 +585,48 @@ function App() {
     ]);
   }
 
+  function templatesForSetupShip(ship?: SetupShipOption) {
+    if (!ship) {
+      return [];
+    }
+
+    return shipStaffingTemplates.filter(
+      (template) =>
+        (ship.shipId && template.ship_id === ship.shipId) ||
+        (ship.slug && template.ship_slug === ship.slug) ||
+        normalizeName(template.ship_name) === normalizeName(ship.name),
+    );
+  }
+
+  function presetPositionsForShip(ship: SetupShipOption, profile: StaffingProfile) {
+    return buildPresetPositions(
+      templatesForSetupShip(ship),
+      profile,
+      buildProfilePositions(profile, ship.positions),
+    );
+  }
+
+  function activeSetupPositions(profile = setupProfile) {
+    if (profile === 'custom') {
+      return customPositions;
+    }
+
+    if (setupMode === 'ship' && selectedSetupShip) {
+      return presetPositionsForShip(selectedSetupShip, profile);
+    }
+
+    return buildProfilePositions(profile, buildCategoryTypePositions(setupTypeKey));
+  }
+
   function handleSetupShipChange(shipName: string) {
     const nextShip = setupShipChoices.find((ship) => ship.name === shipName);
 
     setSetupShipName(shipName);
 
     if (nextShip) {
-      setCustomPositions(nextShip.positions);
-      setSetupCrewTarget(Math.max(1, nextShip.requiredPositions));
+      const positions = presetPositionsForShip(nextShip, setupProfile);
+      setCustomPositions(positions);
+      setSetupCrewTarget(Math.max(1, crewTargetForPositions(positions)));
     }
   }
 
@@ -570,10 +636,11 @@ function App() {
     if (mode === 'type') {
       const positions = buildCategoryTypePositions(setupTypeKey);
       setCustomPositions(positions);
-      setSetupCrewTarget(totalPositionQuantity(positions));
+      setSetupCrewTarget(crewTargetForPositions(positions));
     } else if (selectedSetupShip) {
-      setCustomPositions(selectedSetupShip.positions);
-      setSetupCrewTarget(Math.max(1, selectedSetupShip.requiredPositions));
+      const positions = presetPositionsForShip(selectedSetupShip, setupProfile);
+      setCustomPositions(positions);
+      setSetupCrewTarget(Math.max(1, crewTargetForPositions(positions)));
     }
   }
 
@@ -582,7 +649,40 @@ function App() {
 
     setSetupTypeKey(categoryKey);
     setCustomPositions(positions);
-    setSetupCrewTarget(totalPositionQuantity(positions));
+    setSetupCrewTarget(crewTargetForPositions(positions));
+  }
+
+  function handleSetupProfileChange(profile: StaffingProfile) {
+    if (profile === 'custom') {
+      openSetupCustomization();
+      return;
+    }
+
+    const positions =
+      setupMode === 'ship' && selectedSetupShip
+        ? presetPositionsForShip(selectedSetupShip, profile)
+        : buildProfilePositions(profile, buildCategoryTypePositions(setupTypeKey));
+
+    setSetupProfile(profile);
+    setCustomPositions(positions);
+    setSetupCrewTarget(Math.max(1, crewTargetForPositions(positions)));
+  }
+
+  function openSetupCustomization() {
+    const fallback = activeSetupPositions(setupProfile);
+    const positions =
+      setupMode === 'ship' && selectedSetupShip
+        ? buildCustomizablePositions(selectedSetupShipTemplates, setupProfile, fallback)
+        : fallback;
+
+    setCustomPositions(positions);
+    setCustomCrewOpen(true);
+  }
+
+  function applySetupCustomization() {
+    setSetupProfile('custom');
+    setSetupCrewTarget(Math.max(1, crewTargetForPositions(customPositions)));
+    setCustomCrewOpen(false);
   }
 
   function requestRemoveFleetLine(requestId: string) {
@@ -642,7 +742,9 @@ function App() {
     const teamName = teamLabel(setupTeamKey);
     const basePositions =
       setupMode === 'ship'
-        ? selectedSetupShip?.positions ?? buildCategoryTypePositions('medium')
+        ? selectedSetupShip
+          ? presetPositionsForShip(selectedSetupShip, setupProfile)
+          : buildCategoryTypePositions('medium')
         : buildCategoryTypePositions(setupTypeKey);
     const requestName = setupMode === 'ship' ? selectedSetupShip?.name ?? 'Ship' : `${selectedSetupType?.label} Request`;
     const manufacturer = setupMode === 'ship' ? selectedSetupShip?.manufacturer ?? 'Unknown' : 'Any';
@@ -656,7 +758,7 @@ function App() {
         : selectedSetupType?.label ?? 'Ship Type';
     const imageUrl = setupMode === 'ship' ? selectedSetupShip?.imageUrl : undefined;
     const requiredPositions =
-      setupProfile === 'custom' ? Math.max(1, totalPositionQuantity(customPositions)) : setupCrewTarget;
+      setupProfile === 'custom' ? Math.max(1, crewTargetForPositions(customPositions)) : setupCrewTarget;
 
     const newRequests: FleetShipRequest[] = Array.from(
       { length: Math.max(1, setupQuantity) },
@@ -691,7 +793,9 @@ function App() {
       crew: buildCrewAssignments(
         setupProfile === 'custom'
           ? customPositions
-          : buildProfilePositions(setupProfile, basePositions),
+          : setupMode === 'ship'
+            ? basePositions
+            : buildProfilePositions(setupProfile, basePositions),
       ),
     }));
 
@@ -1241,8 +1345,8 @@ function App() {
             onAddFleetLine={addFleetLine}
             onCrewTargetChange={setSetupCrewTarget}
             onModeChange={handleSetupModeChange}
-            onOpenCustomCrew={() => setCustomCrewOpen(true)}
-            onProfileChange={setSetupProfile}
+            onOpenCustomCrew={openSetupCustomization}
+            onProfileChange={handleSetupProfileChange}
             onQuantityChange={setSetupQuantity}
             onEditPositions={openPositionEditor}
             onRemoveRequest={requestRemoveFleetLine}
@@ -1257,6 +1361,7 @@ function App() {
             quantity={setupQuantity}
             selectedProfile={setupProfile}
             selectedShipName={setupShipName}
+            selectedShipTemplateCount={setupMode === 'ship' ? selectedSetupShipTemplates.length : 0}
             selectedTeamKey={setupTeamKey}
             selectedTypeKey={setupTypeKey}
             setupOpen={setupOpen}
@@ -1405,7 +1510,7 @@ function App() {
       <CustomCrewModal
         title="Select Positions"
         positions={customPositions}
-        onApply={() => setCustomCrewOpen(false)}
+        onApply={applySetupCustomization}
         onClose={() => setCustomCrewOpen(false)}
         onQuantityChange={(positionId, quantity) =>
           setCustomPositions((current) =>
@@ -1498,6 +1603,7 @@ function FleetSetupWorkspace({
   quantity,
   selectedProfile,
   selectedShipName,
+  selectedShipTemplateCount,
   selectedTeamKey,
   selectedTypeKey,
   setupOpen,
@@ -1531,6 +1637,7 @@ function FleetSetupWorkspace({
   quantity: number;
   selectedProfile: StaffingProfile;
   selectedShipName: string;
+  selectedShipTemplateCount: number;
   selectedTeamKey: string;
   selectedTypeKey: FleetShipRequest['categoryKey'];
   setupOpen: boolean;
@@ -1561,6 +1668,7 @@ function FleetSetupWorkspace({
           quantity={quantity}
           customPositions={customPositions}
           shipSearchTerm={shipSearchTerm}
+          selectedShipTemplateCount={selectedShipTemplateCount}
           onToggleOpen={onToggleSetup}
           onModeChange={onModeChange}
           onShipChange={onShipChange}
@@ -1665,6 +1773,7 @@ function FleetSetupPanel({
   selectedTypeKey,
   selectedTeamKey,
   selectedProfile,
+  selectedShipTemplateCount,
   crewTarget,
   quantity,
   customPositions,
@@ -1688,6 +1797,7 @@ function FleetSetupPanel({
   selectedTypeKey: FleetShipRequest['categoryKey'];
   selectedTeamKey: string;
   selectedProfile: StaffingProfile;
+  selectedShipTemplateCount: number;
   crewTarget: number;
   quantity: number;
   customPositions: PositionRequirement[];
@@ -1790,7 +1900,7 @@ function FleetSetupPanel({
           </label>
 
           <div className="profile-picker" aria-label="Staffing profile">
-            {(Object.keys(profileLabels) as StaffingProfile[]).map((profile) => (
+            {(['skeleton', 'standard', 'full_crew'] as StaffingProfile[]).map((profile) => (
               <button
                 className={selectedProfile === profile ? 'active' : ''}
                 key={profile}
@@ -1801,6 +1911,12 @@ function FleetSetupPanel({
               </button>
             ))}
           </div>
+
+          <span className="setup-template-status">
+            {selectedShipTemplateCount > 0
+              ? 'Preset from reviewed ship positions'
+              : 'No reviewed template found; using category fallback'}
+          </span>
 
           <label>
             <span>Crew target</span>
@@ -1815,7 +1931,7 @@ function FleetSetupPanel({
 
           <button className="setup-secondary" onClick={onOpenCustomCrew} type="button">
             <ClipboardList size={16} />
-            <span>{totalPositionQuantity(customPositions)} custom seats</span>
+            <span>Customize ({crewTargetForPositions(customPositions)} seats)</span>
           </button>
 
           <button className="setup-submit" onClick={onAddFleetLine} type="button">
@@ -2439,6 +2555,8 @@ function optionFromCatalog(
   if (template) {
     return {
       ...template,
+      shipId: ship.id,
+      slug: ship.slug,
       manufacturer: ship.manufacturer ?? template.manufacturer,
       categoryKey: ship.primary_category_key ?? template.categoryKey,
       categoryName: ship.primary_category_name ?? template.categoryName,
@@ -2449,6 +2567,8 @@ function optionFromCatalog(
   const categoryKey = ship.primary_category_key ?? 'medium';
 
   return {
+    shipId: ship.id,
+    slug: ship.slug,
     name: ship.name,
     manufacturer: ship.manufacturer ?? 'Unknown',
     categoryKey,

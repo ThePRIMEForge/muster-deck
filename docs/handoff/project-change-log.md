@@ -2,6 +2,15 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Fleet Setup Reviewed Presets And Customization
+
+- Decision: Fleet Command setup uses reviewed ship-position templates for Skeleton, Standard, and Full Crew when a selected ship has reviewed data.
+- Decision: Officers can use `Customize` to open a position quantity modal seeded from every reviewed role available for the selected ship.
+- Decision: Ship Type requests and ships without reviewed templates keep the existing category fallback behavior for now.
+- Reason: Officers need the locked staffing baseline available in the actual setup workflow, while still keeping event-level overrides fast.
+- Files affected: `supabase/migrations/20260521210000_ship_staffing_template_summary.sql`, `src/lib/fleetSetup.ts`, `src/lib/supabase.ts`, `src/lib/types.ts`, `src/App.tsx`, `src/styles.css`, `scripts/fleet-command/fleetSetup.test.ts`, `supabase/tests/read_models_smoke.sql`, `docs/superpowers/specs/2026-05-21-fleet-command-reviewed-staffing-setup-design.md`, `docs/superpowers/plans/2026-05-21-fleet-command-reviewed-staffing-setup.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Persist created fleet lines to Supabase through `create_fleet_event_ship_request_with_positions` after the setup UI behavior is stable.
+
 ## 2026-05-21 - Fleet Command Reviewed Staffing Baseline
 
 - Decision: Use the locked `Ship Position Review` export from 2026-05-21 as the Fleet Command staffing baseline for this patch.

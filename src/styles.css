@@ -395,8 +395,16 @@ h3 {
 .profile-picker {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 5px;
+}
+
+.setup-template-status {
+  grid-column: 1 / -1;
+  color: #a39a8c;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .profile-picker button,

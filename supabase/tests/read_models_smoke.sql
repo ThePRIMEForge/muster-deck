@@ -18,6 +18,7 @@ declare
   assigned_count integer;
   pending_suggestion_count integer;
   locked_state boolean;
+  standard_roles text[];
 begin
   select count(*)
   into catalog_count
@@ -35,6 +36,16 @@ begin
 
   if scorpius_id is null then
     raise exception 'expected Scorpius as heavy fighter in catalog summary';
+  end if;
+
+  select array_agg(role_type order by sort_order)
+  into standard_roles
+  from public.ship_staffing_template_summary
+  where ship_slug = 'rsi-scorpius'
+    and staffing_profile_key = 'standard';
+
+  if standard_roles <> array['pilot', 'turret_gunner'] then
+    raise exception 'expected reviewed Scorpius standard roles, found %', standard_roles;
   end if;
 
   insert into public.fleet_events (code, name, description)

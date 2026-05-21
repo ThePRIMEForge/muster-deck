@@ -36,6 +36,24 @@ export type ShipCatalogRow = {
   subcategory_keys: string[] | null;
 };
 
+export type ShipStaffingTemplateSummaryRow = {
+  ship_id: string;
+  ship_slug: string;
+  ship_name: string;
+  staffing_profile_key: StaffingProfile;
+  staffing_profile_name: string;
+  role_type: string;
+  label: string;
+  required: boolean;
+  min_count: number;
+  max_count: number | null;
+  can_transition_to_fps: boolean;
+  sort_order: number;
+  source: 'wiki_suggested' | 'uex_suggested' | 'manual';
+  review_status: 'needs_review' | 'reviewed';
+  updated_at: string;
+};
+
 export type FleetShipRequest = {
   id: string;
   team: string;

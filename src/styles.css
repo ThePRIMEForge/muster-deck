@@ -1,6 +1,28 @@
 :root {
   color: #f5f0e6;
   background: #050505;
+  --md-bg: #070808;
+  --md-bg-elevated: #0d0f0f;
+  --md-surface: #141615;
+  --md-surface-raised: #1b1e1b;
+  --md-surface-muted: #24281f;
+  --md-border-subtle: rgba(245, 240, 230, 0.1);
+  --md-border-strong: rgba(245, 240, 230, 0.18);
+  --md-border-caution: rgba(214, 154, 47, 0.5);
+  --md-text: #f5f0e6;
+  --md-text-secondary: #c9c2b2;
+  --md-text-muted: #9f988b;
+  --md-mustard: #d69a2f;
+  --md-mustard-hot: #e0b552;
+  --md-mustard-deep: #8d611e;
+  --md-olive: #4f5a3f;
+  --md-olive-muted: #303728;
+  --md-caution-orange: #bd6537;
+  --md-success: #4ade80;
+  --md-focus: rgba(224, 181, 82, 0.45);
+  --md-panel-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  --md-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --md-texture-opacity: 0.18;
   font-family:
     Bahnschrift, "DIN Alternate", "Arial Narrow", "Aptos Condensed", "Roboto Condensed",
     "Segoe UI", sans-serif;

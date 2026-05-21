@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MusterDeck Free Icon Candidates V3.3</title>
+    <title>MusterDeck Free Icon Candidates V3.5</title>
     <style>
       :root {
         --bg: #10110d;
@@ -236,6 +236,10 @@
         height: 86px;
       }
 
+      .candidate .custom-svg {
+        color: var(--mustard);
+      }
+
       .custom-svg svg {
         width: 100%;
         height: 100%;
@@ -366,12 +370,12 @@
     <main>
       <header>
         <div>
-          <h1>MusterDeck Free Icon Candidates V3.3</h1>
+          <h1>MusterDeck Free Icon Candidates V3.5</h1>
           <p class="intro">
             Free and open-source candidates for the problem icons. This sheet uses existing icon libraries and local references so we can choose source families before any styling pass.
           </p>
         </div>
-        <div class="tag">free-source proof v0.3.3</div>
+        <div class="tag">free-source proof v0.3.5</div>
       </header>
 
       <div class="rule">
@@ -399,9 +403,13 @@
           rows: [
             {
               name: "Salvage",
-              note: "Locked to the uploaded hammer/wrench reference. The hand-built and library-combo attempts are rejected; production needs a trace/extraction from the reference.",
+              note: "The prior hand-built and library-combo attempts are rejected. This pass compares the uploaded reference against true single-purpose tool glyphs so we are not judging scrambled composites.",
               candidates: [
-                { kind: "local", src: local("../../icon examples/new salvage icon.jpg"), label: "Uploaded hammer/wrench reference", source: "Local reference", license: "User supplied", status: "Locked", locked: true },
+                { kind: "custom", custom: "salvageMdiFixed", label: "Fixed hammer-wrench glyph", source: "MusterDeck edit of MDI", license: "Apache 2.0", status: "Locked", locked: true },
+                { kind: "icon", id: "mdi:hammer-wrench", label: "Original single glyph", source: "Material Design Icons", license: "Apache 2.0", status: "Backup", backup: true },
+                { kind: "local", src: local("assets/icon-references/new salvage icon.jpg"), label: "Uploaded hammer/wrench reference", source: "Local reference", license: "User supplied", status: "Reference", locked: true },
+                { kind: "icon", id: "material-symbols:construction", label: "Construction glyph", source: "Material Symbols", license: "Apache 2.0", status: "Review", backup: true },
+                { kind: "icon", id: "carbon:tools", label: "Tools glyph", source: "Carbon", license: "Apache 2.0", status: "Review", backup: true },
                 { kind: "combo", icons: ["lucide:wrench", "lucide:hammer"], label: "Lucide wrench + hammer", source: "Lucide", license: "ISC", status: "Rejected", rejected: true },
                 { kind: "combo", icons: ["mdi:wrench", "mdi:hammer"], label: "MDI wrench + hammer", source: "Material Design Icons", license: "Apache 2.0", status: "Rejected", rejected: true },
                 { kind: "combo", icons: ["iconoir:wrench", "iconoir:hammer"], label: "Iconoir wrench + hammer", source: "Iconoir", license: "MIT", status: "Rejected", rejected: true },
@@ -411,7 +419,7 @@
               name: "Rifleman / FPS",
               note: "Locked to the uploaded rifle SVG, recolored and rotated 45 degrees counterclockwise. Winchester is only a fallback.",
               candidates: [
-                { kind: "localTint", src: local("../../icon examples/New Rifle SVG.svg"), label: "Uploaded rifle SVG recolor", source: "Local reference", license: "User supplied", status: "Locked", locked: true, className: "rotate-ccw" },
+                { kind: "localTint", src: local("assets/icon-references/New Rifle SVG.svg"), label: "Uploaded rifle SVG recolor", source: "Local reference", license: "User supplied", status: "Locked", locked: true, className: "rotate-ccw" },
                 { kind: "icon", id: "game-icons:winchester-rifle", label: "Winchester rifle", source: "Game-icons.net", license: "CC BY 3.0", status: "Backup", backup: true, warning: true },
               ],
             },
@@ -419,7 +427,7 @@
               name: "Piracy",
               note: "Locked to the uploaded skull. MDI skull-crossbones is acceptable only as a fallback.",
               candidates: [
-                { kind: "localTint", src: local("../../icon examples/Pirate Skull.svg"), label: "Uploaded pirate skull SVG recolor", source: "Local reference", license: "User supplied", status: "Locked", locked: true },
+                { kind: "localTint", src: local("assets/icon-references/Pirate Skull.svg"), label: "Uploaded pirate skull SVG recolor", source: "Local reference", license: "User supplied", status: "Locked", locked: true },
                 { kind: "icon", id: "mdi:skull-crossbones", label: "Skull crossbones", source: "Material Design Icons", license: "Apache 2.0", status: "Backup", backup: true },
               ],
             },
@@ -428,7 +436,7 @@
               note: "Phosphor gas can is the current primary. Uploaded gas can remains useful shape reference.",
               candidates: [
                 { kind: "icon", id: "ph:gas-can", label: "Gas can", source: "Phosphor", license: "MIT", status: "Locked", locked: true },
-                { kind: "local", src: local("../../icon examples/Gas can.png"), label: "Uploaded gas can reference", source: "Local reference", license: "User supplied", status: "Reference" },
+                { kind: "local", src: local("assets/icon-references/Gas can.png"), label: "Uploaded gas can reference", source: "Local reference", license: "User supplied", status: "Reference" },
               ],
             },
             {
@@ -483,7 +491,7 @@
               note: "Use our earlier custom chevrons/bars from V2; it reads better than the source candidates.",
               candidates: [
                 { kind: "custom", custom: "quartermaster", label: "V2 custom Quartermaster", source: "MusterDeck custom SVG", license: "Project owned", status: "Locked", locked: true },
-                { kind: "local", src: local("../../icon examples/Quartermaster.png"), label: "Uploaded rank reference", source: "Local reference", license: "User supplied", status: "Reference" },
+                { kind: "local", src: local("assets/icon-references/Quartermaster.png"), label: "Uploaded rank reference", source: "Local reference", license: "User supplied", status: "Reference" },
               ],
             },
           ],
@@ -535,6 +543,17 @@
                 <path d="M22 88 H106" />
                 <path d="M22 102 H106" />
                 <path d="M22 116 H106" />
+              </svg>
+            </span>
+          `;
+        }
+
+        if (candidate.kind === "custom" && candidate.custom === "salvageMdiFixed") {
+          return `
+            <span class="custom-svg" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path class="filled" d="m13.78 15.3l6 6l2.11-2.16l-6-6zm3.72-5.2c-.39 0-.81-.05-1.14-.19L4.97 21.25l-2.11-2.11l7.41-7.4L8.5 9.96l-.72.7l-1.45-1.41v2.86l-.7.7l-3.52-3.56l.7-.7h2.81l-1.4-1.41l3.56-3.56a2.976 2.976 0 0 1 4.22 0L9.89 5.74l1.41 1.4l-.71.71l1.79 1.78l1.82-1.88c-.14-.33-.2-.75-.2-1.12a3.49 3.49 0 0 1 3.5-3.52c.59 0 1.11.14 1.58.42L16.41 6.2l1.5 1.5l2.67-2.67c.28.47.42.97.42 1.6c0 1.92-1.55 3.47-3.5 3.47" />
+                <path class="filled" d="M10.05 10.24l1.28-1.28l3.06 3.06l-1.28 1.28z" />
               </svg>
             </span>
           `;

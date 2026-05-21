@@ -52,7 +52,7 @@ Use Lucide or Tabler as the app-wide action/UI family. Use Material Design Icons
 
 | Icon | Decision | Source | License / Tracking |
 | --- | --- | --- | --- |
-| Salvage | Locked to uploaded hammer/wrench reference; hand-built and library-combo attempts are rejected. Production needs trace/extraction from this reference. | `docs/mockups/assets/icon-references/new salvage icon.jpg` | User supplied |
+| Salvage | Locked to a MusterDeck edit of `mdi:hammer-wrench` with the awkward handle break patched. Original `mdi:hammer-wrench` remains the clean free-library backup; crossed-library combo attempts are rejected. | Edited `mdi:hammer-wrench`, `docs/mockups/assets/icon-references/new salvage icon.jpg` | Apache 2.0 / User supplied |
 | Rifleman / FPS Combat | Locked to uploaded rifle SVG, recolored for MusterDeck and rotated 45 degrees counterclockwise. | `docs/mockups/assets/icon-references/New Rifle SVG.svg` | User supplied |
 | Piracy | Locked to uploaded pirate skull SVG. MDI skull-crossbones can be emergency fallback. | `docs/mockups/assets/icon-references/Pirate Skull.svg` | User supplied |
 | Refuel | Locked to Phosphor gas can. | `ph:gas-can` | MIT |
@@ -67,5 +67,5 @@ Use Lucide or Tabler as the app-wide action/UI family. Use Material Design Icons
 
 ## Remaining Open Problems
 
-- Salvage needs clean SVG extraction from the uploaded hammer/wrench reference before production use.
+- Salvage is approved as the patched `mdi:hammer-wrench` edit. Next step is to vendor the final SVG locally with Apache 2.0 attribution.
 - FPS Combat should combine the uploaded rifle SVG with a selected target/bounty overlay after the rifle is extracted cleanly.

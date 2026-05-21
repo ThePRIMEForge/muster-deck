@@ -92,4 +92,4 @@ Core icon symbols should be vector-first. Raster/generated assets should mainly 
 | `icon-plate-ledger-category.png` | Proposed | Plate behind S.P.O.I.L.S. item-category icons | For inventory/settlement categories. |
 | `../../archive/mockups/2026-05-20-icon-proof-v1/musterdeck-icon-proof-batch.html` | Rejected/archived | Icon review page | Rugged plate direction is useful, but V1 symbols are too crude/filled-in and should not become the production icon style. Keep as historical proof only. |
 | `../../archive/mockups/2026-05-20-icon-proof-v2/musterdeck-icon-proof-batch-v2.html` | Superseded/archived | Icon review page | V2 improved the outline-first stencil direction, but V3 is now the active source-selection board. |
-| `../musterdeck-free-icon-candidates-v3.html` | Draft | Icon source review page | V3.3 decision board locking the uploaded Salvage reference and replacing Ship Combat's reticle with the target-overlay style. |
+| `../musterdeck-free-icon-candidates-v3.html` | Draft | Icon source review page | V3.5 decision board adding a patched `mdi:hammer-wrench` Salvage candidate while retaining original source and reference candidates. |

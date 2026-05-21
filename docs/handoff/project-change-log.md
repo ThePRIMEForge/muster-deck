@@ -2,6 +2,13 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Project Operating Rules
+
+- Decision: Add operating rules for anti-AI copy review, documentation folder discipline, version-history hygiene, archive/reference handling, chat handoffs, periodic context review, major decision logging, and deployable package cleanliness.
+- Reason: MusterDeck now spans product strategy, brand voice, mockups, generated assets, backend schema, frontend implementation, and deployment planning. The project needs durable process rules so future chats can continue without relying on memory or accumulating stale context.
+- Files affected: `docs/handoff/project-operating-rules.md`, `docs/handoff/2026-05-20-project-organization-guide.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Use these rules before writing user-facing copy, starting new workstreams, archiving material, or creating deployable packages.
+
 ## 2026-05-20 - Platform And Pillar Names
 
 - Decision: Overall platform is MusterDeck, with public domain direction `www.muster-deck.com`.
@@ -163,7 +170,7 @@ Use this file for concise product, architecture, naming, visual, and organizatio
 
 - Decision: Mark user-approved icon choices as locked, acceptable fallbacks as backups, and weak candidates as rejected or unresolved.
 - Decision: Keep custom MusterDeck SVGs where they already read well, including the V2 Quartermaster mark.
-- Decision: Leave Salvage and Ship Combat unresolved instead of forcing poor candidates.
+- Decision: Leave Salvage and Ship Combat unresolved at this stage instead of forcing poor candidates.
 - Reason: The review clarified which free/open-source and local-reference assets are strong enough to carry forward.
 - Files affected: `docs/mockups/musterdeck-free-icon-candidates-v3.html`, `docs/handoff/2026-05-20-musterdeck-free-icon-sourcing-plan.md`, `docs/mockups/assets/ASSET-MANIFEST.md`, `docs/handoff/project-change-log.md`.
 - Follow-up: Extract locked SVGs locally, create attribution tracking for CC BY icons, and run focused searches for Salvage and Ship Combat.
@@ -175,7 +182,7 @@ Use this file for concise product, architecture, naming, visual, and organizatio
 - Decision: Lock Ship Combat back to the V2 custom spaceship mark with a larger target reticle.
 - Reason: The review confirmed most locked icons are good, but Salvage, Rifleman orientation, and Ship Combat needed focused correction.
 - Files affected: `docs/mockups/musterdeck-free-icon-candidates-v3.html`, `docs/handoff/2026-05-20-musterdeck-free-icon-sourcing-plan.md`, `docs/mockups/assets/ASSET-MANIFEST.md`, `docs/handoff/project-change-log.md`.
-- Follow-up: Review the new Salvage rebuild candidate before extracting the final icon set.
+- Follow-up: Resolved by V3.5. The patched `mdi:hammer-wrench` is now the approved Salvage direction.
 
 ## 2026-05-20 - Icon Source Decisions V3.3
 
@@ -183,7 +190,30 @@ Use this file for concise product, architecture, naming, visual, and organizatio
 - Decision: Change Ship Combat to use the target-overlay reticle style instead of the small circular reticle.
 - Reason: The rendered screenshot showed the Salvage custom rebuild was still not recognizable, while the uploaded reference read clearly.
 - Files affected: `docs/mockups/musterdeck-free-icon-candidates-v3.html`, `docs/handoff/2026-05-20-musterdeck-free-icon-sourcing-plan.md`, `docs/mockups/assets/ASSET-MANIFEST.md`, `docs/handoff/project-change-log.md`.
-- Follow-up: Extract or trace a clean SVG from the locked Salvage reference instead of manually redrawing it.
+- Follow-up: Superseded by V3.5. Use the patched `mdi:hammer-wrench` instead of tracing the reference image.
+
+## 2026-05-20 - Icon Source Decisions V3.4
+
+- Decision: Stop treating crossed hammer/wrench composites as viable Salvage candidates; add true single-purpose glyphs for comparison.
+- Decision: Keep the uploaded hammer/wrench reference as the preferred Salvage visual, with `mdi:hammer-wrench` as the strongest free library fallback.
+- Reason: The rendered proof sheet showed the purpose-built glyphs read clearly, while separate icon composites still collapse into visual noise.
+- Files affected: `docs/mockups/musterdeck-free-icon-candidates-v3.html`, `docs/handoff/2026-05-20-musterdeck-free-icon-sourcing-plan.md`, `docs/mockups/assets/ASSET-MANIFEST.md`, `docs/handoff/project-change-log.md`.
+- Verification: Rendered `outputs/mockup-checks/musterdeck-free-icon-candidates-v3-4-full.png` and inspected the Salvage row.
+
+## 2026-05-20 - Icon Source Decisions V3.5
+
+- Decision: Add a MusterDeck-patched version of `mdi:hammer-wrench` for Salvage, closing the awkward break in the handle area while retaining the original glyph as backup.
+- Decision: Lock the patched `mdi:hammer-wrench` as the approved Salvage icon direction.
+- Reason: The single MDI glyph reads correctly for Salvage; only the handle junction needed cleanup.
+- Files affected: `docs/mockups/musterdeck-free-icon-candidates-v3.html`, `docs/handoff/2026-05-20-musterdeck-free-icon-sourcing-plan.md`, `docs/mockups/assets/ASSET-MANIFEST.md`, `docs/handoff/project-change-log.md`.
+- Verification: Rendered `outputs/mockup-checks/musterdeck-free-icon-candidates-v3-5-full.png` and inspected the Salvage row.
+
+## 2026-05-20 - Consolidated Next-Chat Handoff
+
+- Decision: Create one clean start-here handoff for the next chat that consolidates the reset brief, transition notes, CrewTerminal research, S.P.O.I.L.S. notes, visual direction, icon decisions, and current repo state.
+- Reason: The project now has enough parallel planning history that the next session needs a concise entry point instead of rereading every prior note.
+- Files affected: `docs/handoff/2026-05-20-start-here-next-chat.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Start the next chat by reading `docs/handoff/2026-05-20-start-here-next-chat.md`, then review and commit the closeout changes if still approved.
 
 ## 2026-05-20 - Project Folder Organization Pass
 

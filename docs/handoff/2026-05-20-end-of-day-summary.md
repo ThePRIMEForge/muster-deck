@@ -157,6 +157,9 @@ Actions:
 - `docs/handoff/2026-05-20-musterdeck-free-icon-sourcing-plan.md`
   - Free/open-source icon sourcing strategy.
 
+- `docs/handoff/2026-05-20-start-here-next-chat.md`
+  - Consolidated next-chat handoff that merges reset brief, transition notes, product decisions, visual direction, icon decisions, and next steps.
+
 ### Mockups And Assets
 
 Active:
@@ -167,6 +170,7 @@ Active:
 - `docs/mockups/assets/ASSET-MANIFEST.md`
 - `docs/mockups/assets/icon-references/`
 - `docs/mockups/assets/fonts/`
+- `docs/handoff/2026-05-20-start-here-next-chat.md`
 
 Archived:
 
@@ -196,13 +200,15 @@ Modified files at closeout:
 - `docs/handoff/project-change-log.md`
 - `docs/mockups/assets/ASSET-MANIFEST.md`
 - `docs/mockups/musterdeck-free-icon-candidates-v3.html`
+- `docs/handoff/2026-05-20-start-here-next-chat.md`
 
 Summary of those uncommitted edits:
 
 - V3.4 and V3.5 icon source decision notes were added.
-- Salvage direction shifted from tracing the uploaded reference to reviewing a patched `mdi:hammer-wrench` edit.
+- Salvage is now locked to the patched `mdi:hammer-wrench` edit.
 - The active V3 icon board now references moved asset paths under `docs/mockups/assets/icon-references/`.
 - The V3 icon board title/version was updated to V3.5.
+- A consolidated next-chat handoff was added.
 
 These changes appear related to active visual identity/iconography work and should be reviewed tomorrow before committing or revising.
 
@@ -222,15 +228,16 @@ The `.superpowers/` browser artifacts are ignored and should not be committed.
 
 ## Recommended Restart Tomorrow
 
-Start tomorrow by reviewing this file first.
+Start tomorrow by reviewing `docs/handoff/2026-05-20-start-here-next-chat.md` first.
 
 Then do this sequence:
 
-1. Review the uncommitted V3.5 icon-board changes.
-2. Decide whether to commit, revise, or discard those icon-board changes.
-3. Continue the visual brand guide outside or alongside the app repo.
-4. When ready to implement, create an isolated worktree for the shared foundation build.
-5. Execute `docs/superpowers/plans/2026-05-20-shared-foundation-implementation.md` using subagent-driven development.
+1. Import `outputs/position-review/star-citizen-ship-position-review-one-line-preserved.xlsx` into Google Sheets for ship staffing review.
+2. Review and commit the closeout documentation and V3.5 icon-board changes if they still look right.
+3. Vendor the approved icon SVGs locally and add attribution tracking.
+4. Decide whether the next visual mockup should be the logged-in hub, S.P.O.I.L.S. settlement screen, or Rally Point listing detail.
+5. When ready to implement, create an isolated worktree for the shared foundation build.
+6. Execute `docs/superpowers/plans/2026-05-20-shared-foundation-implementation.md` using subagent-driven development.
 
 Recommended first implementation branch:
 
@@ -245,10 +252,8 @@ Before implementation:
 
 ## Open Decisions For Tomorrow
 
-- Whether the patched `mdi:hammer-wrench` Salvage icon is approved.
 - Whether `Operations Hub` or `Command Deck` becomes the logged-in home label.
 - Whether `Report in` is a signup CTA or reserved for authenticated app actions.
 - Whether public landing copy should lead with `Star Citizen operations` or `operations across the 'verse`.
 - Whether fan-kit source folders remain local references or become tracked source assets.
 - Whether the shared foundation implementation should proceed immediately or wait for visual brand guide integration.
-

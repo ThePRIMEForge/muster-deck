@@ -14,6 +14,8 @@ Keep the project easy to navigate as the app grows. We should preserve useful ol
 4. Do not let archived concepts drive current implementation unless they are intentionally restored.
 5. Build a deployment package only when the product direction and implementation are ready for that step.
 
+For copy quality, chat handoff discipline, periodic context review, and deployable-package hygiene, also follow `docs/handoff/project-operating-rules.md`.
+
 ## Folder Roles
 
 ### `src/`
@@ -263,3 +265,4 @@ Before deployment packaging:
 - Supabase migrations must be verified.
 - Legal/footer disclaimer must be present.
 - Current module and Star Citizen data versions must be visible.
+- A package manifest must list included folders, excluded folders, build commands, required environment variables, and the source branch/commit.

@@ -2,6 +2,15 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Local Supabase Verification
+
+- Decision: Use Docker Desktop plus the Supabase CLI as the local database verification path.
+- Decision: Keep generated Wiki vehicle and staffing-template data outside the normal `supabase/seed.sql` reset seed, but provide `npm run db:test` to reset, load generated local data, and run database smoke tests in one repeatable command.
+- Decision: Make SQL smoke files emit pgTAP output so `supabase test db` can report pass/fail correctly.
+- Reason: The app needs lightweight resets for schema work, while Fleet Command smoke tests require the larger generated ship catalog and staffing data.
+- Files affected: `package.json`, `scripts/supabase/load-generated-local-data.sh`, `supabase/tests/fleet_request_helpers_smoke.sql`, `supabase/tests/read_models_smoke.sql`, `supabase/tests/shared_foundation_accounts_smoke.sql`, `docs/handoff/project-change-log.md`.
+- Follow-up: If generated catalog data becomes required for every local reset, consider splitting seed paths into a small default seed and an explicit full-catalog seed profile.
+
 ## 2026-05-21 - Global Messages And Ship Position Baseline
 
 - Decision: Rename the shared notification surface to `Messages and Notifications`.

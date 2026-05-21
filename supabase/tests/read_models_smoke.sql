@@ -1,3 +1,7 @@
+create extension if not exists pgtap with schema extensions;
+
+select extensions.plan(1);
+
 begin;
 
 do $$
@@ -145,3 +149,6 @@ end;
 $$;
 
 rollback;
+
+select extensions.pass('read model smoke checks passed');
+select * from extensions.finish();

@@ -18,8 +18,13 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
     <div className="foundation-shell">
       <header className="foundation-header">
         <button className="foundation-brand" onClick={() => onRouteChange('landing')} type="button">
-          <Shield size={22} />
-          <span>MusterDeck</span>
+          <span className="foundation-brand-mark" aria-hidden="true">
+            <Shield size={18} />
+          </span>
+          <span className="foundation-brand-copy">
+            <span>MusterDeck</span>
+            <small>Operations board</small>
+          </span>
         </button>
         <nav className="foundation-nav" aria-label="Primary navigation">
           {visibleRoutes
@@ -36,27 +41,32 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
             ))}
         </nav>
         <div className="foundation-actions">
-          <button onClick={() => onRouteChange('notifications')} type="button" title="Notifications">
+          <button
+            className="foundation-icon-action"
+            onClick={() => onRouteChange('notifications')}
+            type="button"
+            title="Notifications"
+          >
             <Bell size={17} />
           </button>
-          <button onClick={() => onRouteChange('account')} type="button" title={viewer.displayName}>
+          <button className="foundation-icon-action" onClick={() => onRouteChange('account')} type="button" title={viewer.displayName}>
             <UserRound size={17} />
           </button>
-          <button onClick={() => onRouteChange('login')} type="button" title="Log in">
+          <button className="foundation-icon-action" onClick={() => onRouteChange('login')} type="button" title="Log in">
             <LogIn size={17} />
           </button>
-          <button className="mobile-menu-button" type="button" title="Menu">
+          <button className="foundation-icon-action mobile-menu-button" type="button" title="Menu">
             <Menu size={17} />
           </button>
         </div>
       </header>
 
       <div className="foundation-status-strip">
-        <span>Rally Point v0.1</span>
-        <span>Fleet Command v0.1</span>
-        <span>S.P.O.I.L.S. v0.1</span>
-        <span>Proving Ground v0.1</span>
-        <span>Star Citizen data: 4.8.0-LIVE.11825000</span>
+        <span className="foundation-status-chip">Rally Point v0.1</span>
+        <span className="foundation-status-chip">Fleet Command v0.1</span>
+        <span className="foundation-status-chip">S.P.O.I.L.S. v0.1</span>
+        <span className="foundation-status-chip">Proving Ground v0.1</span>
+        <span className="foundation-status-chip">Star Citizen data: 4.8.0-LIVE.11825000</span>
       </div>
 
       <main className="foundation-main">{children}</main>

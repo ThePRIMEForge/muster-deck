@@ -25,23 +25,31 @@ export function PublicLanding({ onRouteChange }: PublicLandingProps) {
       </div>
 
       <div className="pillar-grid">
-        <article>
-          <Radio size={22} />
+        <article className="foundation-module-card">
+          <span className="foundation-module-icon" aria-hidden="true">
+            <Radio size={22} />
+          </span>
           <h2>{moduleSummaries.rallyPoint.title}</h2>
           <p>{moduleSummaries.rallyPoint.description}</p>
         </article>
-        <article>
-          <ClipboardList size={22} />
+        <article className="foundation-module-card">
+          <span className="foundation-module-icon" aria-hidden="true">
+            <ClipboardList size={22} />
+          </span>
           <h2>{moduleSummaries.fleetCommand.title}</h2>
           <p>{moduleSummaries.fleetCommand.description}</p>
         </article>
-        <article>
-          <Coins size={22} />
+        <article className="foundation-module-card">
+          <span className="foundation-module-icon" aria-hidden="true">
+            <Coins size={22} />
+          </span>
           <h2>{moduleSummaries.spoils.title}</h2>
           <p>{moduleSummaries.spoils.description}</p>
         </article>
-        <article>
-          <Trophy size={22} />
+        <article className="foundation-module-card">
+          <span className="foundation-module-icon" aria-hidden="true">
+            <Trophy size={22} />
+          </span>
           <h2>{moduleSummaries.provingGround.title}</h2>
           <p>{moduleSummaries.provingGround.description}</p>
         </article>

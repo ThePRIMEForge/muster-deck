@@ -1848,7 +1848,7 @@ h3 {
   gap: 8px;
 }
 
-.foundation-icon-action {
+.foundation-actions .foundation-icon-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;

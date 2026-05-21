@@ -19,6 +19,14 @@ export const supabase = hasSupabaseConfig
   ? createClient(supabaseUrl, publishableKey)
   : null;
 
+export type DemoFleetLockState = {
+  masterLocked: boolean;
+  teams: Array<{
+    teamKey: string;
+    locked: boolean;
+  }>;
+};
+
 export async function loadShipCatalog(): Promise<ShipCatalogRow[]> {
   if (!supabase) {
     return [];
@@ -237,6 +245,20 @@ export async function loadDemoFleetSetup(): Promise<FleetShipRequest[]> {
   );
 }
 
+export async function loadDemoFleetLockState(): Promise<DemoFleetLockState> {
+  if (!supabase) {
+    return { masterLocked: false, teams: [] };
+  }
+
+  const { data, error } = await supabase.rpc('demo_fleet_lock_state');
+
+  if (error) {
+    throw error;
+  }
+
+  return data as DemoFleetLockState;
+}
+
 export async function createDemoFleetShipRequest({
   shipSlug,
   primaryCategoryKey,
@@ -360,6 +382,53 @@ export async function removeDemoFleetShipRequest(requestId: string): Promise<voi
   const { error } = await supabase.rpc('remove_demo_fleet_ship_request', {
     target_fleet_event_ship_request_id: requestId,
   });
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function setDemoFleetMasterLock(locked: boolean): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const { error } = await supabase.rpc('set_demo_fleet_master_lock', {
+    target_locked: locked,
+  });
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function setDemoFleetTeamLock({
+  teamKey,
+  locked,
+}: {
+  teamKey: string;
+  locked: boolean;
+}): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const { error } = await supabase.rpc('set_demo_fleet_team_lock', {
+    target_team_key: teamKey,
+    target_locked: locked,
+  });
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function unlockAllDemoFleetShipRosters(): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const { error } = await supabase.rpc('unlock_all_demo_ship_rosters');
 
   if (error) {
     throw error;

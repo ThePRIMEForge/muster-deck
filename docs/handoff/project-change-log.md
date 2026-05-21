@@ -11,6 +11,15 @@ Use this file for concise product, architecture, naming, visual, and organizatio
 - Files affected: `supabase/migrations/20260521220000_demo_fleet_setup_persistence.sql`, `supabase/tests/fleet_request_helpers_smoke.sql`, `src/lib/supabase.ts`, `src/App.tsx`, `docs/superpowers/plans/2026-05-21-fleet-command-line-edit-persistence.md`, `docs/handoff/project-change-log.md`.
 - Follow-up: Design assignment-preserving updates for existing line profile, crew target, and custom position edits.
 
+## 2026-05-21 - Fleet Command Demo Roster Lock Persistence
+
+- Decision: Persist prototype Fleet Command master and team ship roster locks for the saved `DEMO-DRAFT` event.
+- Decision: Keep roster locks scoped to ship suggestions/substitutions while crew assignments remain flexible.
+- Decision: Add a compact lock-state RPC for hydrating the Fleet Command lock buttons on reload.
+- Reason: Officers need saved lock controls before ship suggestion workflows can be trusted during live operation planning.
+- Files affected: `supabase/migrations/20260521220000_demo_fleet_setup_persistence.sql`, `supabase/tests/fleet_request_helpers_smoke.sql`, `src/lib/supabase.ts`, `src/App.tsx`, `docs/superpowers/plans/2026-05-21-fleet-command-lock-persistence.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Add officer-scoped policies and audit/message records when real authenticated event permissions replace demo helpers.
+
 ## 2026-05-21 - Fleet Command Demo Assignment Persistence
 
 - Decision: Persist prototype officer drag-and-drop crew assignments against the saved `DEMO-DRAFT` Fleet Command event.

@@ -382,11 +382,133 @@ $$;
 comment on function public.remove_demo_fleet_ship_request(uuid) is
   'Removes a prototype Fleet Command request from the demo draft event.';
 
+create or replace function public.set_demo_fleet_master_lock(target_locked boolean)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+
+  update public.fleet_events
+  set ship_roster_locked = coalesce(target_locked, false),
+      updated_at = now()
+  where id = demo_event_id;
+end;
+$$;
+
+comment on function public.set_demo_fleet_master_lock(boolean) is
+  'Sets the prototype Fleet Command event-level ship roster lock.';
+
+create or replace function public.set_demo_fleet_team_lock(
+  target_team_key text,
+  target_locked boolean
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+  resolved_team_id uuid;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+
+  select id
+  into resolved_team_id
+  from public.teams
+  where fleet_event_id = demo_event_id
+    and lower(name) = lower(replace(coalesce(target_team_key, 'Unassigned'), '_', ' '));
+
+  if resolved_team_id is null then
+    raise exception 'unknown demo team key: %', target_team_key;
+  end if;
+
+  update public.teams
+  set ship_roster_locked = coalesce(target_locked, false)
+  where id = resolved_team_id;
+end;
+$$;
+
+comment on function public.set_demo_fleet_team_lock(text, boolean) is
+  'Sets a standard team ship roster lock for the prototype Fleet Command event.';
+
+create or replace function public.unlock_all_demo_ship_rosters()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+  perform public.unlock_all_ship_rosters(demo_event_id);
+end;
+$$;
+
+comment on function public.unlock_all_demo_ship_rosters() is
+  'Clears event, team, and request ship roster locks for the prototype Fleet Command event.';
+
+create or replace function public.demo_fleet_lock_state()
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  demo_event_id uuid;
+  master_locked boolean;
+  team_locks jsonb;
+begin
+  demo_event_id := public.ensure_demo_fleet_event();
+
+  select ship_roster_locked
+  into master_locked
+  from public.fleet_events
+  where id = demo_event_id;
+
+  select coalesce(
+    jsonb_agg(
+      jsonb_build_object(
+        'teamKey',
+        lower(replace(team.name, ' ', '_')),
+        'locked',
+        team.ship_roster_locked
+      )
+      order by team.sort_order, team.name
+    ),
+    '[]'::jsonb
+  )
+  into team_locks
+  from public.teams as team
+  where team.fleet_event_id = demo_event_id;
+
+  return jsonb_build_object(
+    'masterLocked',
+    coalesce(master_locked, false),
+    'teams',
+    team_locks
+  );
+end;
+$$;
+
+comment on function public.demo_fleet_lock_state() is
+  'Returns the prototype Fleet Command event and team ship roster lock state for the app shell.';
+
 grant execute on function public.ensure_demo_fleet_event() to anon, authenticated;
 grant execute on function public.create_demo_fleet_ship_request(text, text, integer, text, text, boolean, text) to anon, authenticated;
 grant execute on function public.ensure_demo_fleet_member(text) to anon, authenticated;
 grant execute on function public.assign_demo_member_to_fleet_position(uuid, text, text) to anon, authenticated;
 grant execute on function public.move_demo_fleet_ship_request_to_team(uuid, text) to anon, authenticated;
 grant execute on function public.remove_demo_fleet_ship_request(uuid) to anon, authenticated;
+grant execute on function public.set_demo_fleet_master_lock(boolean) to anon, authenticated;
+grant execute on function public.set_demo_fleet_team_lock(text, boolean) to anon, authenticated;
+grant execute on function public.unlock_all_demo_ship_rosters() to anon, authenticated;
+grant execute on function public.demo_fleet_lock_state() to anon, authenticated;
 grant execute on function public.create_fleet_event_ship_request_with_positions(uuid, uuid, uuid, integer, uuid, text, boolean, text, text) to anon, authenticated;
 grant execute on function public.replace_fleet_event_positions(uuid, jsonb) to anon, authenticated;

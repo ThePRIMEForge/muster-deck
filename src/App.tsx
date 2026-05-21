@@ -54,12 +54,16 @@ import {
   assignDemoMemberToFleetPosition,
   createDemoFleetShipRequest,
   hasSupabaseConfig,
+  loadDemoFleetLockState,
   loadDemoFleetSetup,
   loadShipCatalog,
   loadShipStaffingTemplates,
   moveDemoFleetShipRequestToTeam,
   removeDemoFleetShipRequest,
   replaceFleetEventPositions,
+  setDemoFleetMasterLock,
+  setDemoFleetTeamLock,
+  unlockAllDemoFleetShipRosters,
 } from './lib/supabase';
 import type {
   CrewAssignment,
@@ -392,8 +396,13 @@ function App() {
       };
     }
 
-    Promise.all([loadShipCatalog(), loadShipStaffingTemplates(), loadDemoFleetSetup()])
-      .then(([catalogRows, staffingRows, persistedRequests]) => {
+    Promise.all([
+      loadShipCatalog(),
+      loadShipStaffingTemplates(),
+      loadDemoFleetSetup(),
+      loadDemoFleetLockState(),
+    ])
+      .then(([catalogRows, staffingRows, persistedRequests, lockState]) => {
         if (!active) {
           return;
         }
@@ -401,6 +410,10 @@ function App() {
         setShipCatalog(catalogRows);
         setShipStaffingTemplates(staffingRows);
         setFleetRequests(persistedRequests);
+        setMasterLocked(lockState.masterLocked);
+        setLockedTeams(
+          Object.fromEntries(lockState.teams.map((team) => [team.teamKey, team.locked])),
+        );
         setPersistedFleetSetupActive(true);
         setCatalogState('live');
       })
@@ -565,9 +578,78 @@ function App() {
     setupTypeKey,
   ]);
 
-  function unlockAll() {
+  async function unlockAll() {
+    if (persistedFleetSetupActive) {
+      try {
+        await unlockAllDemoFleetShipRosters();
+        const [persistedRequests, lockState] = await Promise.all([
+          loadDemoFleetSetup(),
+          loadDemoFleetLockState(),
+        ]);
+        setFleetRequests(persistedRequests);
+        setMasterLocked(lockState.masterLocked);
+        setLockedTeams(
+          Object.fromEntries(lockState.teams.map((team) => [team.teamKey, team.locked])),
+        );
+        return;
+      } catch {
+        setCatalogState('error');
+        setPersistedFleetSetupActive(false);
+      }
+    }
+
     setMasterLocked(false);
     setLockedTeams({});
+  }
+
+  async function toggleMasterShipRosterLock() {
+    const nextLocked = !masterLocked;
+
+    if (persistedFleetSetupActive) {
+      try {
+        await setDemoFleetMasterLock(nextLocked);
+        const [persistedRequests, lockState] = await Promise.all([
+          loadDemoFleetSetup(),
+          loadDemoFleetLockState(),
+        ]);
+        setFleetRequests(persistedRequests);
+        setMasterLocked(lockState.masterLocked);
+        setLockedTeams(
+          Object.fromEntries(lockState.teams.map((team) => [team.teamKey, team.locked])),
+        );
+        return;
+      } catch {
+        setCatalogState('error');
+        setPersistedFleetSetupActive(false);
+      }
+    }
+
+    setMasterLocked(nextLocked);
+  }
+
+  async function toggleTeamShipRosterLock(teamKey: string) {
+    const nextLocked = !lockedTeams[teamKey];
+
+    if (persistedFleetSetupActive) {
+      try {
+        await setDemoFleetTeamLock({ teamKey, locked: nextLocked });
+        const [persistedRequests, lockState] = await Promise.all([
+          loadDemoFleetSetup(),
+          loadDemoFleetLockState(),
+        ]);
+        setFleetRequests(persistedRequests);
+        setMasterLocked(lockState.masterLocked);
+        setLockedTeams(
+          Object.fromEntries(lockState.teams.map((team) => [team.teamKey, team.locked])),
+        );
+        return;
+      } catch {
+        setCatalogState('error');
+        setPersistedFleetSetupActive(false);
+      }
+    }
+
+    setLockedTeams((current) => ({ ...current, [teamKey]: nextLocked }));
   }
 
   function toggleExpanded(requestId: string) {
@@ -1444,9 +1526,7 @@ function App() {
                 </button>
                 <button
                   className={locked ? 'lock-toggle locked' : 'lock-toggle'}
-                  onClick={() =>
-                    setLockedTeams((current) => ({ ...current, [teamKey]: !current[teamKey] }))
-                  }
+                  onClick={() => toggleTeamShipRosterLock(teamKey)}
                   type="button"
                   aria-label={`${locked ? 'Unlock' : 'Lock'} ${team} ship roster`}
                 >
@@ -1475,7 +1555,7 @@ function App() {
               <>
                 <button
                   className={masterLocked ? 'icon-action locked' : 'icon-action'}
-                  onClick={() => setMasterLocked((current) => !current)}
+                  onClick={toggleMasterShipRosterLock}
                   type="button"
                   title="Master ship roster lock"
                 >

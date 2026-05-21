@@ -363,6 +363,41 @@ begin
     raise exception 'expected demo request to move to Beta';
   end if;
 
+  perform public.set_demo_fleet_master_lock(true);
+
+  if not exists (
+    select 1
+    from public.fleet_event_ship_request_summary
+    where id = demo_request_id
+      and effective_ship_roster_locked = true
+  ) then
+    raise exception 'expected demo master ship roster lock to lock request summary';
+  end if;
+
+  perform public.set_demo_fleet_master_lock(false);
+  perform public.set_demo_fleet_team_lock('beta', true);
+
+  if not exists (
+    select 1
+    from public.fleet_event_ship_request_summary
+    where id = demo_request_id
+      and team_name = 'Beta'
+      and effective_ship_roster_locked = true
+  ) then
+    raise exception 'expected demo team ship roster lock to lock Beta request summary';
+  end if;
+
+  perform public.unlock_all_demo_ship_rosters();
+
+  if exists (
+    select 1
+    from public.fleet_event_ship_request_summary
+    where id = demo_request_id
+      and effective_ship_roster_locked = true
+  ) then
+    raise exception 'expected demo unlock all to clear effective request lock';
+  end if;
+
   demo_removed_request_id := public.create_demo_fleet_ship_request(
     'rsi-scorpius',
     null,

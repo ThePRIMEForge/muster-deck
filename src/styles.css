@@ -2120,7 +2120,7 @@ h3 {
   outline: 0;
 }
 
-.foundation-provider-button {
+.foundation-form-panel .foundation-provider-button {
   border: 1px solid var(--md-border-subtle);
   background: rgba(255, 255, 255, 0.045);
   color: var(--md-text);
@@ -2179,7 +2179,7 @@ h3 {
 }
 
 .admin-row-restricted,
-.admin-row-suspended {
+.admin-row-banned {
   box-shadow: inset 4px 0 0 var(--md-caution-orange);
 }
 

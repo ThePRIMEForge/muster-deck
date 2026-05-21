@@ -2,6 +2,17 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Confirmed Shared Foundation Direction
+
+- Decision: Save the public investor/collaborator summary as reusable external-facing project material.
+- Decision: Keep `Proving Ground` as the fourth top-level pillar name for now.
+- Decision: Keep `Operations Hub` as the logged-in home that routes to the four pillars, admin panels, and account panels.
+- Decision: Treat Proving Ground as a fourth top-level pillar, not a Rally Point/Event Management sub-module.
+- Decision: Limit first-version Proving Ground score reporting to admins only.
+- Reason: These decisions stabilize the shared foundation navigation and prevent the first app shell from being built around unresolved module names or tournament permissions.
+- Files affected: `docs/marketing/2026-05-21-musterdeck-public-summary.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Carry these decisions into the shared foundation implementation branch.
+
 ## 2026-05-21 - Tournament Prize S.P.O.I.L.S.
 
 - Decision: Extend S.P.O.I.L.S. with a tournament prize settlement variant connected to Proving Ground.

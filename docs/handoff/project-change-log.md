@@ -2,6 +2,15 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Fleet Command Reviewed Staffing Baseline
+
+- Decision: Use the locked `Ship Position Review` export from 2026-05-21 as the Fleet Command staffing baseline for this patch.
+- Decision: Store the locked CSV as tracked database reference material and generate local reviewed staffing SQL from it during database verification.
+- Decision: Load reviewed manual templates instead of the older generated Wiki-suggested staffing templates in the local verification path.
+- Reason: Fleet Command needs repeatable roster-position data based on the reviewed sheet, while generated SQL should remain disposable and easy to rebuild.
+- Files affected: `supabase/reference/ship-position-review-2026-05-21.csv`, `scripts/staffing-templates/reviewed-csv.mjs`, `scripts/staffing-templates/reviewed-csv.test.mjs`, `scripts/staffing-templates/generate-reviewed-staffing-template-sql.mjs`, `scripts/supabase/load-generated-local-data.sh`, `package.json`, `docs/handoff/project-change-log.md`.
+- Follow-up: When ship data changes, update the reference CSV from the reviewed sheet and rerun the database verification path before committing the new baseline.
+
 ## 2026-05-21 - Local Supabase Verification
 
 - Decision: Use Docker Desktop plus the Supabase CLI as the local database verification path.

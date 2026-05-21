@@ -9,7 +9,9 @@ if ! docker ps --format '{{.Names}}' | grep -qx "$container"; then
   exit 1
 fi
 
-for file in supabase/generated/wiki-vehicles-sync/*.sql supabase/generated/staffing-templates/*.sql; do
+npm run staffing:generate-reviewed
+
+for file in supabase/generated/wiki-vehicles-sync/*.sql supabase/generated/reviewed-staffing-templates/*.sql; do
   echo "Loading $file"
   docker exec -i "$container" psql -v ON_ERROR_STOP=1 -U postgres -d postgres < "$file" >/dev/null
 done

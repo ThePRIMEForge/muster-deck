@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test --experimental-strip-types scripts/permissions/*.test.ts scripts/foundation/*.test.ts scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",
     "test:data": "node --test scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",
+    "staffing:generate-reviewed": "node scripts/staffing-templates/generate-reviewed-staffing-template-sql.mjs",
     "db:load-generated": "bash scripts/supabase/load-generated-local-data.sh",
     "db:test": "supabase db reset && npm run db:load-generated && supabase test db"
   },

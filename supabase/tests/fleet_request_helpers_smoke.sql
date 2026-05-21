@@ -72,12 +72,12 @@ begin
     select 1
     from public.fleet_event_positions
     where fleet_event_ship_request_id = test_request_id
-      and role_type = 'remote_turret_gunner'
+      and role_type = 'turret_gunner'
       and min_count = 2
       and max_count = 2
       and required = true
   ) then
-    raise exception 'expected two required Scorpius turret gunners after count multiplier';
+    raise exception 'expected two required Scorpius reviewed turret gunners after count multiplier';
   end if;
 
   perform public.replace_fleet_event_positions(

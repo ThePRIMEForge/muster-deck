@@ -50,7 +50,14 @@ import {
   roleLabels,
   type AppPage,
 } from './lib/permissions';
-import { hasSupabaseConfig, loadShipCatalog, loadShipStaffingTemplates } from './lib/supabase';
+import {
+  createDemoFleetShipRequest,
+  hasSupabaseConfig,
+  loadDemoFleetSetup,
+  loadShipCatalog,
+  loadShipStaffingTemplates,
+  replaceFleetEventPositions,
+} from './lib/supabase';
 import type {
   CrewAssignment,
   FilterMode,
@@ -368,6 +375,7 @@ function App() {
   });
   const [shipCatalog, setShipCatalog] = useState<ShipCatalogRow[]>([]);
   const [shipStaffingTemplates, setShipStaffingTemplates] = useState<ShipStaffingTemplateSummaryRow[]>([]);
+  const [persistedFleetSetupActive, setPersistedFleetSetupActive] = useState(false);
   const [catalogState, setCatalogState] = useState<'preview' | 'loading' | 'live' | 'error'>(
     hasSupabaseConfig ? 'loading' : 'preview',
   );
@@ -381,14 +389,16 @@ function App() {
       };
     }
 
-    Promise.all([loadShipCatalog(), loadShipStaffingTemplates()])
-      .then(([catalogRows, staffingRows]) => {
+    Promise.all([loadShipCatalog(), loadShipStaffingTemplates(), loadDemoFleetSetup()])
+      .then(([catalogRows, staffingRows, persistedRequests]) => {
         if (!active) {
           return;
         }
 
         setShipCatalog(catalogRows);
         setShipStaffingTemplates(staffingRows);
+        setFleetRequests(persistedRequests);
+        setPersistedFleetSetupActive(true);
         setCatalogState('live');
       })
       .catch(() => {
@@ -730,7 +740,12 @@ function App() {
     });
   }
 
-  function addFleetLine() {
+  async function reloadPersistedFleetSetup() {
+    const persistedRequests = await loadDemoFleetSetup();
+    setFleetRequests(persistedRequests);
+  }
+
+  function localAddFleetLine() {
     if (setupMode === 'ship' && !selectedSetupShip) {
       return;
     }
@@ -814,6 +829,80 @@ function App() {
       tags: ['fleet', `team:${setupTeamKey}`, setupMode === 'ship' ? `ship:${requestName}` : `type:${categoryKey}`],
       audience: 'command',
     });
+  }
+
+  async function addFleetLine() {
+    if (!persistedFleetSetupActive) {
+      localAddFleetLine();
+      return;
+    }
+
+    if (setupMode === 'ship' && !selectedSetupShip) {
+      return;
+    }
+
+    if (setupMode === 'type' && !selectedSetupType) {
+      return;
+    }
+
+    const teamName = teamLabel(setupTeamKey);
+    const requestName = setupMode === 'ship' ? selectedSetupShip?.name ?? 'Ship' : `${selectedSetupType?.label} Request`;
+    const categoryKey =
+      setupMode === 'ship'
+        ? selectedSetupShip?.categoryKey ?? 'medium'
+        : setupTypeKey;
+    const shouldReplacePositions =
+      setupProfile === 'custom' ||
+      setupMode === 'type' ||
+      (setupMode === 'ship' && selectedSetupShipTemplates.length === 0);
+    const positionsToPersist =
+      setupProfile === 'custom'
+        ? customPositions
+        : setupMode === 'ship' && selectedSetupShip
+          ? presetPositionsForShip(selectedSetupShip, setupProfile)
+          : buildProfilePositions(setupProfile, buildCategoryTypePositions(setupTypeKey));
+
+    try {
+      for (let index = 0; index < Math.max(1, setupQuantity); index += 1) {
+        const requestId = await createDemoFleetShipRequest({
+          shipSlug: setupMode === 'ship' ? selectedSetupShip?.slug ?? null : null,
+          primaryCategoryKey: setupMode === 'type' ? setupTypeKey : null,
+          requestedCount: 1,
+          teamKey: setupTeamKey,
+          staffingProfile: setupProfile,
+          exactRequired: setupMode === 'ship' && Boolean(selectedSetupShip?.slug),
+          notes:
+            setupProfile === 'custom'
+              ? `Custom crew target: ${customPositions
+                  .filter((position) => position.quantity > 0)
+                  .map((position) => `${position.quantity} ${position.label}`)
+                  .join(', ')}.`
+              : setupMode === 'ship'
+                ? `${profileLabels[setupProfile]} crew target created by fleet planning.`
+                : `${profileLabels[setupProfile]} ${categoryLabel(categoryKey).toLowerCase()} type request. Crew may offer a matching specific ship.`,
+        });
+
+        if (shouldReplacePositions) {
+          await replaceFleetEventPositions(requestId, positionsToPersist);
+        }
+      }
+
+      await reloadPersistedFleetSetup();
+      setFilter('all');
+      pushMessage({
+        title: 'Fleet roster saved',
+        body:
+          setupQuantity > 1
+            ? `${setupQuantity} ${requestName} fleet lines saved to ${teamName}.`
+            : `${requestName} saved to ${teamName}.`,
+        tags: ['fleet', `team:${setupTeamKey}`, setupMode === 'ship' ? `ship:${requestName}` : `type:${categoryKey}`],
+        audience: 'command',
+      });
+    } catch {
+      setCatalogState('error');
+      setPersistedFleetSetupActive(false);
+      localAddFleetLine();
+    }
   }
 
   function moveRequestToTeam(requestId: string, teamKey: string) {

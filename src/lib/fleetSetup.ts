@@ -1,4 +1,4 @@
-import type { StaffingProfile } from './types';
+import type { FleetCategoryKey, FleetShipRequest, StaffingProfile } from './types';
 
 export type FleetSetupPosition = {
   id: string;
@@ -13,6 +13,54 @@ export type ShipStaffingTemplateRow = {
   ship_name: string;
   staffing_profile_key: StaffingProfile;
   staffing_profile_name: string;
+  role_type: string;
+  label: string;
+  required: boolean;
+  min_count: number;
+  max_count: number | null;
+  can_transition_to_fps: boolean;
+  sort_order: number;
+};
+
+export type FleetEventShipRequestSummaryRow = {
+  id: string;
+  fleet_event_id: string;
+  fleet_event_code: string;
+  fleet_event_name: string;
+  ship_id: string | null;
+  ship_slug: string | null;
+  ship_name: string | null;
+  primary_category_id: string | null;
+  requested_primary_category_key: string | null;
+  requested_primary_category_name: string | null;
+  resolved_primary_category_key: string | null;
+  resolved_primary_category_name: string | null;
+  requested_count: number;
+  team_id: string | null;
+  team_name: string | null;
+  parent_team_id: string | null;
+  staffing_profile_id: string | null;
+  staffing_profile_key: StaffingProfile | null;
+  staffing_profile_name: string | null;
+  staffing_profile_color: string | null;
+  is_exact_ship_required: boolean;
+  substitution_policy: 'allow_alternatives' | 'exact_only' | 'locked';
+  effective_ship_roster_locked: boolean;
+  notes: string;
+  required_positions_min: number;
+  required_positions_max: number;
+  optional_positions_min: number;
+  optional_positions_max: number;
+  position_type_count: number;
+  assigned_position_count: number;
+  pending_ship_suggestion_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FleetEventPositionRow = {
+  id: string;
+  fleet_event_ship_request_id: string;
   role_type: string;
   label: string;
   required: boolean;
@@ -91,6 +139,46 @@ export function crewTargetForPositions(positions: FleetSetupPosition[]) {
   return positions.reduce((total, position) => total + Math.max(0, position.quantity), 0);
 }
 
+export function mapPersistedFleetRequests(
+  summaries: FleetEventShipRequestSummaryRow[],
+  positions: FleetEventPositionRow[],
+): FleetShipRequest[] {
+  const positionsByRequest = positions.reduce<Map<string, FleetEventPositionRow[]>>((groups, position) => {
+    const current = groups.get(position.fleet_event_ship_request_id) ?? [];
+    current.push(position);
+    groups.set(position.fleet_event_ship_request_id, current);
+    return groups;
+  }, new Map());
+
+  return summaries.map((summary) => {
+    const categoryKey = (summary.resolved_primary_category_key ?? 'medium') as FleetCategoryKey;
+    const categoryName = summary.resolved_primary_category_name ?? 'Ship';
+    const shipName = summary.ship_name ?? `${categoryName} Request`;
+
+    return {
+      id: summary.id,
+      team: summary.team_name ?? 'Unassigned',
+      teamKey: teamKey(summary.team_name),
+      categoryKey,
+      categoryName,
+      shipName,
+      manufacturer: 'Any',
+      requestedCount: summary.requested_count,
+      staffingProfile: summary.staffing_profile_key ?? 'standard',
+      requiredPositions: summary.required_positions_max,
+      optionalPositions: summary.optional_positions_max,
+      assignedPositions: summary.assigned_position_count,
+      pendingSuggestions: summary.pending_ship_suggestion_count,
+      locked: summary.effective_ship_roster_locked,
+      exactRequired: summary.is_exact_ship_required,
+      hasMarines: categoryKey === 'marines',
+      isAdmiralShip: false,
+      notes: summary.notes,
+      crew: buildCrewFromPersistedPositions(positionsByRequest.get(summary.id) ?? []),
+    };
+  });
+}
+
 function positionFromTemplate(row: ShipStaffingTemplateRow): FleetSetupPosition {
   return {
     id: roleKey(row),
@@ -106,4 +194,24 @@ function templateQuantity(row: ShipStaffingTemplateRow) {
 
 function roleKey(row: Pick<ShipStaffingTemplateRow, 'role_type' | 'label'>) {
   return row.role_type || row.label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function teamKey(teamName: string | null) {
+  return (teamName ?? 'Unassigned').toLowerCase().replace(/\s+/g, '_');
+}
+
+function buildCrewFromPersistedPositions(positions: FleetEventPositionRow[]) {
+  return positions
+    .slice()
+    .sort((left, right) => left.sort_order - right.sort_order || left.label.localeCompare(right.label))
+    .flatMap((position) => {
+      const quantity = Math.max(0, position.max_count ?? position.min_count);
+
+      return Array.from({ length: quantity }, (_, index) => ({
+        id: `${position.id}-${index}`,
+        name: 'Open',
+        role: quantity > 1 ? `${position.label} ${index + 1}` : position.label,
+        status: 'requested' as const,
+      }));
+    });
 }

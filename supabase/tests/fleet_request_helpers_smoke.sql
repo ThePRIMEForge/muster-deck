@@ -17,6 +17,9 @@ declare
   event_lock_blocked boolean := false;
   team_lock_blocked boolean := false;
   request_lock_blocked boolean := false;
+  demo_event_id uuid;
+  demo_team_id uuid;
+  demo_request_id uuid;
 begin
   select id
   into scorpius_id
@@ -278,6 +281,43 @@ begin
       and assignment_type = 'ship_position'
   ) then
     raise exception 'expected crew assignment to remain allowed while ship roster is locked';
+  end if;
+
+  demo_event_id := public.ensure_demo_fleet_event();
+  demo_event_id := public.ensure_demo_fleet_event();
+
+  select id
+  into demo_team_id
+  from public.teams
+  where fleet_event_id = demo_event_id
+    and lower(name) = 'alpha';
+
+  if demo_team_id is null then
+    raise exception 'expected demo Alpha team to be created';
+  end if;
+
+  demo_request_id := public.create_demo_fleet_ship_request(
+    'rsi-scorpius',
+    null,
+    1,
+    'alpha',
+    'standard',
+    false,
+    'demo persisted Scorpius'
+  );
+
+  if not exists (
+    select 1
+    from public.fleet_event_ship_request_summary
+    where id = demo_request_id
+      and fleet_event_id = demo_event_id
+      and ship_slug = 'rsi-scorpius'
+      and team_name = 'Alpha'
+      and staffing_profile_key = 'standard'
+      and required_positions_min = 2
+      and required_positions_max = 2
+  ) then
+    raise exception 'expected demo persisted Scorpius request with copied reviewed positions';
   end if;
 end;
 $$;

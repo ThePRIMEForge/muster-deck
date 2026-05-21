@@ -2,6 +2,15 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - Fleet Setup Draft Persistence
+
+- Decision: Persist the Fleet Command setup table to a single prototype draft operation named `DEMO-DRAFT`.
+- Decision: Add security-definer helpers to create or reuse the demo operation and add ship/category request lines through the existing reviewed-position copy path.
+- Decision: Keep the current local fallback roster when Supabase is unavailable, but use persisted draft setup rows when Supabase is live.
+- Reason: Fleet Setup needs to prove real database persistence before broader live-operation assignment, messaging, and lock workflows are wired.
+- Files affected: `supabase/migrations/20260521220000_demo_fleet_setup_persistence.sql`, `supabase/tests/fleet_request_helpers_smoke.sql`, `src/lib/supabase.ts`, `src/lib/fleetSetup.ts`, `scripts/fleet-command/fleetSetup.test.ts`, `src/App.tsx`, `docs/superpowers/plans/2026-05-21-fleet-command-draft-setup-persistence.md`, `docs/handoff/project-change-log.md`.
+- Follow-up: Replace the prototype demo event helper with authenticated event creation and officer-scoped write policies when real user accounts are connected.
+
 ## 2026-05-21 - Fleet Setup Reviewed Presets And Customization
 
 - Decision: Fleet Command setup uses reviewed ship-position templates for Skeleton, Standard, and Full Crew when a selected ship has reviewed data.

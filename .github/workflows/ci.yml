@@ -1,0 +1,141 @@
+name: CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+env:
+  LANGUAGES: "react"
+
+jobs:
+  pre-commit-hooks:
+    if: hashFiles('.pre-commit-config.yaml') != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pre-commit
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pre-commit
+      - name: Run non-tox pre-commit hooks
+        env:
+          SKIP: tox-suite
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  go:
+    if: contains(env.LANGUAGES, 'go') && hashFiles('go.mod') != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Check gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "Files not formatted with gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+      - name: Run tests
+        run: go test ./...
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+
+  gin:
+    if: contains(env.LANGUAGES, 'gin') && hashFiles('go.mod') != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Download dependencies
+        run: go mod tidy
+      - name: Check gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "Files not formatted with gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+      - name: Run tests
+        run: go test ./...
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+
+  python:
+    if: contains(env.LANGUAGES, 'python') && hashFiles('pyproject.toml') != ''
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tox-env: [lint, type, coverage]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install tox
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install tox
+      - name: Run tox (${{ matrix.tox-env }})
+        run: tox -e ${{ matrix.tox-env }}
+      - name: Upload coverage.xml artifact
+        if: matrix.tox-env == 'coverage'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: error
+      - name: Upload coverage to Codecov
+        if: matrix.tox-env == 'coverage'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  react:
+    if: contains(env.LANGUAGES, 'react') && hashFiles('web/package.json') != ''
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Ensure lockfile exists
+        run: |
+          if [ ! -f package-lock.json ]; then
+            npm install --package-lock-only
+          fi
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint --if-present
+      - name: Build
+        run: npm run build
+      - name: Test (optional)
+        run: |
+          if npm run | grep -qE '^[[:space:]]+test'; then
+            npm test -- --watch=false
+          else
+            echo "No test script defined; skipping tests."
+          fi

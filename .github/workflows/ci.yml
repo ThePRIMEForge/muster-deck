@@ -109,18 +109,14 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   react:
-    if: contains(env.LANGUAGES, 'react') && hashFiles('web/package.json') != ''
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: npm
-          cache-dependency-path: web/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Ensure lockfile exists
         run: |
           if [ ! -f package-lock.json ]; then

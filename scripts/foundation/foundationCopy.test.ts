@@ -16,7 +16,7 @@ test('foundation copy includes all four product pillars', () => {
 });
 
 test('landing copy respects broad combat, industrial, tournament, and reward positioning', () => {
-  assert.equal(foundationCopy.landing.heroTitle, 'Rally, command, settle.');
+  assert.equal(foundationCopy.landing.heroTitle, 'Rally, Command, Settle.');
   assert.match(foundationCopy.landing.heroSubtitle, /cargo/);
   assert.match(foundationCopy.landing.heroSubtitle, /combat/);
   assert.match(foundationCopy.landing.heroSubtitle, /tournaments/);

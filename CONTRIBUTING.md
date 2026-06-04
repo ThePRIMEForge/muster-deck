@@ -164,4 +164,4 @@ npx tsc --noEmit     # type check only
 
 ## Questions
 
-Open an issue and we'll sort it out there.
+Open an issue or join the [Discord](https://discord.gg/95V4mGVaxA).

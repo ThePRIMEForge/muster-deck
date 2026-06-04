@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { guestViewer, useAuth } from './lib/useAuth';
 import {
   CheckCircle2,
   ChevronDown,
@@ -320,10 +321,19 @@ function readStoredViewerId() {
 }
 
 function App() {
+  const { viewer: authViewer, isLoading: authLoading } = useAuth();
+  const foundationViewer = hasSupabaseConfig ? (authViewer ?? guestViewer) : demoFoundationViewer;
+
   const [foundationRoute, setFoundationRoute] = useState<FoundationRouteId>(() =>
-    defaultFoundationRouteForViewer(demoFoundationViewer),
+    defaultFoundationRouteForViewer(hasSupabaseConfig ? guestViewer : demoFoundationViewer),
   );
-  const foundationViewer = demoFoundationViewer;
+
+  useEffect(() => {
+    if (!hasSupabaseConfig || authLoading) return;
+    if (authViewer && (foundationRoute === 'login' || foundationRoute === 'signup' || foundationRoute === 'landing')) {
+      setFoundationRoute('hub');
+    }
+  }, [authViewer, authLoading, foundationRoute]);
   const [fleetRequests, setFleetRequests] = useState(fallbackFleetRequests);
   const [members, setMembers] = useState(() => applyStoredMemberRoles(fallbackMembers));
   const [currentViewerId, setCurrentViewerId] = useState(readStoredViewerId);
@@ -1349,7 +1359,10 @@ function App() {
   if (foundationRoute === 'login' || foundationRoute === 'signup') {
     return (
       <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
-        <AuthScreen mode={foundationRoute === 'login' ? 'login' : 'signup'} />
+        <AuthScreen
+          mode={foundationRoute === 'login' ? 'login' : 'signup'}
+          onSuccess={() => setFoundationRoute('hub')}
+        />
       </AppFrame>
     );
   }

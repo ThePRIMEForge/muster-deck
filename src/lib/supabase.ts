@@ -533,3 +533,45 @@ export async function unlockAllDemoFleetShipRosters(): Promise<void> {
     throw error;
   }
 }
+
+// --- Profile ---
+
+export type ProfileRow = {
+  id: string;
+  auth_user_id: string | null;
+  display_name: string;
+  primary_org: string;
+  rsi_handle: string | null;
+  rsi_verification_status: string;
+  account_status: string;
+};
+
+export async function getOrCreateProfile(): Promise<ProfileRow | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.rpc('get_or_create_profile');
+  if (error || !data?.length) return null;
+  return (data as ProfileRow[])[0];
+}
+
+export async function updateMyProfile({
+  displayName,
+  primaryOrg,
+  rsiHandle,
+}: {
+  displayName?: string;
+  primaryOrg?: string;
+  rsiHandle?: string;
+}): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { error } = await supabase.rpc('update_my_profile', {
+    p_display_name: displayName ?? null,
+    p_primary_org: primaryOrg ?? null,
+    p_rsi_handle: rsiHandle ?? null,
+  });
+  if (error) throw error;
+}
+
+export async function signOut(): Promise<void> {
+  if (!supabase) return;
+  await supabase.auth.signOut();
+}

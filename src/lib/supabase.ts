@@ -575,3 +575,39 @@ export async function signOut(): Promise<void> {
   if (!supabase) return;
   await supabase.auth.signOut();
 }
+
+// --- Admin ---
+
+export type AdminProfileRow = {
+  id: string;
+  display_name: string;
+  account_status: string;
+  rsi_handle: string | null;
+  rsi_verification_status: string;
+  is_site_admin: boolean;
+  last_active_at: string | null;
+  created_at: string;
+  discord_linked: boolean;
+  google_linked: boolean;
+};
+
+export async function listProfilesForAdmin(): Promise<AdminProfileRow[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase.rpc('list_profiles_for_admin');
+  if (error) throw error;
+  return (data ?? []) as AdminProfileRow[];
+}
+
+export async function adminSetAccountStatus(
+  profileId: string,
+  action: 'ban' | 'unban' | 'restrict' | 'unrestrict' | 'require_approval' | 'restore_access',
+  reason = '',
+): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { error } = await supabase.rpc('admin_set_account_status', {
+    p_profile_id: profileId,
+    p_action: action,
+    p_reason: reason,
+  });
+  if (error) throw error;
+}

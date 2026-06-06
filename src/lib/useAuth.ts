@@ -23,7 +23,7 @@ function profileToViewer(profile: ProfileRow): FoundationViewer {
     displayName: profile.display_name,
     accountState,
     operationRole: 'crew',
-    isSiteAdmin: false,
+    isSiteAdmin: profile.is_site_admin,
   };
 }
 
@@ -36,25 +36,33 @@ export function useAuth() {
 
     let cancelled = false;
 
+    // getSession() is the primary loader — it always resolves and unblocks
+    // the loading state, even in React strict mode where onAuthStateChange
+    // may fire to a subscription that was already cleaned up on the first pass.
     void supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (cancelled) return;
-      if (session?.user) {
-        const profile = await getOrCreateProfile();
-        if (!cancelled && profile) setViewer(profileToViewer(profile));
+      try {
+        if (session?.user) {
+          const profile = await getOrCreateProfile();
+          if (!cancelled && profile) setViewer(profileToViewer(profile));
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-      if (!cancelled) setIsLoading(false);
     });
 
+    // onAuthStateChange handles sign-in and sign-out events after initial load.
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (cancelled) return;
       if (event === 'SIGNED_OUT') {
         setViewer(null);
         return;
       }
       if (session?.user) {
         const profile = await getOrCreateProfile();
-        if (profile) setViewer(profileToViewer(profile));
+        if (!cancelled && profile) setViewer(profileToViewer(profile));
       }
     });
 

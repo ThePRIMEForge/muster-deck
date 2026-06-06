@@ -544,6 +544,7 @@ export type ProfileRow = {
   rsi_handle: string | null;
   rsi_verification_status: string;
   account_status: string;
+  is_site_admin: boolean;
 };
 
 export async function getOrCreateProfile(): Promise<ProfileRow | null> {

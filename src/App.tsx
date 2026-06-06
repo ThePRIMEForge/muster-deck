@@ -1348,6 +1348,16 @@ function App() {
     }
   }
 
+  if (hasSupabaseConfig && authLoading) {
+    return (
+      <AppFrame activeRoute="landing" viewer={guestViewer} onRouteChange={setFoundationRoute}>
+        <section className="foundation-page narrow-page">
+          <p className="foundation-subtitle">Loading...</p>
+        </section>
+      </AppFrame>
+    );
+  }
+
   if (foundationRoute === 'landing') {
     return (
       <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>

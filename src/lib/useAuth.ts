@@ -23,7 +23,7 @@ function profileToViewer(profile: ProfileRow): FoundationViewer {
     displayName: profile.display_name,
     accountState,
     operationRole: 'crew',
-    isSiteAdmin: profile.is_site_admin,
+    isSiteAdmin: false,
   };
 }
 
@@ -36,20 +36,26 @@ export function useAuth() {
 
     let cancelled = false;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    void supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (cancelled) return;
-      if (event === 'SIGNED_OUT') {
-        setViewer(null);
-        setIsLoading(false);
-        return;
-      }
       if (session?.user) {
         const profile = await getOrCreateProfile();
         if (!cancelled && profile) setViewer(profileToViewer(profile));
       }
       if (!cancelled) setIsLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setViewer(null);
+        return;
+      }
+      if (session?.user) {
+        const profile = await getOrCreateProfile();
+        if (profile) setViewer(profileToViewer(profile));
+      }
     });
 
     return () => {

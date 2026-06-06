@@ -36,15 +36,11 @@ export function useAuth() {
 
     let cancelled = false;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // getSession() is the primary loader — it always resolves and unblocks
+    // the loading state, even in React strict mode where onAuthStateChange
+    // may fire to a subscription that was already cleaned up on the first pass.
+    void supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (cancelled) return;
-      if (event === 'SIGNED_OUT') {
-        setViewer(null);
-        setIsLoading(false);
-        return;
-      }
       try {
         if (session?.user) {
           const profile = await getOrCreateProfile();
@@ -52,6 +48,21 @@ export function useAuth() {
         }
       } finally {
         if (!cancelled) setIsLoading(false);
+      }
+    });
+
+    // onAuthStateChange handles sign-in and sign-out events after initial load.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (cancelled) return;
+      if (event === 'SIGNED_OUT') {
+        setViewer(null);
+        return;
+      }
+      if (session?.user) {
+        const profile = await getOrCreateProfile();
+        if (!cancelled && profile) setViewer(profileToViewer(profile));
       }
     });
 

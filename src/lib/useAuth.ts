@@ -45,11 +45,14 @@ export function useAuth() {
         setIsLoading(false);
         return;
       }
-      if (session?.user) {
-        const profile = await getOrCreateProfile();
-        if (!cancelled && profile) setViewer(profileToViewer(profile));
+      try {
+        if (session?.user) {
+          const profile = await getOrCreateProfile();
+          if (!cancelled && profile) setViewer(profileToViewer(profile));
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-      if (!cancelled) setIsLoading(false);
     });
 
     return () => {

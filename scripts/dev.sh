@@ -21,6 +21,7 @@ fi
 
 echo "Switching to branch: $BRANCH"
 git fetch origin
+git stash
 git checkout "$BRANCH"
 git pull origin "$BRANCH"
 

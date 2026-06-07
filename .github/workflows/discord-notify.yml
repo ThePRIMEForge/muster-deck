@@ -1,0 +1,52 @@
+name: Discord CI Notify
+
+# Posts a pass/fail message to Discord whenever the CI or CodeQL workflow finishes.
+# Requires a repository secret named DISCORD_WEBHOOK (the #github channel webhook URL).
+# Note: workflow_run triggers only fire once this file is on the default branch.
+
+on:
+  workflow_run:
+    workflows: ["CI", "CodeQL"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post CI result to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WF_URL: ${{ github.event.workflow_run.html_url }}
+          WF_ACTOR: ${{ github.event.workflow_run.actor.login }}
+          WF_TITLE: ${{ github.event.workflow_run.display_title }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "DISCORD_WEBHOOK secret not set — skipping notification."
+            exit 0
+          fi
+
+          case "$WF_CONCLUSION" in
+            success)   COLOR=3066993;  EMOJI="✅"; STATUS="passed" ;;
+            failure)   COLOR=15158332; EMOJI="❌"; STATUS="failed" ;;
+            cancelled) COLOR=9807270;  EMOJI="⚪"; STATUS="cancelled" ;;
+            timed_out) COLOR=15158332; EMOJI="⏰"; STATUS="timed out" ;;
+            *)         COLOR=15844367; EMOJI="⚠️"; STATUS="$WF_CONCLUSION" ;;
+          esac
+
+          payload=$(jq -n \
+            --arg title "$EMOJI $WF_NAME $STATUS — $WF_BRANCH" \
+            --arg desc "$WF_TITLE" \
+            --arg url "$WF_URL" \
+            --arg actor "triggered by $WF_ACTOR" \
+            --argjson color "$COLOR" \
+            '{embeds:[{title:$title, description:$desc, url:$url, color:$color, footer:{text:$actor}}]}')
+
+          curl -sf -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK" \
+            && echo "Posted $WF_NAME=$WF_CONCLUSION to Discord." \
+            || echo "Failed to post to Discord (check the webhook URL secret)."

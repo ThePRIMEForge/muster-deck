@@ -11,6 +11,7 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
+    "prepare": "husky",
     "test": "node --test --experimental-strip-types scripts/permissions/*.test.ts scripts/foundation/*.test.ts scripts/fleet-command/*.test.ts scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",
     "test:data": "node --test scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",
     "staffing:generate-reviewed": "node scripts/staffing-templates/generate-reviewed-staffing-template-sql.mjs",
@@ -32,9 +33,14 @@
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
     "prettier": "^3.0.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.0.0",
     "vite": "^7.2.6"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"]
   }
 }

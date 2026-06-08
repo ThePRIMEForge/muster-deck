@@ -860,11 +860,6 @@ function App() {
     });
   }
 
-  async function reloadPersistedFleetSetup() {
-    const persistedRequests = await loadDemoFleetSetup();
-    setFleetRequests(persistedRequests);
-  }
-
   async function reloadPersistedFleetRosterState() {
     const [persistedRequests, persistedAssignments] = await Promise.all([
       loadDemoFleetSetup(),

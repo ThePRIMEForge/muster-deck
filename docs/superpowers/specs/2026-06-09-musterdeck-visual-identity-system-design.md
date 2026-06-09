@@ -104,8 +104,47 @@ body or primary headings. Stencil faces from the May identity are not used.
 - **Ink stamp motif:** rotated stencil-stamp marks (e.g. status stamps) in rust or pillar accent.
 - **Brushed metal:** faint horizontal brush lines (Rally Point).
 - **CRT scanlines + phosphor glow:** Fleet Command terminal surfaces and any CRT-font text.
-- Precision over grunge: crisp 1px borders, thin dividers, squared controls. No chip-loss, no
-  full-page grunge filters.
+- The retired worn-paint **chip-loss / weathering** system stays retired. "More texture" below
+  means richer surface grain and depth, **not** a return to the grunge-filter look.
+
+## Weight, Depth & Glow (2026-06-09 addendum)
+
+This refines the earlier "machined / minimal / thin-1px" stance. The site should feel **heavier and
+more tactile** — more physical weight, not flatter. Where this conflicts with the original "precision
+over grunge, thin dividers" guidance above, this addendum wins.
+
+- **More texture, site-wide:** apply subtle surface texture (screenprint grain / fine noise) across
+  all surfaces, not only per-pillar accents — enough to kill flat dead-color panels.
+- **Thicker borders:** raise default borders from hairline 1px toward ~1.5–2px, with stronger
+  presence on cards, islands, and controls.
+- **Glow + shadow everywhere it earns it:** layered drop shadows for separation and depth; soft
+  accent glow on focus and key surfaces.
+- **Glowing CTAs:** primary calls-to-action carry an accent glow (box-shadow halo) at rest, and a
+  brighter glow on hover/active.
+- **Hover effects:** interactive elements (buttons, islands, nav, cards) respond on hover with
+  added glow and/or lift (shadow + slight translate).
+- **3D depth on buttons and islands:** raised treatment — edge highlights (inset top highlight),
+  bottom/outer shadow, optional press-in active state — so buttons and pillar islands read as
+  physical, depressible objects rather than flat rectangles.
+- Keep it **token-driven**: define shadow, glow, border-weight, and depth as reusable CSS variables
+  so weight can be tuned globally.
+
+These are deliberate "add weight" moves; legibility and performance still gate them (glow/shadow must
+not blow out text or tank render performance — verify at build).
+
+**Chosen weight level: "D · Max / Hardware"** (from the 2026-06-09 weight/depth options board, saved
+to Drive as `2026-06-09-musterdeck-weight-depth.{pdf,html}`). Specifics:
+
+- Borders ~2.5px, accent-tinted, on cards/islands/controls.
+- Strong site-wide surface grain (noise texture ~0.5 opacity).
+- Islands: thick bevel — inset top highlight + inner bottom shadow + large outer drop shadow; on
+  hover they lift (translateY + slight scale) and gain an accent glow.
+- CTAs: extruded/raised with a resting accent glow that brightens on hover; press-in (translateY)
+  active state.
+- **Refinement flag:** the extruded CTA's hard flat bottom-edge shadow (the `0 6px 0 <dark>` color
+  edge) read as "weird" in the pre-vis. Refine at build — soften or restyle the button's 3D edge
+  (e.g. blended dual-shadow or a beveled border-bottom rather than a flat color slab) so it reads as
+  a clean physical key, not a detached bar.
 
 ## Header Behavior — 3-tier, loud → calm
 

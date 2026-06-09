@@ -35,7 +35,7 @@
   font-family: "Capture It";
   font-style: normal;
   font-weight: 400;
-  src: url("../Fankit_2025_11_19/05_FONTS/capture-it/Capture it.ttf") format("truetype");
+  src: url("./assets/fonts/capture-it/capture-it.ttf") format("truetype");
 }
 
 * {

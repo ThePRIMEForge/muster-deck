@@ -61,6 +61,9 @@ const privacyPolicy: LegalDocument = {
             'Account information: your email address and a securely hashed password, handled by our authentication provider (Supabase). We never store your password in readable form.',
             'Profile information: your display name (callsign), optional primary organization, and optional RSI handle.',
             'Operational data you create: the listings, rosters, assignments, settlement records, and similar content you enter while using the app.',
+            'Linked-account identifiers: if you sign in with or connect Discord or Google, the account identifier and the basic profile details those services share with us (such as your email address and display name).',
+            'Support and moderation records: messages you send us for support, and records of reports, moderation actions, or enforcement decisions relating to your account.',
+            'Support and payment metadata (not enabled yet): if we later offer Patreon or paid features, your membership status or tier and basic subscription metadata. Full payment details are handled by the payment provider, not stored by us — see "How we share information."',
             'Essential local storage: small pieces of data stored in your browser to keep you signed in and remember basic app state. This is required for the app to function.',
           ],
         },
@@ -128,6 +131,8 @@ const privacyPolicy: LegalDocument = {
             'Supabase — authentication and database hosting for your account and app data.',
             'Netlify — hosting and delivery of the website.',
             'Discord — if you choose to link a Discord identity or interact with our community integrations.',
+            'Google — if you choose to sign in with Google, for authenticating your account.',
+            'Patreon or a payment processor (not enabled yet) — if we later offer support or paid features, the relevant provider processes membership and payment details under its own terms and privacy policy. MusterDeck does not receive or store your full card number.',
           ],
         },
         {
@@ -156,7 +161,7 @@ const privacyPolicy: LegalDocument = {
           type: 'list',
           items: [
             'EU/UK (GDPR): access, correction, deletion, restriction, portability, objection, and the right to withdraw consent. You may also lodge a complaint with your local data-protection authority.',
-            'California (CCPA/CPRA): the right to know what we collect, to delete it, to correct it, and to opt out of sale or sharing. We do not sell or share personal information.',
+            'California (CCPA/CPRA): where these laws apply, the right to know what we collect, to delete it, to correct it, and to opt out of the sale or sharing of personal information. We do not sell or share personal information, and we honor these rights for California users regardless of whether MusterDeck currently meets the law’s business-size thresholds.',
             'Canada (PIPEDA): the right to access your information and to challenge its accuracy, and our accountability for how it is handled.',
           ],
         },
@@ -221,7 +226,7 @@ const termsOfService: LegalDocument = {
   lastUpdated: '2026-06-09',
   isDraft: true,
   intro:
-    'These terms govern your use of MusterDeck. By creating an account or using the app, you agree to them. MusterDeck is a free, fan-made tool provided as-is.',
+    'These terms govern your use of MusterDeck. By creating an account or using the app, you agree to them. MusterDeck is a fan-made tool currently provided free of charge and as-is; if we add paid features in future, separate paid-service terms will apply at checkout.',
   sections: [
     {
       heading: 'Acceptance of these terms',
@@ -270,6 +275,23 @@ const termsOfService: LegalDocument = {
       ],
     },
     {
+      heading: 'Support, donations, and paid features',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'MusterDeck may offer optional ways to support the project, including Patreon or similar third-party platforms. Unless we clearly state otherwise, support payments are voluntary and are not charitable, tax-deductible donations — MusterDeck is not a registered charity. Any benefits offered to supporters may change over time.',
+        },
+        {
+          type: 'paragraph',
+          text: 'Patreon or the relevant payment provider processes your payment details under its own terms and privacy policy; MusterDeck never receives or stores your full card number. If we later offer paid subscriptions or supporter-only tools, the checkout page will describe the price, billing period, renewal and cancellation terms, included features, and refund policy before you pay, and those purchases will be governed by separate paid-service terms.',
+        },
+        {
+          type: 'paragraph',
+          text: 'No paid feature implies any affiliation with, or endorsement by, Cloud Imperium Games or Roberts Space Industries.',
+        },
+      ],
+    },
+    {
       heading: 'Automated access',
       blocks: [
         {
@@ -306,6 +328,15 @@ const termsOfService: LegalDocument = {
       ],
     },
     {
+      heading: 'Mandatory consumer rights',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'Nothing in these terms limits rights that cannot legally be waived, including mandatory consumer, privacy, or digital-service rights that apply where you live. Where local law gives you stronger protections than these terms, those protections apply.',
+        },
+      ],
+    },
+    {
       heading: 'Termination',
       blocks: [
         {
@@ -319,7 +350,7 @@ const termsOfService: LegalDocument = {
       blocks: [
         {
           type: 'paragraph',
-          text: `These terms are governed by the laws of ${GOVERNING_LAW}, without regard to conflict-of-laws rules. This will be finalized before launch.`,
+          text: `These terms are governed by the laws of ${GOVERNING_LAW}, without regard to conflict-of-laws rules. This will be finalized before launch. The chosen governing law does not remove mandatory consumer-protection rights that apply in the country where you live.`,
         },
       ],
     },
@@ -328,7 +359,7 @@ const termsOfService: LegalDocument = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'We may update these terms as the platform evolves. We will update the "last updated" date above, and significant changes will be communicated more prominently. Continued use after changes means you accept the updated terms.',
+          text: 'We may update these terms as the platform evolves. We will update the "last updated" date above, and significant changes will be communicated more prominently. Continued use after changes means you accept the updated terms. Material changes to paid features will not reduce access you have already paid for without notice or any legally required remedy.',
         },
       ],
     },
@@ -353,6 +384,15 @@ const disclaimer: LegalDocument = {
   intro:
     'MusterDeck is an independent, fan-made tool. This page states our relationship — or lack of one — to the rights holders behind Star Citizen.',
   sections: [
+    {
+      heading: 'Unofficial Star Citizen fan site',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'MusterDeck is an unofficial Star Citizen fan site, not affiliated with the Cloud Imperium group of companies. All Star Citizen-related content not authored by MusterDeck or its users is the property of its respective owners. Official Star Citizen information is available at https://robertsspaceindustries.com.',
+        },
+      ],
+    },
     {
       heading: 'Independent fan project',
       blocks: [

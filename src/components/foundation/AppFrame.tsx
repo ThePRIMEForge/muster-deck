@@ -100,8 +100,9 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
         <div className="foundation-footer-primary">
           <p>{fanProjectDisclaimer}</p>
           <div className="foundation-footer-links">
-            <button type="button">Privacy Policy</button>
-            <button type="button">Terms of Service</button>
+            <button type="button" onClick={() => onRouteChange('privacy')}>Privacy Policy</button>
+            <button type="button" onClick={() => onRouteChange('terms')}>Terms of Service</button>
+            <button type="button" onClick={() => onRouteChange('legal')}>Disclaimer</button>
             <button type="button">Status</button>
           </div>
         </div>

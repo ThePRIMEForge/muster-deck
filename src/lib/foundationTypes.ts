@@ -11,7 +11,10 @@ export type FoundationRouteId =
   | 'rally-browse'
   | 'fleet-command'
   | 'spoils'
-  | 'proving-ground';
+  | 'proving-ground'
+  | 'privacy'
+  | 'terms'
+  | 'legal';
 
 export type FoundationModuleKey = 'rally_point' | 'fleet_command' | 'spoils' | 'proving_ground';
 

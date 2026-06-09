@@ -83,6 +83,27 @@ export const appRoutes: FoundationRoute[] = [
     requiresAuth: true,
     buildPriority: 'draft_now',
   },
+  {
+    id: 'privacy',
+    label: 'Privacy Policy',
+    public: true,
+    requiresAuth: false,
+    buildPriority: 'build_now',
+  },
+  {
+    id: 'terms',
+    label: 'Terms of Service',
+    public: true,
+    requiresAuth: false,
+    buildPriority: 'build_now',
+  },
+  {
+    id: 'legal',
+    label: 'Disclaimer',
+    public: true,
+    requiresAuth: false,
+    buildPriority: 'build_now',
+  },
 ];
 
 export function isSignedIn(viewer: FoundationViewer) {

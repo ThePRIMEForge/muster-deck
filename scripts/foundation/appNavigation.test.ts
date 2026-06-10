@@ -36,7 +36,7 @@ const admin: FoundationViewer = {
 test('guest users only see public and auth routes', () => {
   assert.deepEqual(
     visibleFoundationRoutes(guest).map((route) => route.id),
-    ['landing', 'rally-browse', 'login', 'signup'],
+    ['landing', 'rally-browse', 'login', 'signup', 'privacy', 'terms', 'legal'],
   );
   assert.equal(defaultFoundationRouteForViewer(guest), 'landing');
 });

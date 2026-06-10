@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 import { appRoutes, isSignedIn } from '../../lib/appNavigation';
 import { fanProjectDisclaimer } from '../../lib/foundationCopy';
 import type { FoundationRouteId, FoundationViewer } from '../../lib/foundationTypes';
+import { openConsentManager } from '../../lib/useConsent';
+import { ConsentBanner } from './ConsentBanner';
 
 type AppFrameProps = {
   activeRoute: FoundationRouteId;
@@ -103,6 +105,7 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
             <button type="button" onClick={() => onRouteChange('privacy')}>Privacy Policy</button>
             <button type="button" onClick={() => onRouteChange('terms')}>Terms of Service</button>
             <button type="button" onClick={() => onRouteChange('legal')}>Disclaimer</button>
+            <button type="button" onClick={() => openConsentManager()}>Cookie preferences</button>
             <button type="button">Status</button>
           </div>
         </div>
@@ -114,6 +117,8 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
           <span className="foundation-status-chip">SC data 4.8.0-LIVE.11825000</span>
         </div>
       </footer>
+
+      <ConsentBanner onRouteChange={onRouteChange} />
     </div>
   );
 }

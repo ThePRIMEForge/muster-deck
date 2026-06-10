@@ -17,6 +17,11 @@ only user list is the admin/moderator moderation table).
 This ships in two epics on a shared real-time foundation. **Epic 1 (Friends & Presence)
 ships first and stands on its own.** Epic 2 (Messaging) builds on top.
 
+**Framing — this is intentionally lightweight.** MusterDeck messaging is a low-friction option
+for members who aren't comfortable moving into Discord yet; it is **not** meant to replace Discord.
+That framing justifies the deliberately small retention limits (§6.5) and the modest scale we're
+designing for.
+
 ---
 
 ## 2 · Scope — two distinct lists
@@ -50,8 +55,12 @@ participant chat) — see §6.
 
 ## 4 · Shared foundation (both epics depend on this)
 
-- **Real-time infrastructure spike** — confirm approach (Supabase Realtime channels vs. heartbeat
-  polling) for both presence and live messaging. Blair's call. This is a prerequisite ticket.
+- **Real-time transport — Supabase Realtime channels (confirmed; not heartbeat polling).** Powers
+  both presence and live messaging. Setup/conventions are a prerequisite ticket.
+- **Presence cadence (recommended, lightweight):** use Realtime **Presence** so online/offline is
+  event-driven (join/leave → near-instant), with no polling timer. The "what they're doing in
+  MusterDeck" context updates only on a **screen/activity change**, and `last_seen_at` is written on
+  disconnect. This is effectively free — a few-minutes timer isn't needed.
 - **Building block in place:** `profiles.last_seen_at` already exists
   (`supabase/migrations/20260520190000_shared_foundation_accounts.sql`) — currently unused.
 
@@ -81,9 +90,16 @@ that bound that abuse surface are defined here in Epic 1 so they exist before me
 - **Relationship gate:** to *open a private thread* with someone, you must share a relationship —
   friend, shared org, or shared activity (both signed up to the same activity). Prevents cold,
   context-free DMs.
-- **Rate limiting:** caps on outbound friend requests and on cold DMs to people you don't already
-  have a thread with.
-- **Block:** as in §5.1.
+- **Rate limiting (recommended starter values, tunable):** friend requests **20 / day**; cold DMs
+  to people you don't already share a thread with **5 / hour**, and you can't keep messaging a cold
+  contact who hasn't replied (anti-spam). Block has no limit. Numbers are deliberately conservative
+  given expected low usage; Blair tunes after launch.
+- **Block & Report buttons on every person** — surfaced wherever a person appears (friends list,
+  roster, profile, chat). **Block** is per-user and stops contact both directions (§5.1). **Report**
+  routes into the moderation flow (§6.3).
+- **Blocks notify moderators/admins** — each block emits a signal into the mod/admin notification
+  view as an abuse indicator (a user being blocked repeatedly is a flag worth seeing). *Assumption
+  to confirm with Blair: this is a mod/admin-facing signal, not a notification to the blocked user.*
 
 > Activity *channels* themselves are not the main abuse vector (membership = legitimate signups).
 > The gate primarily governs the **start-a-private-thread (Y)** path and friend requests.
@@ -105,9 +121,15 @@ that bound that abuse surface are defined here in Epic 1 so they exist before me
 - **💬 Participant chat** — everyone signed up talks in the same channel.
 - **Start a private DM/group DM** with specific people from a roster (the Y path; subject to §5.3).
 
-### 6.3 Report-from-chat  *(moved up from backlog per Blair's review)*
-Given how open activity channels are, a **report action from within a chat** is in Epic 2 core, not
-the backlog. Routes into the existing admin/moderator tooling (Admin Portal / Moderator page).
+### 6.3 Report & moderation flow  *(moved up from backlog per Blair's review)*
+Given how open activity channels are, reporting is in Epic 2 core, not the backlog.
+
+- **Report button** on every person (per §5.3) and from within any chat.
+- A report lands in a **moderator/admin inbox**, including a **link to the last conversation thread
+  with the reported member** so a moderator has immediate context.
+- Routes into the existing admin/moderator tooling (Admin Portal #110 / Moderator page #111), which
+  already supports time-out / ban / blocklist actions.
+- Block events also feed the mod/admin view as a passive abuse signal (§5.3).
 
 ### 6.4 Pillar-maturity rule  *(explicit, so the assumption is not lost)*
 - The **activity-channel capability** (the reusable pattern: a channel bound to a signup list, with
@@ -117,6 +139,19 @@ the backlog. Routes into the existing admin/moderator tooling (Admin Portal / Mo
   own build-out** — a named acceptance criterion inside each pillar's epic — **not** as separate
   standalone "later" tickets. When the pillar matures enough to have a participant/signup list, its
   channel comes online by wiring that list into the Epic 2 capability.
+
+---
+
+### 6.5 Retention & scale  *(deliberately small)*
+Designed for light use (see Framing in §1), which keeps storage and complexity low:
+
+- **DMs & group DMs:** rolling **last 50 messages per thread** — older messages drop off. Keep only
+  the **15 most-recent conversations per user**; older threads age out.
+- **Activity channels:** lifetime is bound to the activity — a channel is archived/removed when its
+  activity closes. *Open for Blair: a busy op channel may want a higher or time-based cap than 50;
+  flagged rather than assumed.*
+- Implementation: enforce via a scheduled prune (or trigger) rather than keeping everything and
+  filtering at read time.
 
 ---
 
@@ -141,15 +176,22 @@ the backlog. Routes into the existing admin/moderator tooling (Admin Portal / Mo
 
 ---
 
-## 9 · Open questions for Blair
+## 9 · Decisions resolved + remaining questions for Blair
 
-1. **Real-time approach** — Supabase Realtime channels vs. heartbeat polling for presence; and the
-   transport for live messages.
-2. **Presence write cadence** — how often `last_seen_at` / activity context updates (cost vs.
-   freshness).
-3. **Relationship-gate defaults** — what the default "who can DM me" value is for a new user.
-4. **Rate-limit thresholds** — concrete numbers for friend requests / cold DMs.
-5. **Message retention** — do we keep full DM/channel history indefinitely, or cap it?
+**Resolved (2026-06-10):**
+- Real-time transport: **Supabase Realtime channels** (not heartbeat). → §4
+- Presence cadence: **event-driven via Realtime Presence**, context on screen change; no polling. → §4
+- Rate limits: starter values **20 req/day, 5 cold DMs/hour** (tunable). → §5.3
+- Retention: **50 messages/thread, 15 threads/user**. → §6.5
+- Block + Report on every person; report → mod/admin inbox with link to last thread; blocks signal
+  mods/admins. → §5.3, §6.3
+
+**Still open for Blair:**
+1. **Relationship-gate default** — default "who can DM me" value for a new user (recommend:
+   *Org members + shared activity*, not fully open).
+2. **Busy-channel retention** — whether activity channels need a higher/time-based cap than 50 (§6.5).
+3. **Block-signal direction** — confirm blocks are a mod/admin-facing signal only, not surfaced to
+   the blocked user (§5.3).
 
 ---
 
@@ -158,17 +200,18 @@ the backlog. Routes into the existing admin/moderator tooling (Admin Portal / Mo
 - **[EPIC] Friends & Presence** (`epic`, new `epic:social` label)
   - Foundation spike: real-time infrastructure approach
   - Friend graph: requests / accept / decline / remove (data model + RLS migration)
-  - Block a user
-  - Presence tracking service (online + in-app activity)
+  - Block + Report buttons on every person (block stops contact both ways)
+  - Presence tracking service (online + in-app activity) via Supabase Realtime Presence
   - Friends-Online panel (Crossroads + Rally Point browse)
   - "Who's here" roster (Fleet Command op + S.P.O.I.L.S. settlement)
-  - Privacy & safety: "who can DM me" setting + relationship gate + rate limiting
+  - Privacy & safety: "who can DM me" setting + relationship gate + rate limiting + block-signal to mods
 - **[EPIC] Messaging** (`epic:social`, *depends on Friends & Presence*)
   - Friend DMs (1-on-1)
   - Group DMs
   - Activity-channel capability (announcements + participant chat) — Rally Point + Fleet Command
   - Start private thread from a roster
-  - Report-from-chat → admin/mod tooling
+  - Report → moderator/admin inbox with link to last thread (→ Admin #110 / Moderator #111)
+  - Retention prune: 50 messages/thread, 15 threads/user (scheduled job/trigger)
 - **Cross-pillar acceptance criteria** (added to existing pillar epics #107 S.P.O.I.L.S. and #108
   Proving Ground): "activity channel wired to this pillar's signup list."
 - **Backlog tickets:** Discord announcement-bridge · in-game SC status · Away/DND · native-app

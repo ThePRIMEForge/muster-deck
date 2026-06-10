@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
     "test": "node --test --experimental-strip-types scripts/permissions/*.test.ts scripts/foundation/*.test.ts scripts/fleet-command/*.test.ts scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",

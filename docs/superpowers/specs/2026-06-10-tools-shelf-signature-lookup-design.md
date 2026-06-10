@@ -1,4 +1,4 @@
-# Tools Shelf + "What's That Signature?" — Design
+# Tools Shelf + "Signature Ident" — Design
 
 **Date:** 2026-06-10
 **Status:** Approved in brainstorm; ready for Blair review → ticketing
@@ -9,7 +9,9 @@
 ## 1 · Goal & framing
 
 Introduce a **Tools** area in MusterDeck — a lightweight shelf of small, self-contained utilities
-for players — and ship its **first tool**: a Star Citizen mining **radar-signature lookup**.
+for players — and ship its **first tool**, **Signature Ident**: a Star Citizen mining
+**radar-signature lookup**. ("Ident" = identify-from-signal, in the IFF/comms sense — the tool
+identifies an ore from its radar signature.)
 
 This is its **own epic / new scope**. The Tools shelf is deliberately *not* a fifth pillar: it reads
 as a collection of handy helpers, visually lighter than Rally Point, Fleet Command, Spoils, and
@@ -77,7 +79,7 @@ credit to the original author.
 - `src/lib/tools/signatureMatch.ts` — pure functions: `parseSignatureInput(raw)` and
   `findSignatureMatches(value)` returning the ranked top-5. No DOM, no React — easily unit-tested.
 - `src/components/tools/ToolsHub.tsx` — the shelf. Renders a grid of **tool cards**; v1 has one card
-  ("What's That Signature?"). Holds local state for which tool is open and renders it inline, so
+  ("Signature Ident"). Holds local state for which tool is open and renders it inline, so
   adding future tools needs no new top-level route. Includes an empty/"more tools coming" affordance.
 - `src/components/tools/SignatureLookup.tsx` — the tool UI: number input + live results list + the
   patch caption + attribution line.

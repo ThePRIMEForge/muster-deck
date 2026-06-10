@@ -6,10 +6,10 @@
 // so the UI shows a "pending legal review" banner. Do not treat as binding
 // until a qualified human has reviewed it.
 //
-// Two values still require a human decision before launch (see the legal-pages
-// PR description). They are centralised here so they can be set in one place:
-const PRIVACY_CONTACT = 'the MusterDeck team via the project Discord';
-const GOVERNING_LAW = 'a jurisdiction to be confirmed before launch';
+// Centralised contact + governing law (set 2026-06-09). Pages remain isDraft
+// until a lawyer reviews them (planned closer to when monetization begins).
+const PRIVACY_CONTACT = 'MusterDeck (Christoph Mayer) at cm@f-shift.com';
+const GOVERNING_LAW = 'British Columbia, Canada';
 
 export type LegalBlock = { type: 'paragraph'; text: string } | { type: 'list'; items: string[] };
 
@@ -44,7 +44,7 @@ const privacyPolicy: LegalDocument = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'MusterDeck is an independent fan-made operations tool for Star Citizen players and organizations. For the purposes of data-protection law, the MusterDeck team is the controller of the personal data described here. We are not affiliated with Cloud Imperium Games or Roberts Space Industries.',
+          text: 'MusterDeck is an independent fan-made operations tool for Star Citizen players and organizations. For the purposes of data-protection law, MusterDeck — operated by Christoph Mayer — is the controller of the personal data described here, and can be reached at cm@f-shift.com. We are not affiliated with Cloud Imperium Games or Roberts Space Industries.',
         },
       ],
     },
@@ -350,7 +350,7 @@ const termsOfService: LegalDocument = {
       blocks: [
         {
           type: 'paragraph',
-          text: `These terms are governed by the laws of ${GOVERNING_LAW}, without regard to conflict-of-laws rules. This will be finalized before launch. The chosen governing law does not remove mandatory consumer-protection rights that apply in the country where you live.`,
+          text: `These terms are governed by the laws of ${GOVERNING_LAW}, without regard to conflict-of-laws rules. The chosen governing law does not remove mandatory consumer-protection rights that apply in the country where you live.`,
         },
       ],
     },

@@ -31,6 +31,7 @@ import { AccountSettings } from './components/foundation/AccountSettings';
 import { AdminPortal } from './components/foundation/AdminPortal';
 import { AppFrame } from './components/foundation/AppFrame';
 import { AuthScreen } from './components/foundation/AuthScreen';
+import { LegalPage } from './components/foundation/LegalPage';
 import { NotificationCenter } from './components/foundation/NotificationCenter';
 import { OperationsHub } from './components/foundation/OperationsHub';
 import { PublicLanding } from './components/foundation/PublicLanding';
@@ -43,6 +44,7 @@ import {
 } from './lib/fleetSetup';
 import { hydrateMembersFromPersistedAssignments } from './lib/fleetMembers';
 import { demoFoundationViewer } from './lib/foundationData';
+import { legalDocuments } from './lib/legalContent';
 import type { FoundationRouteId } from './lib/foundationTypes';
 import {
   canAccessPage,
@@ -1411,6 +1413,14 @@ function App() {
             This module is planned and will be built after the shared foundation and Fleet Command core are stable.
           </p>
         </section>
+      </AppFrame>
+    );
+  }
+
+  if (foundationRoute === 'privacy' || foundationRoute === 'terms' || foundationRoute === 'legal') {
+    return (
+      <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+        <LegalPage doc={legalDocuments[foundationRoute]} />
       </AppFrame>
     );
   }

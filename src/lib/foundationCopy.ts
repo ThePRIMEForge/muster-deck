@@ -14,30 +14,46 @@ export const moduleSummaries = {
   rallyPoint: {
     title: 'Rally Point',
     action: 'Find an operation',
-    description: 'Browse open runs, offer your ship, and join crews that need your station.',
+    description:
+      'Browse LFG listings, find open crews, offer your ship or role, and join operations that need your station.',
+    detail:
+      'Rally Point is the public-facing LFG board. Guests can inspect open listings before creating an account, but posting, joining, messaging, and crew coordination require a MusterDeck account.',
+    publicAccess: 'Guest access: open LFG listings only.',
   },
   fleetCommand: {
     title: 'Fleet Command',
     action: 'Command an operation',
-    description: 'Build the roster, assign the crew, and keep the operation moving.',
+    description:
+      'Build rosters, assign crew, track ship requests, and keep an operation organized from setup through launch.',
+    detail:
+      'Fleet Command is the working board for hosts and officers. It manages ship staffing, role assignments, team structure, check-ins, and the operational messages that keep a crew aligned.',
+    publicAccess: 'Account required for command tools.',
   },
   spoils: {
     title: 'S.P.O.I.L.S.',
     action: 'Settle rewards',
-    description: 'Log the haul, approve claims, and settle shares after the job is done.',
+    description:
+      'Log hauls, review claims, approve payout splits, and settle shares after the job is done.',
+    detail:
+      'S.P.O.I.L.S. is the settlement lane. It turns messy post-op payout math into a clear review flow for claims, approvals, adjustments, and final shares.',
+    publicAccess: 'Account required for settlement access.',
   },
   provingGround: {
     title: 'Proving Ground',
     action: 'Run a tournament',
-    description: 'Open signups, seed brackets, report scores, and publish standings.',
+    description:
+      'Run events, open signups, seed brackets, report scores, and publish standings or leaderboards.',
+    detail:
+      'Proving Ground supports competitions and repeatable event formats. Guests may be able to view selected leaderboards, while signup, reporting, moderation, and bracket tools belong to account holders.',
+    publicAccess: 'Guest access: selected event leaderboards.',
   },
 } as const;
 
 export const foundationCopy = {
   landing: {
-    heroTitle: 'Rally, command, settle.',
+    heroTitle: 'Rally, Command, Settle.',
     heroSubtitle: "Coordinate crews, cargo, combat, tournaments, and payouts across the 'verse.",
-    primaryCta: 'Create account',
+    primaryCta: 'Create Account',
     secondaryCta: 'Browse Rally Point',
     loginCta: 'Log in',
   },

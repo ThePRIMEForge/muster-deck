@@ -2,6 +2,17 @@
 
 Use this file for concise product, architecture, naming, visual, and organization decisions.
 
+## 2026-05-21 - MusterDeck Visual Identity Landing Status
+
+- Decision: Continue with a modern industrial visual identity that uses mustard caution paint, black/yellow hazard contrast, stencil headings, and subtle star-chart/topographic waypoint backgrounds.
+- Decision: Keep the landing page account-first with `SC Operations` as the small preheading and `Rally, Command, Settle.` as the main headline.
+- Decision: Make the four landing pillar cards open explanatory modals instead of routing directly into modules.
+- Decision: Move module/data version chips from the top strip into the footer and avoid oval chip styling.
+- Decision: Use the cleaner `Capture It` stencil candidate for headings for now; the old XiInchil font files are not present in the current font folder.
+- Reason: The identity needs to feel rugged and operational without becoming too militarized, too olive/drab, or too visually heavy for repeated app use.
+- Files affected: `docs/handoff/2026-05-21-musterdeck-visual-identity-status.md`, `src/components/foundation/AppFrame.tsx`, `src/components/foundation/PublicLanding.tsx`, `src/lib/foundationCopy.ts`, `src/styles.css`, `scripts/foundation/foundationCopy.test.ts`, `docs/handoff/project-change-log.md`.
+- Follow-up: Decide how to track the currently ignored stencil font asset before committing or deploying this landing-page pass.
+
 ## 2026-05-21 - Fleet Command Demo Line Edit Persistence
 
 - Decision: Persist saved Fleet Setup line team changes and removals against the prototype `DEMO-DRAFT` event.
@@ -336,3 +347,42 @@ Use this file for concise product, architecture, naming, visual, and organizatio
 - Reason: The project needed clear separation between active mockups, source references, candidate fonts, archived mockups, generated outputs, and production code before shared foundation implementation begins.
 - Files affected: `docs/mockups/assets/icon-references/`, `docs/mockups/assets/fonts/`, `docs/archive/mockups/`, `docs/mockups/assets/ASSET-MANIFEST.md`, `docs/handoff/2026-05-20-musterdeck-free-icon-sourcing-plan.md`.
 - Follow-up: Decide whether fan-kit source folders should remain untracked local references or be committed as repository assets after production asset policy is finalized.
+
+## 2026-05-22 — Visual identity v1 locked
+
+- Built a comprehensive mood board at `docs/mockups/2026-05-21-musterdeck-visual-identity-v1.html` covering paint system, textures, type, header lanes, and background vocabulary.
+- Research pass on RSI/CIG visual language, fan-tool competitive set, and real-world industrial caution paint. Findings summarised in `docs/handoff/2026-05-22-musterdeck-visual-identity-handoff.md`.
+- Decision: One committed mustard yellow (#D4A028). No second warm yellow. Black hazard contrast. Warm-grey primer (#6E6A60), darker concrete substrate (#443E32). Industrial neutrals in a warm-black family, not blue-black.
+- Decision: Typography stack moves to free open-licensed Google Fonts: Stardos Stencil (display), Black Ops One (display heavy), Saira Condensed (body), JetBrains Mono (mono). Retires Capture It due to gitignored fan-kit folder.
+- Decision: Distressed paint system implemented via inline SVG `feTurbulence` + `feComponentTransfer feFuncA type='discrete'` for binary chip-loss patches with opaque normal-blend overlay, plus multiply layers for scratches and grain. No raster textures.
+- Decision: Header treatments are assigned per app context, not a single chosen lane.
+  - Lane A "Hangar Doors" → landing page, Operations Hub, general brand vibe (full distressed mustard band).
+  - Lane C "Mission Patch" → the four pillar apps (brand mark carries identity, header stays dark).
+  - Lane D "Caution Tape" → Admin Portal, user/profile panels, modals, main panels inside Fleet Command (6px hazard strip, otherwise dark).
+  - Lane B "Operations Placard" not used.
+- Decision: **Patches and logos stay clean. No distressing or aging.** Brand mark crispness is part of trust.
+- Decision: **Iconography gets distressed.** Chips, scrapes, and aging applied to icon plates so icons read as lived-in operational hardware.
+- Decision: Background uses naval-chart vocabulary (hairline grid, sparse mustard waypoints with mono labels, faint contour arcs, dashed plot lines). No generic topographic blobs.
+- Files created: `docs/mockups/2026-05-21-musterdeck-visual-identity-v1.html`, `docs/handoff/2026-05-22-musterdeck-visual-identity-handoff.md`, `docs/handoff/2026-05-22-musterdeck-visual-identity-v1.pdf`, `docs/mockups/archive/2026-05-22-musterdeck-visual-identity-v1-locked.html`.
+- Files of reference (screenshots): `outputs/identity-v1-full.png`, `outputs/identity-v1-textures.png`, `outputs/identity-v1-lanes.png`, `outputs/zoom-worn.png`, `outputs/zoom-lane-a.png`.
+- Application source files NOT modified in this pass. Implementation in `src/styles.css` and React components is the next workstream.
+- Onboarding: Blair Gemmer joining as engineering partner. Handoff doc written so he can pick this up cold.
+- Follow-up: Build Lane C and Lane D at production fidelity, design pillar card system for Lane A hub, run a voice cleanup pass through shipped copy, and begin porting locked tokens into `src/styles.css`.
+
+## 2026-05-22 — Background variations v1 locked (8 variants)
+
+- Built a single-page mockup at `docs/mockups/2026-05-22-musterdeck-background-variations.html` containing eight background variants. All share the same chart vocabulary (dark warm-black base, hairline 48px grid on a 12px sub-grid, mustard waypoint accents, JetBrains Mono labels, edge tick marks). What changes is the subject the chart is plotting.
+- Decision: All eight variants are confirmed locked designs. Surface assignments deferred — Christoph will pick which variant goes where later.
+- Variant A — Orbital Plot. Top-down system view with concentric orbits and one dashed slingshot trajectory.
+- Variant B — Course Plot. Angled orbital ellipses with an active flight path (pre-burn, transfer orbit, gravity assist, slingshot exit).
+- Variant C — Sector Chart. Tactical grid with three waypoints connected by solid/dashed routes and a hatched contested zone.
+- Variant D — Jump Corridor. Wide strategic view of four named systems (Stanton, Pyro, Magnus, Terra) with hairline jump corridors and diamond jump-point markers.
+- Variant E — Surface Survey. Planet-side topographic map with mining symbols (ore, gem, pickaxe), claim boundary, hostile zone with attack reticles, friendly waypoints, supply lines.
+- Variant F — Pyro System. Red-giant central star with broken debris arcs, five named Pyro planets including Terminus/Ruin Station, three outlaw stations, "no UEE jurisdiction" warning band. Uses rust accent #9C4A22 as a Pyro-specific signal.
+- Variant G — Levski on Delamar. Asteroid base close-up with hex-grid surface, six labelled mining shafts hatched into the rock, dashed tunnel routes, three docking ports, drift asteroids, approach vector.
+- Variant H — Aaron Halo style asteroid belt. Wide diagonal belt with irregular asteroid polygons and dot debris, three friendly stations on host asteroids, one outlaw outpost, trade routes (solid, dashed, grey-route), hatched mining claim.
+- Decision: Variants E and F deliberately use red signal color (#B43A2A for hostile vocabulary, #9C4A22 for Pyro). All other variants stay mustard-only. The red usage is tied to vocabulary, not arbitrary.
+- Files created: `docs/mockups/2026-05-22-musterdeck-background-variations.html`, `docs/mockups/archive/2026-05-22-musterdeck-background-variations-locked.html`, `docs/handoff/2026-05-22-musterdeck-background-variations.pdf`.
+- Reference screenshots: `outputs/bg-full.png`, `outputs/bg-var-A.png` through `outputs/bg-var-H.png`.
+- Production notes for engineering: variants rendered at preview brightness; production opacity should drop another 20-30 percent. Star density over header/footer zones is a risk — implementation should add gradient fades at the canvas top and bottom so star density falls off where text needs to read.
+- Follow-up: surface assignments (which variant goes on landing, Hub, Fleet Command, Rally Point, etc.) deferred. No additional Nyx-system or moon-surface variants requested yet but offered as future options.

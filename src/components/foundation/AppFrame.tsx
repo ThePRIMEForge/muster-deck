@@ -1,4 +1,4 @@
-import { ChevronDown, LogIn, Menu, Shield, UserRound } from 'lucide-react';
+import { ChevronDown, LogIn, Menu, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { appRoutes, isSignedIn } from '../../lib/appNavigation';
@@ -24,18 +24,10 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
 
   return (
     <div className="foundation-shell">
-      <div className="foundation-status-strip">
-        <span className="foundation-status-chip">Rally v0.1</span>
-        <span className="foundation-status-chip">Fleet v0.1</span>
-        <span className="foundation-status-chip">S.P.O.I.L.S. v0.1</span>
-        <span className="foundation-status-chip">Ground v0.1</span>
-        <span className="foundation-status-chip">SC data 4.8.0-LIVE.11825000</span>
-      </div>
-
       <header className="foundation-header">
         <button className="foundation-brand" onClick={() => onRouteChange('landing')} type="button">
           <span className="foundation-brand-mark" aria-hidden="true">
-            <Shield size={18} />
+            <img src="/brand/musterdeck-badge.png" alt="" />
           </span>
           <span className="foundation-brand-copy">
             <span>MusterDeck</span>
@@ -105,11 +97,20 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
       <main className="foundation-main">{children}</main>
 
       <footer className="foundation-footer">
-        <p>{fanProjectDisclaimer}</p>
-        <div>
-          <button type="button">Privacy Policy</button>
-          <button type="button">Terms of Service</button>
-          <button type="button">Status</button>
+        <div className="foundation-footer-primary">
+          <p>{fanProjectDisclaimer}</p>
+          <div className="foundation-footer-links">
+            <button type="button">Privacy Policy</button>
+            <button type="button">Terms of Service</button>
+            <button type="button">Status</button>
+          </div>
+        </div>
+        <div className="foundation-status-strip" aria-label="Build and data versions">
+          <span className="foundation-status-chip">Rally v0.1</span>
+          <span className="foundation-status-chip">Fleet v0.1</span>
+          <span className="foundation-status-chip">S.P.O.I.L.S. v0.1</span>
+          <span className="foundation-status-chip">Ground v0.1</span>
+          <span className="foundation-status-chip">SC data 4.8.0-LIVE.11825000</span>
         </div>
       </footer>
     </div>

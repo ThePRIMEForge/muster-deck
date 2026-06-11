@@ -1,8 +1,8 @@
 # MusterDeck Visual Identity System — Design Spec
 
-Date: 2026-06-09
-Author: Christoph Mayer (creative direction) with Claude
-Status: Approved direction, ready for implementation planning
+**Date:** 2026-06-09
+**Author:** Christoph Mayer (creative direction) with Claude
+**Status:** active
 
 ## Purpose
 

@@ -1,8 +1,8 @@
 # MusterDeck Information Architecture & Site Map — Design Spec
 
-Date: 2026-06-09
-Author: Christoph Mayer (creative/product direction) with Claude
-Status: Approved structure, ready for implementation planning
+**Date:** 2026-06-09
+**Author:** Christoph Mayer (creative/product direction) with Claude
+**Status:** active
 Companion: `2026-06-09-musterdeck-visual-identity-system-design.md` (visual identity)
 
 ## Purpose

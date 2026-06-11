@@ -1,7 +1,7 @@
 # Friends, Presence & Messaging — Design
 
 **Date:** 2026-06-10
-**Status:** Approved in brainstorm; ready for Blair review → ticketing
+**Status:** active
 **Author:** Christoph (product) with Claude; reviewed by Blair (tech owner)
 
 ---

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — Weight / Depth / Glow Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&family=Saira+Condensed:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+<style>
+  :root{--mustard:#D4A028;--mustard-hi:#E3B651;--rust:#C1632E;--ink:#F3ECDB;--ink2:#b9b09c;--ink3:#8b8472;--panel:#1d1810;--base:#161109}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 80% at 50% -8%,#241a0f,transparent 58%),linear-gradient(160deg,#141009,#16120b);
+    color:var(--ink);font-family:"Saira Condensed",system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 90px}
+  .head{padding:28px 40px 14px;border-bottom:1px solid rgba(212,160,40,.25)}
+  .head h1{font-family:"Archivo";font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:20px;margin:0 0 6px}
+  .head p{color:var(--ink2);margin:0;max-width:80ch;font-size:15px;line-height:1.5}
+  .head b{color:var(--mustard)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:26px 40px;max-width:1180px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  .col{border:1px solid rgba(255,255,255,.1);border-radius:7px;overflow:hidden;background:rgba(0,0,0,.18)}
+  .lab{display:flex;align-items:baseline;gap:10px;padding:11px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.08)}
+  .lab .n{font-family:"Archivo";font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:14px}
+  .lab .d{color:var(--ink3);font-size:12.5px;font-family:"Share Tech Mono";margin-left:auto}
+  .scene{padding:24px}
+
+  /* the island */
+  .island{position:relative;border-style:solid;border-color:color-mix(in srgb,var(--ac,var(--rust)) 40%,rgba(255,255,255,.12));
+    border-radius:6px;background:linear-gradient(180deg,var(--panel),#16110a);padding:18px 18px 20px;overflow:hidden;transition:transform .22s ease, box-shadow .22s ease}
+  .island::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:var(--tex,.3);
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.5'/></svg>")}
+  .island > *{position:relative;z-index:1}
+  .island .k{font-family:"Share Tech Mono";font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ac,var(--rust));margin:0 0 6px}
+  .island h3{font-family:"Archivo";font-weight:900;text-transform:uppercase;letter-spacing:.03em;font-size:22px;margin:0 0 6px}
+  .island p{color:var(--ink2);font-size:13.5px;line-height:1.45;margin:0 0 16px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{font-family:"Archivo";font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:13px;padding:11px 18px;border-radius:4px;border:none;cursor:pointer;
+    background:var(--mustard);color:#15120a;transition:transform .16s ease, box-shadow .16s ease, background .16s ease}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .hint{text-align:center;color:var(--mustard);font-family:"Share Tech Mono";font-size:11px;margin-top:14px;opacity:.85}
+
+  /* ===== A · Subtle ===== */
+  .a .island{--tex:.22;border-width:1.5px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .a .island:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.5)}
+  .a .btn{box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .a .btn:hover{box-shadow:0 0 12px color-mix(in srgb,var(--mustard) 55%,transparent),0 2px 6px rgba(0,0,0,.4)}
+  .a .btn.ghost{border:1.5px solid color-mix(in srgb,var(--mustard) 45%,transparent)}
+
+  /* ===== B · Medium ===== */
+  .b .island{--tex:.32;border-width:2px;box-shadow:0 10px 26px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07)}
+  .b .island:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.09),0 0 22px color-mix(in srgb,var(--ac,var(--rust)) 22%,transparent)}
+  .b .btn{box-shadow:0 0 10px color-mix(in srgb,var(--mustard) 35%,transparent),0 3px 8px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+  .b .btn:hover{transform:translateY(-1px);box-shadow:0 0 18px color-mix(in srgb,var(--mustard) 65%,transparent),0 4px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+  .b .btn.ghost{border:2px solid color-mix(in srgb,var(--mustard) 50%,transparent);box-shadow:none}
+
+  /* ===== C · Heavy ===== */
+  .c .island{--tex:.42;border-width:2px;
+    box-shadow:0 16px 38px rgba(0,0,0,.6),inset 0 1.5px 0 rgba(255,255,255,.12),inset 0 -4px 10px rgba(0,0,0,.55)}
+  .c .island:hover{transform:translateY(-4px);box-shadow:0 22px 46px rgba(0,0,0,.7),inset 0 1.5px 0 rgba(255,255,255,.14),inset 0 -4px 10px rgba(0,0,0,.55),0 0 30px color-mix(in srgb,var(--ac,var(--rust)) 30%,transparent)}
+  .c .btn{box-shadow:0 0 16px color-mix(in srgb,var(--mustard) 50%,transparent),0 4px 0 #8a6818,0 8px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.35)}
+  .c .btn:hover{box-shadow:0 0 26px color-mix(in srgb,var(--mustard) 80%,transparent),0 4px 0 #8a6818,0 10px 18px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.4)}
+  .c .btn:active{transform:translateY(3px);box-shadow:0 0 18px color-mix(in srgb,var(--mustard) 60%,transparent),0 1px 0 #8a6818,0 3px 8px rgba(0,0,0,.5)}
+  .c .btn.ghost{border:2px solid color-mix(in srgb,var(--mustard) 55%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 10px rgba(0,0,0,.4)}
+
+  /* ===== D · Max / Hardware ===== */
+  .d .island{--tex:.55;border-width:2.5px;border-color:color-mix(in srgb,var(--ac,var(--rust)) 55%,rgba(255,255,255,.14));
+    box-shadow:0 20px 46px rgba(0,0,0,.68),inset 0 2px 0 rgba(255,255,255,.16),inset 0 -6px 14px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5)}
+  .d .island:hover{transform:translateY(-5px) scale(1.005);box-shadow:0 28px 56px rgba(0,0,0,.78),inset 0 2px 0 rgba(255,255,255,.18),inset 0 -6px 14px rgba(0,0,0,.6),0 0 40px color-mix(in srgb,var(--ac,var(--rust)) 40%,transparent)}
+  .d .btn{border-radius:5px;box-shadow:0 0 20px color-mix(in srgb,var(--mustard) 55%,transparent),0 6px 0 #7a5a14,0 12px 20px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.45)}
+  .d .btn:hover{background:var(--mustard-hi);box-shadow:0 0 34px color-mix(in srgb,var(--mustard) 90%,transparent),0 6px 0 #7a5a14,0 14px 24px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.5)}
+  .d .btn:active{transform:translateY(6px);box-shadow:0 0 20px color-mix(in srgb,var(--mustard) 60%,transparent),0 0 0 #7a5a14,0 3px 8px rgba(0,0,0,.55)}
+  .d .btn.ghost{border:2.5px solid color-mix(in srgb,var(--mustard) 60%,transparent);box-shadow:inset 0 2px 0 rgba(255,255,255,.1),0 6px 14px rgba(0,0,0,.45)}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>MusterDeck · Weight / Depth / Glow — Options</h1>
+    <p>Same island + CTAs, four levels of <b>weight</b> — texture, border thickness, shadow, glow, and 3D depth ramp up A → D. <b>Hover the islands and buttons</b>, and <b>click-and-hold the buttons</b> to feel the press. Pick a level (or "B borders + C glow", etc.).</p>
+  </div>
+
+  <div class="grid">
+    <section class="col a"><div class="lab"><span class="n">A · Subtle</span><span class="d">1.5px · soft shadow · glow on hover</span></div>
+      <div class="scene"><div class="island" style="--ac:var(--rust)"><p class="k">Find an operation</p><h3>Rally Point</h3><p>Browse open listings, offer your ship or role, join a crew.</p><div class="btns"><button class="btn">Browse Rally Point</button><button class="btn ghost">Sign up</button></div><div class="hint">hover me</div></div></div>
+    </section>
+    <section class="col b"><div class="lab"><span class="n">B · Medium</span><span class="d">2px · layered shadow · resting glow · lift</span></div>
+      <div class="scene"><div class="island" style="--ac:var(--rust)"><p class="k">Find an operation</p><h3>Rally Point</h3><p>Browse open listings, offer your ship or role, join a crew.</p><div class="btns"><button class="btn">Browse Rally Point</button><button class="btn ghost">Sign up</button></div><div class="hint">hover me</div></div></div>
+    </section>
+    <section class="col c"><div class="lab"><span class="n">C · Heavy</span><span class="d">bevel · big shadow · glow halo · press-in</span></div>
+      <div class="scene"><div class="island" style="--ac:var(--rust)"><p class="k">Find an operation</p><h3>Rally Point</h3><p>Browse open listings, offer your ship or role, join a crew.</p><div class="btns"><button class="btn">Browse Rally Point</button><button class="btn ghost">Sign up</button></div><div class="hint">hover + click-hold</div></div></div>
+    </section>
+    <section class="col d"><div class="lab"><span class="n">D · Max / Hardware</span><span class="d">thick bevel · extruded button · strong glow</span></div>
+      <div class="scene"><div class="island" style="--ac:var(--rust)"><p class="k">Find an operation</p><h3>Rally Point</h3><p>Browse open listings, offer your ship or role, join a crew.</p><div class="btns"><button class="btn">Browse Rally Point</button><button class="btn ghost">Sign up</button></div><div class="hint">hover + click-hold</div></div></div>
+    </section>
+  </div>
+</body>
+</html>

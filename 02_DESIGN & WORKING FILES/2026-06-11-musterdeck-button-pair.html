@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — Button Pair (solid + hollow, matched corners)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Saira+Condensed:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root{--mustard:#D4A028;--cyan:#2DE2E6;--ink:#F3ECDB;--ink2:#b9b09c}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 80% at 50% -8%,#241a0f,transparent 58%),linear-gradient(160deg,#120f0a,#15110b);
+    color:var(--ink);font-family:"Saira Condensed",system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 90px}
+  .head{padding:28px 40px 14px;border-bottom:2px solid rgba(212,160,40,.3)}
+  .head h1{font-family:"Archivo";font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:20px;margin:0 0 6px}
+  .head p{color:var(--ink2);margin:0;max-width:90ch;font-size:15px;line-height:1.5}
+  .head b{color:var(--mustard)}
+  .grid{display:grid;grid-template-columns:1fr;gap:18px;padding:26px 40px;max-width:980px}
+  .card{border:2px solid rgba(255,255,255,.1);border-radius:8px;overflow:hidden;background:rgba(0,0,0,.22)}
+  .lab{display:flex;align-items:baseline;gap:10px;padding:12px 16px;background:rgba(255,255,255,.03);border-bottom:2px solid rgba(255,255,255,.08)}
+  .lab .n{font-family:"Archivo";font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13.5px}
+  .lab .d{color:#8b8472;font-size:11.5px;font-family:"JetBrains Mono";margin-left:auto}
+  .scene{padding:34px 24px;display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;background:linear-gradient(180deg,#1a140c,#16110a)}
+  .scene.dark{background:linear-gradient(180deg,#0a0a12,#0b0a14)}
+
+  /* shared geometry — solid + hollow share radius / size so they pair */
+  .b{font-family:"Archivo";font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:15px;
+    padding:15px 30px;border:none;cursor:pointer;position:relative;border-radius:6px;
+    transition:transform .13s ease, box-shadow .13s ease, filter .13s ease, background .13s ease, color .13s ease}
+
+  /* ===== SOLID — #6 Hardware Extrude ===== */
+  .solid{color:#15120a;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 80%,#fff 20%),var(--c) 50%,color-mix(in srgb,var(--c) 82%,#000));
+    box-shadow:inset 0 3px 0 rgba(255,255,255,.6),inset 0 -4px 8px color-mix(in srgb,var(--c) 55%,#000),
+      0 9px 0 color-mix(in srgb,var(--c) 40%,#000),0 10px 2px rgba(0,0,0,.5),0 18px 26px rgba(0,0,0,.6),0 0 24px color-mix(in srgb,var(--c) 35%,transparent)}
+  .solid::after{content:"";position:absolute;left:8%;right:8%;top:3px;height:38%;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,.45),transparent);pointer-events:none}
+  .solid:hover{filter:brightness(1.07)}
+  .solid:active{transform:translateY(8px);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -3px 6px color-mix(in srgb,var(--c) 55%,#000),0 1px 0 color-mix(in srgb,var(--c) 40%,#000),0 3px 8px rgba(0,0,0,.55)}
+
+  /* ===== HOLLOW A — rounded + nested corner brackets (the #8 idea, rounded) ===== */
+  .hollowA{background:transparent;color:var(--c);border:2px solid color-mix(in srgb,var(--c) 52%,transparent);
+    box-shadow:inset 0 0 18px color-mix(in srgb,var(--c) 14%,transparent),0 6px 16px rgba(0,0,0,.4)}
+  .hollowA::before,.hollowA::after{content:"";position:absolute;width:14px;height:14px;border:2.5px solid var(--c)}
+  .hollowA::before{top:4px;left:4px;border-right:none;border-bottom:none;border-top-left-radius:5px}
+  .hollowA::after{bottom:4px;right:4px;border-left:none;border-top:none;border-bottom-right-radius:5px}
+  .hollowA:hover{box-shadow:inset 0 0 26px color-mix(in srgb,var(--c) 24%,transparent),0 0 18px color-mix(in srgb,var(--c) 40%,transparent),0 6px 16px rgba(0,0,0,.4)}
+  .hollowA:active{transform:translateY(3px)}
+
+  /* ===== HOLLOW B — rounded socket (recessed, the negative of the extrude) ===== */
+  .hollowB{color:var(--c);background:linear-gradient(180deg,#14100a,#1b1610);
+    border:2px solid color-mix(in srgb,var(--c) 30%,#000);
+    box-shadow:inset 0 3px 7px rgba(0,0,0,.75),inset 0 -2px 0 rgba(255,255,255,.07),0 1px 0 rgba(255,255,255,.06),0 6px 14px rgba(0,0,0,.4)}
+  .hollowB:hover{color:color-mix(in srgb,var(--c) 100%,#fff 10%);box-shadow:inset 0 3px 7px rgba(0,0,0,.75),inset 0 0 16px color-mix(in srgb,var(--c) 16%,transparent),0 6px 14px rgba(0,0,0,.4)}
+  .hollowB:active{box-shadow:inset 0 4px 9px rgba(0,0,0,.85),0 2px 6px rgba(0,0,0,.45)}
+
+  /* ===== HOLLOW C — rounded double-stroke + halo ring ===== */
+  .hollowC{background:transparent;color:var(--c);border:2px solid color-mix(in srgb,var(--c) 60%,transparent);
+    box-shadow:inset 0 0 16px color-mix(in srgb,var(--c) 14%,transparent),0 0 0 4px color-mix(in srgb,var(--c) 9%,transparent),0 6px 16px rgba(0,0,0,.4)}
+  .hollowC:hover{box-shadow:inset 0 0 22px color-mix(in srgb,var(--c) 22%,transparent),0 0 0 4px color-mix(in srgb,var(--c) 16%,transparent),0 0 18px color-mix(in srgb,var(--c) 38%,transparent),0 6px 16px rgba(0,0,0,.4)}
+  .hollowC:active{transform:translateY(3px)}
+
+  .tag{font-family:"JetBrains Mono";font-size:10.5px;color:#8b8472;width:100%;text-align:center;margin-top:-6px}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>MusterDeck · Button Pair · solid + hollow, matched corners</h1>
+    <p>Left = <b>#6 hard extrusion</b> (primary). Right = a <b>hollow secondary</b>, now with the <b>same 6px rounded corners</b> so they read as a set. Three takes on the hollow. <b>Hover + click-hold.</b> Tell me which hollow becomes the secondary.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="lab"><span class="n">Pair A · Nested Brackets</span><span class="d">rounded · #8 brackets tucked inside</span></div>
+      <div class="scene"><button class="b solid" style="--c:var(--mustard)">Launch Op</button><button class="b hollowA" style="--c:var(--mustard)">Cancel</button>
+        <div class="tag">the #8 bracket detail, rounded to match #6</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">Pair B · Socket (recessed)</span><span class="d">rounded · hollow reads as pressed-in</span></div>
+      <div class="scene"><button class="b solid" style="--c:var(--mustard)">Launch Op</button><button class="b hollowB" style="--c:var(--mustard)">Cancel</button>
+        <div class="tag">extrude sticks out, socket sinks in — strongest physical pairing</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">Pair C · Double-stroke halo</span><span class="d">rounded · clean glowing outline</span></div>
+      <div class="scene"><button class="b solid" style="--c:var(--mustard)">Launch Op</button><button class="b hollowC" style="--c:var(--mustard)">Cancel</button>
+        <div class="tag">cleanest / most modern</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">Terminal pair · cyan</span><span class="d">same system, purple/cyan room</span></div>
+      <div class="scene dark"><button class="b solid" style="--c:var(--cyan)">Open Console</button><button class="b hollowA" style="--c:var(--cyan)">View Logs</button>
+        <div class="tag">Pair A shown — works in Terminal too</div></div></div>
+  </div>
+</body>
+</html>

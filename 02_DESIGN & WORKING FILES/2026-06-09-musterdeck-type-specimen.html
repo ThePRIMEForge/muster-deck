@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — Type Direction Specimen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Saira+Condensed:wght@400;500;600;700&family=Big+Shoulders+Stencil+Display:wght@500;700;800&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Stardos+Stencil:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* cool gunmetal palette */
+    --bg:#13161a;
+    --bg2:#171b20;
+    --panel:#1c2127;
+    --raised:#252b33;
+    --border:rgba(180,200,220,.12);
+    --border-strong:rgba(180,200,220,.22);
+    --ink:#e8edf2;
+    --ink-2:#a7b2bd;
+    --ink-3:#737e89;
+    --mustard:#d4a028;
+    --mustard-hi:#e3b651;
+    --steel:#5b6b7a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:
+      radial-gradient(circle at 18% -10%, rgba(91,107,122,.18), transparent 40rem),
+      linear-gradient(160deg,#13161a 0%,#15191e 55%,#181d22 100%);
+    color:var(--ink);
+    font-family:"Saira Condensed",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 80px;
+  }
+  .pagehead{
+    padding:34px 40px 10px;border-bottom:1px solid var(--border);
+    margin-bottom:8px;
+  }
+  .pagehead h1{font-family:"Archivo";font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:20px;margin:0 0 6px}
+  .pagehead p{color:var(--ink-2);margin:0;max-width:70ch;font-size:15px;line-height:1.5}
+  .pagehead .must{color:var(--mustard)}
+  .wrap{display:flex;flex-direction:column;gap:34px;padding:30px 40px;}
+  .opt{
+    border:1px solid var(--border);background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border-radius:4px;overflow:hidden;
+  }
+  .opt-tag{
+    display:flex;align-items:center;gap:12px;
+    background:var(--raised);border-bottom:1px solid var(--border);
+    padding:10px 18px;
+  }
+  .opt-tag .num{
+    font-family:"JetBrains Mono";font-weight:700;font-size:12px;color:var(--bg);
+    background:var(--mustard);padding:2px 8px;border-radius:2px;
+  }
+  .opt-tag .name{font-family:"Archivo";font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+  .opt-tag .desc{color:var(--ink-3);font-size:13px;margin-left:auto}
+  .demo{padding:26px 28px 30px;}
+
+  /* mock app bar */
+  .bar{display:flex;align-items:center;gap:22px;padding:12px 16px;border:1px solid var(--border);
+       border-radius:3px;background:rgba(0,0,0,.22);margin-bottom:26px}
+  .bar .brand{display:flex;align-items:center;gap:10px}
+  .bar .mk{width:26px;height:26px;border:1.5px solid var(--mustard);display:grid;place-items:center;color:var(--mustard);
+           font-family:"Archivo";font-weight:900;font-size:13px}
+  .bar nav{display:flex;gap:18px;margin-left:8px;color:var(--ink-2);font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+  .bar nav .active{color:var(--mustard)}
+  .bar .chip{margin-left:auto;font-family:"JetBrains Mono";font-size:11px;color:var(--ink-3);
+             border:1px solid var(--border);padding:3px 8px;border-radius:2px}
+
+  .hero{font-size:46px;line-height:1.02;margin:0 0 6px}
+  .pre{color:var(--mustard);font-family:"JetBrains Mono";font-size:12px;letter-spacing:.28em;text-transform:uppercase;margin:0 0 12px}
+  .sub{color:var(--ink-2);font-size:17px;max-width:60ch;margin:0 0 22px;font-family:"Saira Condensed"}
+  .h2{font-size:24px;margin:24px 0 10px}
+  .pillars{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 22px}
+  .pillars span{border:1px solid var(--border-strong);padding:8px 14px;border-radius:3px;font-size:14px;letter-spacing:.06em;text-transform:uppercase;background:rgba(0,0,0,.18)}
+  .body{color:var(--ink-2);font-family:"Saira Condensed";font-size:15.5px;line-height:1.55;max-width:70ch;margin:0 0 20px}
+  .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .btn{background:var(--mustard);color:#15120a;border:none;padding:11px 20px;border-radius:3px;font-weight:700;
+       letter-spacing:.06em;text-transform:uppercase;font-size:14px;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--border-strong)}
+  .mono{font-family:"JetBrains Mono";font-size:12px;color:var(--ink-3);letter-spacing:.04em}
+
+  /* ===== Option 1: Sharp technical sans (Archivo) ===== */
+  .o1 .hero,.o1 .h2{font-family:"Archivo";font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+  .o1 .hero{font-weight:900;letter-spacing:.02em}
+  .o1 .pillars span{font-family:"Archivo";font-weight:700}
+
+  /* ===== Option 2: Crisp clean stencil (Big Shoulders Stencil) ===== */
+  .o2 .hero,.o2 .h2{font-family:"Big Shoulders Stencil Display";font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+  .o2 .hero{font-size:54px}
+  .o2 .pillars span{font-family:"Big Shoulders Stencil Display";font-weight:700}
+
+  /* ===== Option 3: Wide technical + mono (Chakra Petch + JetBrains Mono) ===== */
+  .o3 .hero,.o3 .h2{font-family:"Chakra Petch";font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .o3 .hero{letter-spacing:.04em}
+  .o3 .pillars span{font-family:"JetBrains Mono";font-weight:600;font-size:12.5px}
+  .o3 .body{font-family:"Chakra Petch";font-weight:400}
+  .o3 .sub{font-family:"Chakra Petch";font-weight:400}
+
+  .note{padding:0 40px;color:var(--ink-3);font-size:13px;font-family:"JetBrains Mono"}
+</style>
+</head>
+<body>
+  <div class="pagehead">
+    <h1>MusterDeck · Type Direction</h1>
+    <p>Same words, same <span class="must">cool-gunmetal + mustard</span> palette, three heading systems. Judge the headings — body stays a clean technical sans in all three. Pick the one that feels "machined, not weathered."</p>
+  </div>
+
+  <div class="wrap">
+
+    <!-- OPTION 1 -->
+    <section class="opt o1">
+      <div class="opt-tag"><span class="num">01</span><span class="name">Sharp technical sans</span><span class="desc">Archivo — engineered nameplate, no stencil</span></div>
+      <div class="demo">
+        <div class="bar"><div class="brand"><div class="mk">M</div><strong style="font-family:'Archivo';font-weight:900;letter-spacing:.1em;text-transform:uppercase;font-size:15px">MusterDeck</strong></div>
+          <nav><span class="active">Rally Point</span><span>Fleet Command</span><span>S.P.O.I.L.S.</span><span>Proving Ground</span></nav>
+          <span class="chip">SC 4.8.0-LIVE</span></div>
+        <p class="pre">SC Operations</p>
+        <h2 class="hero">Rally, Command, Settle.</h2>
+        <p class="sub">Coordinate crews, cargo, combat, tournaments, and payouts across the ’verse.</p>
+        <h3 class="h2">Fleet Command</h3>
+        <div class="pillars"><span>Rally Point</span><span>Fleet Command</span><span>S.P.O.I.L.S.</span><span>Proving Ground</span></div>
+        <p class="body">Build rosters, assign crew, track ship requests, and keep an operation organized from setup through launch. Readable first, thematic second.</p>
+        <div class="row"><button class="btn">Create Account</button><button class="btn ghost">Browse Rally Point</button><span class="mono">FLEET v0.1 · 11825000</span></div>
+      </div>
+    </section>
+
+    <!-- OPTION 2 -->
+    <section class="opt o2">
+      <div class="opt-tag"><span class="num">02</span><span class="name">Crisp clean stencil</span><span class="desc">Big Shoulders Stencil — industrial signage, sharp, no distress</span></div>
+      <div class="demo">
+        <div class="bar"><div class="brand"><div class="mk">M</div><strong style="font-family:'Big Shoulders Stencil Display';font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:17px">MusterDeck</strong></div>
+          <nav><span class="active">Rally Point</span><span>Fleet Command</span><span>S.P.O.I.L.S.</span><span>Proving Ground</span></nav>
+          <span class="chip">SC 4.8.0-LIVE</span></div>
+        <p class="pre">SC Operations</p>
+        <h2 class="hero">Rally, Command, Settle.</h2>
+        <p class="sub">Coordinate crews, cargo, combat, tournaments, and payouts across the ’verse.</p>
+        <h3 class="h2">Fleet Command</h3>
+        <div class="pillars"><span>Rally Point</span><span>Fleet Command</span><span>S.P.O.I.L.S.</span><span>Proving Ground</span></div>
+        <p class="body">Build rosters, assign crew, track ship requests, and keep an operation organized from setup through launch. Readable first, thematic second.</p>
+        <div class="row"><button class="btn">Create Account</button><button class="btn ghost">Browse Rally Point</button><span class="mono">FLEET v0.1 · 11825000</span></div>
+      </div>
+    </section>
+
+    <!-- OPTION 3 -->
+    <section class="opt o3">
+      <div class="opt-tag"><span class="num">03</span><span class="name">Wide technical + mono</span><span class="desc">Chakra Petch + JetBrains Mono — instrument readout</span></div>
+      <div class="demo">
+        <div class="bar"><div class="brand"><div class="mk">M</div><strong style="font-family:'Chakra Petch';font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:15px">MusterDeck</strong></div>
+          <nav><span class="active">Rally Point</span><span>Fleet Command</span><span>S.P.O.I.L.S.</span><span>Proving Ground</span></nav>
+          <span class="chip">SC 4.8.0-LIVE</span></div>
+        <p class="pre">SC Operations</p>
+        <h2 class="hero">Rally, Command, Settle.</h2>
+        <p class="sub">Coordinate crews, cargo, combat, tournaments, and payouts across the ’verse.</p>
+        <h3 class="h2">Fleet Command</h3>
+        <div class="pillars"><span>Rally Point</span><span>Fleet Command</span><span>S.P.O.I.L.S.</span><span>Proving Ground</span></div>
+        <p class="body">Build rosters, assign crew, track ship requests, and keep an operation organized from setup through launch. Readable first, thematic second.</p>
+        <div class="row"><button class="btn">Create Account</button><button class="btn ghost">Browse Rally Point</button><span class="mono">FLEET v0.1 · 11825000</span></div>
+      </div>
+    </section>
+
+  </div>
+  <p class="note">// throwaway specimen · cool-gunmetal + mustard #D4A028 · fonts via Google Fonts</p>
+</body>
+</html>

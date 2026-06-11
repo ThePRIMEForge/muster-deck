@@ -16,6 +16,16 @@ outputs/
 # Full fan-kit downloads stay local unless specific production assets are explicitly added.
 Fankit_2025_11_19/**
 "RSI Star Citizen Fankit_2025_06_03"/**
+
+# Heavy design exports / render artifacts stay local; commit the HTML source instead.
+02_DESIGN & WORKING FILES/*.pdf
+02_DESIGN & WORKING FILES/*.png
+02_DESIGN & WORKING FILES/*.mov
+02_DESIGN & WORKING FILES/*.mp4
+02_DESIGN & WORKING FILES/*.gif
+01_PRODUCTION ASSETS/**
+Content & Asstest/**
+04_REPO BACKUP/**
 supabase/.temp/
 supabase/.branches/
 supabase/generated/

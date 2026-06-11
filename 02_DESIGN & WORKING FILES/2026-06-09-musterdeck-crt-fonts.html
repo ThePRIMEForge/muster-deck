@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — CRT / Terminal Font Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;800;900&family=VT323&family=Share+Tech+Mono&family=DotGothic16&family=Doto:wght@400;700;900&family=Workbench&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#080a08;color:#dde6cf;font-family:"Archivo",system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 90px}
+  .pagehead{padding:32px 40px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+  .pagehead h1{font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:20px;margin:0 0 6px}
+  .pagehead p{color:#9aa888;margin:0;max-width:84ch;font-size:15px;line-height:1.5;font-family:"Saira Condensed",sans-serif}
+  .pagehead b{color:#7fa356}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:26px 40px;max-width:1240px}
+  @media (max-width:920px){.grid{grid-template-columns:1fr}}
+  .card{border:1px solid rgba(127,163,86,.25);border-radius:5px;overflow:hidden;background:#0a0f08}
+  .lab{display:flex;align-items:baseline;gap:10px;padding:11px 16px;background:#10160d;border-bottom:1px solid rgba(127,163,86,.2)}
+  .lab .n{font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:#dde6cf}
+  .lab .v{color:#7e8f6a;font-size:12.5px;font-family:"JetBrains Mono";margin-left:auto}
+
+  /* CRT screen */
+  .crt{position:relative;padding:24px 24px 26px;background:radial-gradient(120% 140% at 50% 0%, #122016 0%, #0a1109 70%, #070b06 100%);overflow:hidden}
+  .crt::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.32) 0 1px, transparent 1px 3px);opacity:.55}
+  .crt > *{position:relative}
+  .kick{font-family:"JetBrains Mono";font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#7fa356;margin:0 0 12px;opacity:.9}
+  .hero{margin:0 0 6px;line-height:1.02;color:#9be36a;
+    text-shadow:0 0 5px rgba(120,230,90,.55), 0 0 18px rgba(120,230,90,.25)}
+  .subhero{margin:0 0 14px;color:#8fd06a;opacity:.92;text-shadow:0 0 4px rgba(120,230,90,.4)}
+  .read{font-family:"JetBrains Mono";font-size:12px;color:#7fa356;opacity:.85;border-top:1px dashed rgba(127,163,86,.25);padding-top:10px;margin-top:4px}
+  .cur{display:inline-block;width:.55em;height:1em;background:#9be36a;margin-left:2px;transform:translateY(2px);
+    animation:blink 1.1s step-end infinite;box-shadow:0 0 8px rgba(120,230,90,.7)}
+  @keyframes blink{50%{opacity:0}}
+  .pair{font-family:"Archivo";font-weight:400;font-size:13px;color:#8a9a78;margin-top:12px;font-family:"Saira Condensed",sans-serif}
+  .pair b{font-weight:800;color:#cdd8bd}
+
+  /* per-font hero sizing */
+  .f-vt   .hero{font-family:"VT323";font-size:62px}
+  .f-vt   .subhero{font-family:"VT323";font-size:30px}
+  .f-vt   .read{font-family:"VT323";font-size:18px;letter-spacing:.02em}
+
+  .f-stm  .hero{font-family:"Share Tech Mono";font-size:40px;letter-spacing:.01em}
+  .f-stm  .subhero{font-family:"Share Tech Mono";font-size:22px}
+
+  .f-dg   .hero{font-family:"DotGothic16";font-size:38px}
+  .f-dg   .subhero{font-family:"DotGothic16";font-size:20px}
+
+  .f-doto .hero{font-family:"Doto";font-weight:900;font-size:46px;letter-spacing:.02em}
+  .f-doto .subhero{font-family:"Doto";font-weight:700;font-size:24px}
+
+  .f-wb   .hero{font-family:"Workbench";font-size:44px}
+  .f-wb   .subhero{font-family:"Workbench";font-size:22px}
+
+  .f-sk   .hero{font-family:"Silkscreen";font-weight:700;font-size:26px;line-height:1.25}
+  .f-sk   .subhero{font-family:"Silkscreen";font-weight:400;font-size:13px;line-height:1.5}
+  .f-sk   .read{font-size:11px}
+
+  /* a mustard variant to show it's not green-only */
+  .amber .crt{background:radial-gradient(120% 140% at 50% 0%, #241a08 0%, #14100a 70%, #0d0a06 100%)}
+  .amber .kick{color:#D4A028}
+  .amber .hero{color:#f0c44f;text-shadow:0 0 5px rgba(224,181,82,.5),0 0 18px rgba(224,181,82,.22)}
+  .amber .subhero{color:#e3b651;text-shadow:0 0 4px rgba(224,181,82,.4)}
+  .amber .read{color:#D4A028}
+  .amber .cur{background:#f0c44f;box-shadow:0 0 8px rgba(224,181,82,.7)}
+</style>
+</head>
+<body>
+  <div class="pagehead">
+    <h1>MusterDeck · CRT / Terminal Font Options</h1>
+    <p>Accent fonts for <b>hero flourishes, sub-hero lines, and status readouts</b> — layered over the CRT treatment (scanlines + phosphor glow). Archivo stays the workhorse for everything else. All free Google Fonts. The last tile shows the look in mustard to prove it isn't green-only.</p>
+  </div>
+
+  <div class="grid">
+
+    <section class="card f-vt">
+      <div class="lab"><span class="n">VT323</span><span class="v">classic green-screen terminal</span></div>
+      <div class="crt">
+        <p class="kick">// FLEET COMMAND · OP CHANNEL</p>
+        <h2 class="hero">ROSTER LOCKED<span class="cur"></span></h2>
+        <p class="subhero">All stations report ready</p>
+        <p class="read">&gt; 12/16 CREW ASSIGNED · IDRIS-P · LAUNCH IN 04:12</p>
+        <p class="pair">Pairs with <b>Archivo</b> body + headings. Most authentic old-terminal feel.</p>
+      </div>
+    </section>
+
+    <section class="card f-stm">
+      <div class="lab"><span class="n">Share Tech Mono</span><span class="v">clean modern terminal</span></div>
+      <div class="crt">
+        <p class="kick">// FLEET COMMAND · OP CHANNEL</p>
+        <h2 class="hero">ROSTER LOCKED<span class="cur"></span></h2>
+        <p class="subhero">All stations report ready</p>
+        <p class="read">&gt; 12/16 CREW ASSIGNED · IDRIS-P · LAUNCH IN 04:12</p>
+        <p class="pair">More legible / less retro. Good if you want CRT vibe but still crisp.</p>
+      </div>
+    </section>
+
+    <section class="card f-doto">
+      <div class="lab"><span class="n">Doto</span><span class="v">rounded LED dot-matrix</span></div>
+      <div class="crt">
+        <p class="kick">// FLEET COMMAND · OP CHANNEL</p>
+        <h2 class="hero">ROSTER LOCKED<span class="cur"></span></h2>
+        <p class="subhero">All stations report ready</p>
+        <p class="read">&gt; 12/16 CREW ASSIGNED · IDRIS-P · LAUNCH IN 04:12</p>
+        <p class="pair">Modern dot-matrix display board. Variable weight, very "departure board."</p>
+      </div>
+    </section>
+
+    <section class="card f-dg">
+      <div class="lab"><span class="n">DotGothic16</span><span class="v">blocky bitmap</span></div>
+      <div class="crt">
+        <p class="kick">// FLEET COMMAND · OP CHANNEL</p>
+        <h2 class="hero">ROSTER LOCKED<span class="cur"></span></h2>
+        <p class="subhero">All stations report ready</p>
+        <p class="read">&gt; 12/16 CREW ASSIGNED · IDRIS-P · LAUNCH IN 04:12</p>
+        <p class="pair">Chunky pixel bitmap. Reads as old LCD / console UI.</p>
+      </div>
+    </section>
+
+    <section class="card f-wb">
+      <div class="lab"><span class="n">Workbench</span><span class="v">CRT / oscilloscope warp</span></div>
+      <div class="crt">
+        <p class="kick">// FLEET COMMAND · OP CHANNEL</p>
+        <h2 class="hero">ROSTER LOCKED<span class="cur"></span></h2>
+        <p class="subhero">All stations report ready</p>
+        <p class="read">&gt; 12/16 CREW ASSIGNED · IDRIS-P · LAUNCH IN 04:12</p>
+        <p class="pair">Built-in CRT distortion — most stylized / loudest. Use sparingly.</p>
+      </div>
+    </section>
+
+    <section class="card f-sk">
+      <div class="lab"><span class="n">Silkscreen</span><span class="v">tiny arcade pixel</span></div>
+      <div class="crt">
+        <p class="kick">// FLEET COMMAND · OP CHANNEL</p>
+        <h2 class="hero">ROSTER LOCKED<span class="cur"></span></h2>
+        <p class="subhero">All stations report ready</p>
+        <p class="read">&gt; 12/16 CREW · IDRIS-P · T-04:12</p>
+        <p class="pair">8-bit arcade. Charming but small-use only — labels, chips, scores.</p>
+      </div>
+    </section>
+
+    <section class="card f-vt amber">
+      <div class="lab"><span class="n">VT323 — amber CRT</span><span class="v">same font, mustard phosphor</span></div>
+      <div class="crt">
+        <p class="kick">// MUSTERDECK · STATUS</p>
+        <h2 class="hero">MUSTER ACTIVE<span class="cur"></span></h2>
+        <p class="subhero">4 pillars online</p>
+        <p class="read">&gt; SC DATA 4.8.0-LIVE.11825000 · ALL SYSTEMS NOMINAL</p>
+        <p class="pair">Amber phosphor instead of green — works for the mustard surfaces too.</p>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

@@ -217,7 +217,7 @@ export const fallbackMembers: Member[] = [
     id: 'm2',
     name: 'Cinder',
     status: 'filling',
-    operationRole: 'officer',
+    operationRole: 'fleet_officer',
     team: 'Alpha',
     primaryRole: 'Perseus Pilot',
     shipOffer: 'Perseus',

@@ -34,7 +34,7 @@ export const demoFoundationViewer: FoundationViewer = {
   displayName: 'Admiral Rowan',
   accountState: 'rsi_verified',
   operationRole: 'fleet_admiral',
-  isSiteAdmin: true,
+  siteRole: 'super_admin',
 };
 
 export const demoNotifications: FoundationNotification[] = [

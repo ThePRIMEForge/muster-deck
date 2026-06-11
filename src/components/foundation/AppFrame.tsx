@@ -2,6 +2,7 @@ import { ChevronDown, LogIn, Menu, Shield, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { appRoutes, isSignedIn } from '../../lib/appNavigation';
+import { isSiteAdminOrAbove } from '../../lib/permissions';
 import { fanProjectDisclaimer } from '../../lib/foundationCopy';
 import type { FoundationRouteId, FoundationViewer } from '../../lib/foundationTypes';
 import { openConsentManager } from '../../lib/useConsent';
@@ -64,14 +65,26 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
               </button>
               {isAccountMenuOpen && (
                 <div className="foundation-account-dropdown" role="menu">
-                  <button onClick={() => handleAccountMenuRoute('account')} type="button" role="menuitem">
+                  <button
+                    onClick={() => handleAccountMenuRoute('account')}
+                    type="button"
+                    role="menuitem"
+                  >
                     Account page
                   </button>
-                  <button onClick={() => handleAccountMenuRoute('notifications')} type="button" role="menuitem">
+                  <button
+                    onClick={() => handleAccountMenuRoute('notifications')}
+                    type="button"
+                    role="menuitem"
+                  >
                     Notification settings
                   </button>
-                  {viewer.isSiteAdmin && (
-                    <button onClick={() => handleAccountMenuRoute('admin')} type="button" role="menuitem">
+                  {isSiteAdminOrAbove(viewer.siteRole) && (
+                    <button
+                      onClick={() => handleAccountMenuRoute('admin')}
+                      type="button"
+                      role="menuitem"
+                    >
                       Page admin
                     </button>
                   )}
@@ -79,7 +92,11 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
               )}
             </div>
           ) : (
-            <button className="foundation-login-action" onClick={() => onRouteChange('login')} type="button">
+            <button
+              className="foundation-login-action"
+              onClick={() => onRouteChange('login')}
+              type="button"
+            >
               <LogIn size={17} />
               <span>Log in</span>
             </button>
@@ -102,10 +119,18 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
         <div className="foundation-footer-primary">
           <p>{fanProjectDisclaimer}</p>
           <div className="foundation-footer-links">
-            <button type="button" onClick={() => onRouteChange('privacy')}>Privacy Policy</button>
-            <button type="button" onClick={() => onRouteChange('terms')}>Terms of Service</button>
-            <button type="button" onClick={() => onRouteChange('legal')}>Disclaimer</button>
-            <button type="button" onClick={() => openConsentManager()}>Cookie preferences</button>
+            <button type="button" onClick={() => onRouteChange('privacy')}>
+              Privacy Policy
+            </button>
+            <button type="button" onClick={() => onRouteChange('terms')}>
+              Terms of Service
+            </button>
+            <button type="button" onClick={() => onRouteChange('legal')}>
+              Disclaimer
+            </button>
+            <button type="button" onClick={() => openConsentManager()}>
+              Cookie preferences
+            </button>
             <button type="button">Status</button>
           </div>
         </div>

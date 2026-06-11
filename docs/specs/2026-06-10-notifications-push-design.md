@@ -1,7 +1,7 @@
 # Notifications & Push — Design
 
 **Date:** 2026-06-10
-**Status:** Approved in brainstorm; ready for Blair review → ticketing
+**Status:** active
 **Author:** Christoph (product) with Claude; for Blair (tech owner)
 
 ---

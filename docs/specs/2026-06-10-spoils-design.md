@@ -1,7 +1,7 @@
 # S.P.O.I.L.S. — Design
 
 **Date:** 2026-06-10
-**Status:** Approved in brainstorm; ready for Blair review → ticketing
+**Status:** active
 **Author:** Christoph (product) with Claude; for Blair (tech owner)
 **Epic:** [#107 S.P.O.I.L.S.](https://github.com/ThePRIMEForge/muster-deck/issues/107) · accent: **oxblood**
 

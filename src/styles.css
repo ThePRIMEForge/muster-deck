@@ -20,6 +20,14 @@
   --md-caution-orange: #bd6537;
   --md-success: #4ade80;
   --md-focus: rgba(224, 181, 82, 0.45);
+  /* Fleet Command pillar identity — radar green / military olive · scanlines */
+  --md-radar-green: #7fa356;
+  --md-radar-green-hot: #93b86a;
+  --md-radar-bg: #080d07;
+  --md-radar-bg2: #0f160c;
+  --md-radar-ink: #dde6cf;
+  --md-radar-ink2: #92a07e;
+  --md-radar-stamp: #566b34;
   --md-panel-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
   --md-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --md-texture-opacity: 0.18;
@@ -70,6 +78,52 @@ img {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr) 280px;
   min-height: 100vh;
+  position: relative;
+  /* Pillar recolor: remap the semantic tokens for the Fleet Command working
+     surface only. The foundation header (outside .app-shell) stays dark. */
+  --md-bg: var(--md-radar-bg);
+  --md-bg-elevated: var(--md-radar-bg2);
+  --md-surface: var(--md-radar-bg2);
+  --md-surface-raised: #16210f;
+  --md-surface-muted: #1a2512;
+  --md-text: var(--md-radar-ink);
+  --md-text-secondary: var(--md-radar-ink2);
+  --md-text-muted: var(--md-radar-ink2);
+  --md-mustard: var(--md-radar-green);
+  --md-mustard-hot: var(--md-radar-green-hot);
+  --md-mustard-deep: var(--md-radar-stamp);
+  --md-border-subtle: rgba(127, 163, 86, 0.16);
+  --md-border-strong: rgba(127, 163, 86, 0.3);
+  --md-border-caution: rgba(127, 163, 86, 0.42);
+  --md-focus: rgba(127, 163, 86, 0.45);
+  color: var(--md-radar-ink);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(127, 163, 86, 0.05) 0,
+      rgba(127, 163, 86, 0.05) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    var(--md-radar-bg);
+}
+
+/* Pillar accents that are hard-coded rather than tokenised get a scoped
+   radar-green override inside the Fleet Command shell. */
+.app-shell .left-rail,
+.app-shell .member-rail {
+  background: rgba(8, 13, 7, 0.92);
+  border-color: rgba(127, 163, 86, 0.2);
+}
+
+.app-shell .brand-mark {
+  border-color: rgba(127, 163, 86, 0.5);
+  background: #11190d;
+  color: var(--md-radar-green-hot);
+}
+
+.app-shell .eyebrow {
+  color: var(--md-radar-green);
 }
 
 .left-rail,

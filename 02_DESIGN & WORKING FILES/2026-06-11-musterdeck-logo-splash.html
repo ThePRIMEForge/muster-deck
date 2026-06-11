@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — Animated Logo / Loading Splash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(120% 90% at 50% 40%,#1b1610,#14130E 60%,#0e0c08);
+    color:#F3ECDB;font-family:"JetBrains Mono",monospace;-webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:40px}
+  .stage{position:relative;width:300px;height:300px;display:grid;place-items:center}
+  /* feather the video's dark slate bg into the page so there's no visible square */
+  video{width:300px;height:300px;object-fit:cover;
+    -webkit-mask:radial-gradient(circle at 50% 50%, #000 58%, transparent 76%);
+            mask:radial-gradient(circle at 50% 50%, #000 58%, transparent 76%)}
+  .glow{position:absolute;inset:0;border-radius:50%;pointer-events:none;
+    box-shadow:0 0 80px 10px rgba(212,160,40,.10) inset, 0 0 60px rgba(212,160,40,.06)}
+  .wm{font-family:"Archivo";font-weight:900;letter-spacing:.18em;text-transform:uppercase;font-size:30px;margin-top:6px}
+  .wm b{color:#D4A028;font-weight:900}
+  .status{color:#8B8472;font-size:12px;letter-spacing:.28em;text-transform:uppercase;margin-top:8px;display:flex;gap:8px;align-items:center}
+  .dot{width:6px;height:6px;border-radius:50%;background:#D4A028;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.2}}
+  .cap{position:fixed;bottom:18px;color:#6b6557;font-size:11px;letter-spacing:.1em}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="glow"></div>
+    <video autoplay muted loop playsinline>
+      <source src="../public/brand/musterdeck-loop.webm" type="video/webm" />
+      <source src="../public/brand/musterdeck-loop.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <div class="wm">Muster<b>Deck</b></div>
+  <div class="status"><span class="dot"></span> Plotting operations</div>
+  <div class="cap">Animated logo loop · 84 KB MP4 / 90 KB WebM (from the 6.3 MB GIF) · loading splash candidate</div>
+</body>
+</html>

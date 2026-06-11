@@ -24,16 +24,19 @@ On **every** page, regardless of pillar accent:
 - **Wordmark:** "MusterDeck" in **Archivo** (900), uppercase, letter-spacing ~0.1em, in the page's `--ink`.
 - The mark is **always mustard and always clean** — it never takes on the pillar accent, never gets distressed. It's the through-line that ties the color-coded pillars into one product.
 
-Logo assets (do not regenerate — these are the official mark):
-- Primary still: `Content & Asstest/Muster Deck Logo Mockups v1/Mustard_Deck_logo_Mock_v1.15.png`
-- Cropped: `…/Mustard_Deck_logo_Mock_v1.14a CROPPED.png`
-- Animated loop (hero/loading): `…/MD Logo Loopv2.mov` / `.gif`
+The mark is a **chart-tile badge**: an isometric naval-chart tile with the mustard dollop, a waypoint pin, and a targeting reticle. (Earlier mockups used a placeholder "M" box — retired.)
+
+Logo source files (do not regenerate — these are the official mark; sources stay local in Google Drive):
+- **Primary still:** `Content & Asstest/Muster Deck Logo Mockups v1/Mustard_Deck_logo_Mock_v1.14a CROPPED.png`
+- Alt 3D-coin still: `…/Mustard_Deck_logo_Mock_v1.15.png`
+- Animated loop (hero/loading): `…/MD Logo Loopv2.mov` (source) — a chart scan with the dollop plopping in
 - Mascot: "Musty the Bot" (`…v1.13_cute_mustard_dollop.png`)
 
 **Committed app assets** (use these in code — generated transparent cutouts of v1.15, the source stays local in Google Drive):
 - `public/brand/musterdeck-badge.png` (512px, transparent) — header / general use
 - `public/brand/musterdeck-badge-128.png` — apple-touch-icon / small
 - `public/brand/favicon.png` (64px) — wired in `index.html`
+- `public/brand/musterdeck-loop.mp4` / `.webm` (~85KB, 5.4s loop) — animated logo for loading splash / hero. Reference: `02_DESIGN & WORKING FILES/2026-06-11-musterdeck-logo-splash.html`
 
 Clear space = height of the badge. On mustard fills use a dark treatment; on dark surfaces the badge sits as-is (graphite rim reads on dark). Note: prior mockups used a placeholder "M" box — that is retired; the real badge is now the mark.
 

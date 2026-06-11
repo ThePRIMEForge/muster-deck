@@ -30,7 +30,12 @@ Logo assets (do not regenerate — these are the official mark):
 - Animated loop (hero/loading): `…/MD Logo Loopv2.mov` / `.gif`
 - Mascot: "Musty the Bot" (`…v1.13_cute_mustard_dollop.png`)
 
-Clear space = height of the "M". On mustard fills use the dark mark; on dark surfaces use the mustard mark.
+**Committed app assets** (use these in code — generated transparent cutouts of v1.15, the source stays local in Google Drive):
+- `public/brand/musterdeck-badge.png` (512px, transparent) — header / general use
+- `public/brand/musterdeck-badge-128.png` — apple-touch-icon / small
+- `public/brand/favicon.png` (64px) — wired in `index.html`
+
+Clear space = height of the badge. On mustard fills use a dark treatment; on dark surfaces the badge sits as-is (graphite rim reads on dark). Note: prior mockups used a placeholder "M" box — that is retired; the real badge is now the mark.
 
 ---
 

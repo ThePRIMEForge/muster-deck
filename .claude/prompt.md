@@ -1,37 +1,26 @@
-# Claude Code -- MusterDeck
+# Agent notes -- MusterDeck
 
-Read AGENTS.md first. Everything in there applies. This file adds Claude Code-specific notes.
-
----
-
-## Tooling
-
-All GitHub operations (issues, PRs, projects, branches) are managed via the
-`repo-scaffold` CLI in the companion repo. Do not use `gh` CLI or raw API calls.
-
-```bash
-# From the repo-scaffold directory:
-poetry run repo-scaffold issue create --repo ThePRIMEForge/muster-deck ...
-poetry run repo-scaffold pr create   --repo ThePRIMEForge/muster-deck ...
-poetry run repo-scaffold project item-add --project-title "MusterDeck Roadmap" \
-  --repo ThePRIMEForge/muster-deck --issue-number NNN --project-owner ThePRIMEForge
-```
+Read AGENTS.md first. Everything in there applies. This file adds repo-specific notes.
 
 ---
 
-## Workspace workflow
+## GitHub operations
 
-All branch work happens inside managed worktrees under `repos/ThePRIMEForge/muster-deck/`
-(gitignored in repo-scaffold). Never use OS temp folders or arbitrary paths.
+Use the `gh` CLI for all GitHub operations:
 
 ```bash
-# From the repo-scaffold directory:
-poetry run repo-scaffold workspace create --repo ThePRIMEForge/muster-deck --branch BRANCH
-poetry run repo-scaffold workspace list   --repo ThePRIMEForge/muster-deck
-poetry run repo-scaffold workspace delete --repo ThePRIMEForge/muster-deck --branch BRANCH
+gh issue create --repo ThePRIMEForge/muster-deck --title "Title" --body "Body"
+gh pr create --repo ThePRIMEForge/muster-deck --title "Title" --head BRANCH --base main
+gh pr list --repo ThePRIMEForge/muster-deck
+gh pr checks N --repo ThePRIMEForge/muster-deck
+gh pr view N --repo ThePRIMEForge/muster-deck --comments
 ```
 
-Layout: `repos/ThePRIMEForge/muster-deck/{branch-slug}/`
+After creating an issue, add it to the MusterDeck Roadmap project board:
+
+```bash
+gh project item-add 1 --owner ThePRIMEForge --url <issue-url>
+```
 
 ---
 
@@ -53,9 +42,9 @@ Use `--force` (not `--force-with-lease`) after a rebase if the local tracking re
 Before starting new work, check open PRs for review comments or CI failures:
 
 ```bash
-poetry run repo-scaffold pr list --repo ThePRIMEForge/muster-deck
-poetry run repo-scaffold pr checks --repo ThePRIMEForge/muster-deck --pr-number N
-poetry run repo-scaffold pr review-threads --repo ThePRIMEForge/muster-deck --pr-number N
+gh pr list --repo ThePRIMEForge/muster-deck
+gh pr checks N --repo ThePRIMEForge/muster-deck
+gh pr view N --repo ThePRIMEForge/muster-deck --comments
 ```
 
 When resolving a review thread: reply with a comment explaining what changed (commit hash
@@ -63,10 +52,9 @@ When resolving a review thread: reply with a comment explaining what changed (co
 
 ---
 
-## Standing rules (Claude-specific)
+## Standing rules
 
 - Never merge or close PRs -- only the repo owner does that.
-- No draft PRs unless explicitly asked.
 - No em dashes anywhere: prose, comments, issue bodies, PRs, commits.
 - Verbose commit messages: subject + blank line + body. Never one-liners.
 - No invented naming schemes -- follow conventions in AGENTS.md exactly.

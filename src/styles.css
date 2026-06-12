@@ -1,41 +1,41 @@
 :root {
-  color: #f5f0e6;
-  background: #050505;
-  --md-bg: #070808;
-  --md-bg-elevated: #0d0f0f;
-  --md-surface: #141615;
-  --md-surface-raised: #1b1e1b;
-  --md-surface-muted: #24281f;
-  --md-border-subtle: rgba(245, 240, 230, 0.1);
-  --md-border-strong: rgba(245, 240, 230, 0.18);
-  --md-border-caution: rgba(214, 154, 47, 0.5);
-  --md-text: #f5f0e6;
-  --md-text-secondary: #c9c2b2;
-  --md-text-muted: #9f988b;
-  --md-mustard: #d69a2f;
-  --md-mustard-hot: #e0b552;
-  --md-mustard-deep: #8d611e;
-  --md-olive: #4f5a3f;
-  --md-olive-muted: #303728;
-  --md-caution-orange: #bd6537;
-  --md-success: #4ade80;
-  --md-focus: rgba(224, 181, 82, 0.45);
-  --md-panel-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  color: #f3eede;
+  background: #0e0c08;
+  /* v2 brand palette (2026-06-11) — see docs/brand/musterdeck-brand-identity-guide.md
+     Token NAMES retained for compatibility; VALUES repointed to v2 master-brand (mustard). */
+  --md-bg: #14130e;
+  --md-bg-elevated: #1c1b16;
+  --md-surface: #1c1b16;
+  --md-surface-raised: #25241d;
+  --md-surface-muted: #211f18;
+  --md-border-subtle: rgba(243, 238, 222, 0.1);
+  --md-border-strong: rgba(243, 238, 222, 0.18);
+  --md-border-caution: rgba(212, 160, 40, 0.5);
+  --md-text: #f3eede;
+  --md-text-secondary: #c8c1ad;
+  --md-text-muted: #8b8472;
+  --md-mustard: #d4a028;
+  --md-mustard-hot: #e3b651;
+  --md-mustard-deep: #8a6818;
+  --md-olive: #3a352a; /* olive retired in v2 — repointed to warm neutral */
+  --md-olive-muted: #25241d;
+  --md-caution-orange: #c1632e;
+  --md-success: #5bb87a;
+  --md-focus: rgba(212, 160, 40, 0.45);
+  --md-panel-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
   --md-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --md-texture-opacity: 0.18;
-  --md-heading-font: "Capture It", Impact, "Arial Narrow", sans-serif;
+  --md-texture-opacity: 0.14;
+  --md-heading-font: "Archivo", Bahnschrift, "Arial Narrow", sans-serif;
+  /* v2 canonical aliases + per-pillar accents (for new components / pillar skins) */
+  --md-yellow: #d4a028;
+  --md-rust: #9c4a22;
+  --md-signal: #b43a2a;
+  --md-ac: #d4a028; /* active pillar accent; overridden per-pillar skin */
   font-family:
     Bahnschrift, "DIN Alternate", "Arial Narrow", "Aptos Condensed", "Roboto Condensed",
     "Segoe UI", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-}
-
-@font-face {
-  font-family: "Capture It";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./assets/fonts/capture-it/capture-it.ttf") format("truetype");
 }
 
 * {
@@ -1784,11 +1784,8 @@ h3 {
   justify-content: space-between;
   min-height: 68px;
   padding: 10px 18px 12px;
-  border-bottom: 1px solid var(--md-border-caution);
-  background:
-    repeating-linear-gradient(135deg, rgba(7, 8, 8, 0.86) 0 10px, rgba(7, 8, 8, 0.86) 10px 16px, transparent 16px 28px),
-    linear-gradient(180deg, rgba(224, 181, 82, 0.96), rgba(141, 97, 30, 0.96)),
-    var(--md-mustard);
+  border-bottom: 2px solid color-mix(in srgb, var(--md-ac) 45%, transparent);
+  background: linear-gradient(180deg, #1c1b16, #14130e);
   box-shadow: var(--md-panel-shadow);
   backdrop-filter: blur(12px);
 }
@@ -1797,28 +1794,17 @@ h3 {
   position: relative;
   gap: 10px;
   min-width: 0;
-  border: 1px solid var(--md-border-caution);
+  border: none;
   border-radius: 8px;
-  padding: 7px 10px 7px 7px;
-  background:
-    linear-gradient(180deg, rgba(214, 154, 47, 0.16), rgba(20, 22, 21, 0.96)),
-    var(--md-surface);
+  padding: 6px 8px;
+  background: transparent;
   color: var(--md-text);
-  box-shadow: var(--md-inset-highlight);
   font-weight: 900;
   text-transform: uppercase;
 }
 
 .foundation-brand::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  opacity: var(--md-texture-opacity);
-  background:
-    linear-gradient(128deg, transparent 0 22%, rgba(255, 255, 255, 0.22) 22.2%, transparent 23%),
-    radial-gradient(circle at 12% 22%, rgba(0, 0, 0, 0.45) 0 2px, transparent 3px);
+  content: none;
 }
 
 .foundation-brand-mark {
@@ -2561,11 +2547,8 @@ h3 {
   justify-content: center;
   gap: 10px;
   padding: 18px 20px;
-  border-top: 1px solid rgba(255, 226, 135, 0.42);
-  background:
-    repeating-linear-gradient(135deg, rgba(7, 8, 8, 0.86) 0 10px, rgba(7, 8, 8, 0.86) 10px 16px, transparent 16px 28px),
-    linear-gradient(180deg, rgba(224, 181, 82, 0.94), rgba(141, 97, 30, 0.96)),
-    var(--md-mustard);
+  border-top: 2px solid color-mix(in srgb, var(--md-ac) 40%, transparent);
+  background: linear-gradient(180deg, #1c1b16, #14130e);
   color: var(--md-text-secondary);
   font-size: 0.74rem;
   text-align: center;

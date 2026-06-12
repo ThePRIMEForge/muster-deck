@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { FoundationViewer } from './foundationTypes';
+import type { SiteRole } from './permissions';
 import { getOrCreateProfile, hasSupabaseConfig, signOut, supabase } from './supabase';
 import type { ProfileRow } from './supabase';
 
@@ -8,7 +9,7 @@ export const guestViewer: FoundationViewer = {
   displayName: 'Guest',
   accountState: 'guest',
   operationRole: 'crew',
-  isSiteAdmin: false,
+  siteRole: 'registered_user',
 };
 
 function profileToViewer(profile: ProfileRow): FoundationViewer {
@@ -23,7 +24,7 @@ function profileToViewer(profile: ProfileRow): FoundationViewer {
     displayName: profile.display_name,
     accountState,
     operationRole: 'crew',
-    isSiteAdmin: profile.is_site_admin,
+    siteRole: profile.site_role as SiteRole,
   };
 }
 

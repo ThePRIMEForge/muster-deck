@@ -1,4 +1,5 @@
 import type { FoundationRoute, FoundationRouteId, FoundationViewer } from './foundationTypes';
+import { isSiteAdminOrAbove } from './permissions.ts';
 
 export const appRoutes: FoundationRoute[] = [
   {
@@ -112,7 +113,7 @@ export function isSignedIn(viewer: FoundationViewer) {
 
 export function visibleFoundationRoutes(viewer: FoundationViewer) {
   return appRoutes.filter((route) => {
-    if (route.requiresAdmin && !viewer.isSiteAdmin) {
+    if (route.requiresAdmin && !isSiteAdminOrAbove(viewer.siteRole)) {
       return false;
     }
 

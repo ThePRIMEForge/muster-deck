@@ -1,3 +1,4 @@
+export type SiteRole = 'registered_user' | 'moderator' | 'admin' | 'super_admin';
 export type OperationRole = 'fleet_admiral' | 'officer' | 'crew';
 export type AppPage = 'setup' | 'operation' | 'crew';
 
@@ -25,6 +26,14 @@ export function canManageFleetSetup(role: OperationRole) {
 
 export function canManageOperation(role: OperationRole) {
   return role === 'fleet_admiral' || role === 'officer';
+}
+
+export function isSiteAdminOrAbove(role: SiteRole): boolean {
+  return role === 'admin' || role === 'super_admin';
+}
+
+export function isModeratorOrAbove(role: SiteRole): boolean {
+  return role === 'moderator' || role === 'admin' || role === 'super_admin';
 }
 
 export function defaultPageForRole(role: OperationRole): AppPage {

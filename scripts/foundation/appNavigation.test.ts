@@ -14,7 +14,7 @@ const guest: FoundationViewer = {
   displayName: 'Guest',
   accountState: 'guest',
   operationRole: 'crew',
-  isSiteAdmin: false,
+  siteRole: 'registered_user',
 };
 
 const crew: FoundationViewer = {
@@ -22,7 +22,7 @@ const crew: FoundationViewer = {
   displayName: 'Deck Crew',
   accountState: 'email_account',
   operationRole: 'crew',
-  isSiteAdmin: false,
+  siteRole: 'registered_user',
 };
 
 const admin: FoundationViewer = {
@@ -30,13 +30,13 @@ const admin: FoundationViewer = {
   displayName: 'Deck Admin',
   accountState: 'discord_linked',
   operationRole: 'fleet_admiral',
-  isSiteAdmin: true,
+  siteRole: 'admin',
 };
 
 test('guest users only see public and auth routes', () => {
   assert.deepEqual(
     visibleFoundationRoutes(guest).map((route) => route.id),
-    ['landing', 'rally-browse', 'login', 'signup', 'privacy', 'terms', 'legal'],
+    ['landing', 'rally-browse', 'login', 'signup', 'privacy', 'terms', 'legal']
   );
   assert.equal(defaultFoundationRouteForViewer(guest), 'landing');
 });

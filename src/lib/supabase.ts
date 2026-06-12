@@ -8,7 +8,12 @@ import {
   type FleetSetupPosition,
 } from './fleetSetup';
 import type { PersistedMemberAssignment } from './fleetMembers';
-import type { FleetShipRequest, StaffingProfile, ShipCatalogRow, ShipStaffingTemplateSummaryRow } from './types';
+import type {
+  FleetShipRequest,
+  StaffingProfile,
+  ShipCatalogRow,
+  ShipStaffingTemplateSummaryRow,
+} from './types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const publishableKey =
@@ -16,9 +21,7 @@ const publishableKey =
 
 export const hasSupabaseConfig = Boolean(supabaseUrl && publishableKey);
 
-export const supabase = hasSupabaseConfig
-  ? createClient(supabaseUrl, publishableKey)
-  : null;
+export const supabase = hasSupabaseConfig ? createClient(supabaseUrl, publishableKey) : null;
 
 export type DemoFleetLockState = {
   masterLocked: boolean;
@@ -52,7 +55,7 @@ export async function loadShipCatalog(): Promise<ShipCatalogRow[]> {
         'primary_image_url',
         'thumbnail_image_url',
         'subcategory_keys',
-      ].join(','),
+      ].join(',')
     )
     .order('primary_category_sort_order', { ascending: true })
     .order('name', { ascending: true })
@@ -89,7 +92,7 @@ export async function loadShipStaffingTemplates(): Promise<ShipStaffingTemplateS
         'source',
         'review_status',
         'updated_at',
-      ].join(','),
+      ].join(',')
     )
     .order('ship_name', { ascending: true })
     .order('sort_order', { ascending: true });
@@ -163,7 +166,7 @@ export async function loadDemoFleetSetup(): Promise<FleetShipRequest[]> {
         'pending_ship_suggestion_count',
         'created_at',
         'updated_at',
-      ].join(','),
+      ].join(',')
     )
     .eq('fleet_event_id', fleetEventId)
     .order('created_at', { ascending: false });
@@ -192,7 +195,7 @@ export async function loadDemoFleetSetup(): Promise<FleetShipRequest[]> {
         'max_count',
         'can_transition_to_fps',
         'sort_order',
-      ].join(','),
+      ].join(',')
     )
     .in('fleet_event_ship_request_id', requestIds)
     .order('sort_order', { ascending: true });
@@ -204,13 +207,9 @@ export async function loadDemoFleetSetup(): Promise<FleetShipRequest[]> {
   const { data: assignments, error: assignmentError } = await supabase
     .from('assignments')
     .select(
-      [
-        'id',
-        'fleet_event_ship_request_id',
-        'fleet_event_position_id',
-        'member_id',
-        'status',
-      ].join(','),
+      ['id', 'fleet_event_ship_request_id', 'fleet_event_position_id', 'member_id', 'status'].join(
+        ','
+      )
     )
     .eq('fleet_event_id', fleetEventId)
     .eq('assignment_type', 'ship_position')
@@ -222,7 +221,9 @@ export async function loadDemoFleetSetup(): Promise<FleetShipRequest[]> {
   }
 
   const assignmentRows = (assignments ?? []) as unknown as FleetEventAssignmentRow[];
-  const memberIds = [...new Set(assignmentRows.map((assignment) => assignment.member_id).filter(Boolean))];
+  const memberIds = [
+    ...new Set(assignmentRows.map((assignment) => assignment.member_id).filter(Boolean)),
+  ];
   let memberRows: FleetEventMemberRow[] = [];
 
   if (memberIds.length > 0) {
@@ -242,7 +243,7 @@ export async function loadDemoFleetSetup(): Promise<FleetShipRequest[]> {
     summaryRows,
     (positions ?? []) as unknown as FleetEventPositionRow[],
     assignmentRows,
-    memberRows,
+    memberRows
   );
 }
 
@@ -274,13 +275,9 @@ export async function loadDemoMemberAssignments(): Promise<PersistedMemberAssign
   const { data: assignments, error: assignmentError } = await supabase
     .from('assignments')
     .select(
-      [
-        'id',
-        'fleet_event_ship_request_id',
-        'fleet_event_position_id',
-        'member_id',
-        'status',
-      ].join(','),
+      ['id', 'fleet_event_ship_request_id', 'fleet_event_position_id', 'member_id', 'status'].join(
+        ','
+      )
     )
     .eq('fleet_event_id', fleetEventId)
     .eq('assignment_type', 'ship_position')
@@ -291,9 +288,13 @@ export async function loadDemoMemberAssignments(): Promise<PersistedMemberAssign
   }
 
   const assignmentRows = (assignments ?? []) as unknown as FleetEventAssignmentRow[];
-  const memberIds = [...new Set(assignmentRows.map((assignment) => assignment.member_id).filter(Boolean))];
+  const memberIds = [
+    ...new Set(assignmentRows.map((assignment) => assignment.member_id).filter(Boolean)),
+  ];
   const requestIds = [
-    ...new Set(assignmentRows.map((assignment) => assignment.fleet_event_ship_request_id).filter(Boolean)),
+    ...new Set(
+      assignmentRows.map((assignment) => assignment.fleet_event_ship_request_id).filter(Boolean)
+    ),
   ];
 
   if (memberIds.length === 0 || requestIds.length === 0) {
@@ -312,7 +313,7 @@ export async function loadDemoMemberAssignments(): Promise<PersistedMemberAssign
             'ship_name',
             'resolved_primary_category_key',
             'resolved_primary_category_name',
-          ].join(','),
+          ].join(',')
         )
         .in('id', requestIds),
     ]);
@@ -326,16 +327,18 @@ export async function loadDemoMemberAssignments(): Promise<PersistedMemberAssign
   }
 
   const membersById = new Map(
-    ((members ?? []) as unknown as FleetEventMemberRow[]).map((member) => [member.id, member]),
+    ((members ?? []) as unknown as FleetEventMemberRow[]).map((member) => [member.id, member])
   );
   const requestsById = new Map(
-    ((requests ?? []) as unknown as Array<{
-      id: string;
-      team_name: string | null;
-      ship_name: string | null;
-      resolved_primary_category_key: string | null;
-      resolved_primary_category_name: string | null;
-    }>).map((request) => [request.id, request]),
+    (
+      (requests ?? []) as unknown as Array<{
+        id: string;
+        team_name: string | null;
+        ship_name: string | null;
+        resolved_primary_category_key: string | null;
+        resolved_primary_category_name: string | null;
+      }>
+    ).map((request) => [request.id, request])
   );
 
   return assignmentRows.flatMap((assignment) => {
@@ -351,8 +354,10 @@ export async function loadDemoMemberAssignments(): Promise<PersistedMemberAssign
         displayName: member.display_name,
         requestId: assignment.fleet_event_ship_request_id,
         team: request.team_name ?? 'Unassigned',
-        shipName: request.ship_name ?? `${request.resolved_primary_category_name ?? 'Ship'} Request`,
-        categoryKey: (request.resolved_primary_category_key ?? 'medium') as PersistedMemberAssignment['categoryKey'],
+        shipName:
+          request.ship_name ?? `${request.resolved_primary_category_name ?? 'Ship'} Request`,
+        categoryKey: (request.resolved_primary_category_key ??
+          'medium') as PersistedMemberAssignment['categoryKey'],
       },
     ];
   });
@@ -398,7 +403,7 @@ export async function createDemoFleetShipRequest({
 
 export async function replaceFleetEventPositions(
   requestId: string,
-  positions: FleetSetupPosition[],
+  positions: FleetSetupPosition[]
 ): Promise<void> {
   if (!supabase) {
     throw new Error('Supabase is not configured');
@@ -544,7 +549,8 @@ export type ProfileRow = {
   rsi_handle: string | null;
   rsi_verification_status: string;
   account_status: string;
-  is_site_admin: boolean;
+  site_role: string;
+  patreon_tier: string;
 };
 
 export async function getOrCreateProfile(): Promise<ProfileRow | null> {
@@ -585,7 +591,8 @@ export type AdminProfileRow = {
   account_status: string;
   rsi_handle: string | null;
   rsi_verification_status: string;
-  is_site_admin: boolean;
+  site_role: string;
+  patreon_tier: string;
   last_active_at: string | null;
   created_at: string;
   discord_linked: boolean;
@@ -602,13 +609,25 @@ export async function listProfilesForAdmin(): Promise<AdminProfileRow[]> {
 export async function adminSetAccountStatus(
   profileId: string,
   action: 'ban' | 'unban' | 'restrict' | 'unrestrict' | 'require_approval' | 'restore_access',
-  reason = '',
+  reason = ''
 ): Promise<void> {
   if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.rpc('admin_set_account_status', {
     p_profile_id: profileId,
     p_action: action,
     p_reason: reason,
+  });
+  if (error) throw error;
+}
+
+export async function adminSetSiteRole(
+  profileId: string,
+  role: 'registered_user' | 'moderator' | 'admin'
+): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { error } = await supabase.rpc('admin_set_site_role', {
+    p_profile_id: profileId,
+    p_role: role,
   });
   if (error) throw error;
 }

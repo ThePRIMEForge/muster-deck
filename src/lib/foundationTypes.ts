@@ -1,4 +1,4 @@
-import type { OperationRole } from './permissions';
+import type { OperationRole, SiteRole } from './permissions';
 
 export type FoundationRouteId =
   | 'landing'
@@ -33,7 +33,7 @@ export type FoundationViewer = {
   displayName: string;
   accountState: AccountState;
   operationRole: OperationRole;
-  isSiteAdmin: boolean;
+  siteRole: SiteRole;
 };
 
 export type FoundationRoute = {

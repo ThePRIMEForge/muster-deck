@@ -6,6 +6,8 @@ import {
   canManageFleetSetup,
   canManageOperation,
   defaultPageForRole,
+  isSiteAdminOrAbove,
+  isModeratorOrAbove,
 } from '../../src/lib/permissions.ts';
 
 test('fleet admiral is the only role that can see and manage fleet setup', () => {
@@ -28,4 +30,18 @@ test('role changes resolve to the first allowed view', () => {
   assert.equal(defaultPageForRole('fleet_admiral'), 'setup');
   assert.equal(defaultPageForRole('officer'), 'operation');
   assert.equal(defaultPageForRole('crew'), 'crew');
+});
+
+test('isSiteAdminOrAbove: only admin and super_admin pass', () => {
+  assert.equal(isSiteAdminOrAbove('super_admin'), true);
+  assert.equal(isSiteAdminOrAbove('admin'), true);
+  assert.equal(isSiteAdminOrAbove('moderator'), false);
+  assert.equal(isSiteAdminOrAbove('registered_user'), false);
+});
+
+test('isModeratorOrAbove: moderator admin and super_admin pass', () => {
+  assert.equal(isModeratorOrAbove('super_admin'), true);
+  assert.equal(isModeratorOrAbove('admin'), true);
+  assert.equal(isModeratorOrAbove('moderator'), true);
+  assert.equal(isModeratorOrAbove('registered_user'), false);
 });

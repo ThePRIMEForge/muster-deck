@@ -1,4 +1,4 @@
-import { ChevronDown, LogIn, Menu, Shield, UserRound } from 'lucide-react';
+import { ChevronDown, LogIn, Menu, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { appRoutes, isSignedIn } from '../../lib/appNavigation';
@@ -29,7 +29,7 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
       <header className="foundation-header">
         <button className="foundation-brand" onClick={() => onRouteChange('landing')} type="button">
           <span className="foundation-brand-mark" aria-hidden="true">
-            <Shield size={18} />
+            <img src="/brand/musterdeck-badge.png" alt="" />
           </span>
           <span className="foundation-brand-copy">
             <span>MusterDeck</span>

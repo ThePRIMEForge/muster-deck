@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — 3D Button & Texture Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Saira+Condensed:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Big+Shoulders+Stencil+Display:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{--mustard:#D4A028;--rust:#C1632E;--green:#7FA356;--ox:#C2473A;--blue:#3DA3E0;--purple:#A66BFF;--cyan:#2DE2E6;--ink:#F3ECDB;--ink2:#b9b09c}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 80% at 50% -8%,#241a0f,transparent 58%),linear-gradient(160deg,#120f0a,#15110b);
+    color:var(--ink);font-family:"Saira Condensed",system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 100px}
+  .head{padding:28px 40px 14px;border-bottom:2px solid rgba(212,160,40,.3)}
+  .head h1{font-family:"Archivo";font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:20px;margin:0 0 6px}
+  .head p{color:var(--ink2);margin:0;max-width:92ch;font-size:15px;line-height:1.5}
+  .head b{color:var(--mustard)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;padding:26px 40px;max-width:1320px}
+  .card{border:2px solid rgba(255,255,255,.1);border-radius:8px;overflow:hidden;background:rgba(0,0,0,.22)}
+  .lab{display:flex;align-items:baseline;gap:10px;padding:12px 16px;background:rgba(255,255,255,.03);border-bottom:2px solid rgba(255,255,255,.08)}
+  .lab .n{font-family:"Archivo";font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13.5px}
+  .lab .d{color:#8b8472;font-size:11.5px;font-family:"JetBrains Mono";margin-left:auto;text-align:right;max-width:55%}
+  .scene{padding:30px 24px;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;min-height:150px;
+    background:linear-gradient(180deg,#1a140c,#16110a)}
+  .scene.dark{background:linear-gradient(180deg,#0a0a12,#0b0a14)}
+
+  /* base label type for all buttons */
+  .b{font-family:"Archivo";font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:#15120a;
+    padding:13px 26px;border:none;cursor:pointer;position:relative;border-radius:5px;background:var(--c,var(--mustard));
+    transition:transform .13s ease, box-shadow .13s ease, filter .13s ease}
+
+  /* ===== 1 · BASELINE (current) ===== */
+  .t1{box-shadow:0 0 14px color-mix(in srgb,var(--c) 38%,transparent),0 4px 0 color-mix(in srgb,var(--c) 55%,#000),0 9px 16px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.35)}
+  .t1:active{transform:translateY(3px);box-shadow:0 0 14px color-mix(in srgb,var(--c) 40%,transparent),0 1px 0 color-mix(in srgb,var(--c) 55%,#000),0 3px 8px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+
+  /* ===== 2 · MACHINED BEVEL (chamfered metal edge, light TL / dark BR) ===== */
+  .t2{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 88%,#fff 12%),var(--c) 42%,color-mix(in srgb,var(--c) 78%,#000));
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.55), inset 2px 0 0 rgba(255,255,255,.25),
+      inset 0 -3px 0 color-mix(in srgb,var(--c) 50%,#000), inset -2px 0 0 color-mix(in srgb,var(--c) 60%,#000),
+      0 6px 0 color-mix(in srgb,var(--c) 45%,#000), 0 12px 20px rgba(0,0,0,.55)}
+  .t2:hover{filter:brightness(1.06)}
+  .t2:active{transform:translateY(5px);box-shadow:inset 0 2px 0 rgba(255,255,255,.5),inset 0 -3px 0 color-mix(in srgb,var(--c) 50%,#000),0 1px 0 color-mix(in srgb,var(--c) 45%,#000),0 3px 8px rgba(0,0,0,.5)}
+
+  /* ===== 3 · RIVETED PLATE (metal sheet + corner rivets) ===== */
+  .t3{color:var(--ink);padding:15px 30px;border-radius:4px;
+    background:
+      radial-gradient(circle at 9px 9px, rgba(255,255,255,.5) 0 1px, rgba(0,0,0,.5) 1.6px 3px, transparent 3.4px),
+      radial-gradient(circle at calc(100% - 9px) 9px, rgba(255,255,255,.5) 0 1px, rgba(0,0,0,.5) 1.6px 3px, transparent 3.4px),
+      radial-gradient(circle at 9px calc(100% - 9px), rgba(255,255,255,.5) 0 1px, rgba(0,0,0,.5) 1.6px 3px, transparent 3.4px),
+      radial-gradient(circle at calc(100% - 9px) calc(100% - 9px), rgba(255,255,255,.5) 0 1px, rgba(0,0,0,.5) 1.6px 3px, transparent 3.4px),
+      linear-gradient(180deg,#3a352c,#23201a);
+    border:1px solid #4a443a;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -2px 6px rgba(0,0,0,.6),0 6px 0 #100e0a,0 12px 22px rgba(0,0,0,.6)}
+  .t3 span{color:var(--c)}
+  .t3:active{transform:translateY(5px);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),inset 0 -2px 6px rgba(0,0,0,.6),0 1px 0 #100e0a,0 3px 8px rgba(0,0,0,.6)}
+
+  /* ===== 4 · WORN CAUTION PAINT (accent + chip texture overlay) ===== */
+  .t4{overflow:hidden;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.4),inset 0 -3px 0 color-mix(in srgb,var(--c) 50%,#000),0 6px 0 color-mix(in srgb,var(--c) 45%,#000),0 12px 20px rgba(0,0,0,.55)}
+  .t4::before{content:"";position:absolute;inset:0;z-index:0;mix-blend-mode:multiply;opacity:.55;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9 0.7' numOctaves='2'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 1'/></feComponentTransfer></filter><rect width='120' height='60' filter='url(%23n)'/></svg>")}
+  .t4 span{position:relative;z-index:1}
+  .t4:active{transform:translateY(5px);box-shadow:inset 0 2px 0 rgba(255,255,255,.35),0 1px 0 color-mix(in srgb,var(--c) 45%,#000),0 3px 8px rgba(0,0,0,.5)}
+
+  /* ===== 5 · ENGRAVED STENCIL (dark plate, embossed cut-in text) ===== */
+  .t5{background:linear-gradient(180deg,#211b12,#171209);color:color-mix(in srgb,var(--c) 85%,#000);
+    font-family:"Big Shoulders Stencil Display";font-weight:800;font-size:18px;letter-spacing:.06em;
+    border:2px solid color-mix(in srgb,var(--c) 40%,#000);
+    text-shadow:0 1px 0 rgba(255,255,255,.12),0 -1px 1px rgba(0,0,0,.8);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.8),inset 0 -1px 0 rgba(255,255,255,.06),0 1px 0 rgba(255,255,255,.05),0 8px 18px rgba(0,0,0,.5)}
+  .t5:hover{color:var(--c)}
+  .t5:active{box-shadow:inset 0 3px 7px rgba(0,0,0,.9),0 2px 6px rgba(0,0,0,.5)}
+
+  /* ===== 6 · HARDWARE EXTRUDE (max — thick lip + sheen + deep press) ===== */
+  .t6{border-radius:6px;padding:15px 30px;font-size:15px;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--c) 80%,#fff 20%),var(--c) 50%,color-mix(in srgb,var(--c) 82%,#000));
+    box-shadow:inset 0 3px 0 rgba(255,255,255,.6),inset 0 -4px 8px color-mix(in srgb,var(--c) 55%,#000),
+      0 9px 0 color-mix(in srgb,var(--c) 40%,#000),0 10px 2px rgba(0,0,0,.5),0 18px 26px rgba(0,0,0,.6),
+      0 0 24px color-mix(in srgb,var(--c) 35%,transparent)}
+  .t6::after{content:"";position:absolute;left:8%;right:8%;top:3px;height:38%;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,.45),transparent);pointer-events:none}
+  .t6:hover{filter:brightness(1.07);box-shadow:inset 0 3px 0 rgba(255,255,255,.65),inset 0 -4px 8px color-mix(in srgb,var(--c) 55%,#000),0 9px 0 color-mix(in srgb,var(--c) 40%,#000),0 10px 2px rgba(0,0,0,.5),0 20px 30px rgba(0,0,0,.65),0 0 36px color-mix(in srgb,var(--c) 55%,transparent)}
+  .t6:active{transform:translateY(8px);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -3px 6px color-mix(in srgb,var(--c) 55%,#000),0 1px 0 color-mix(in srgb,var(--c) 40%,#000),0 3px 8px rgba(0,0,0,.55)}
+
+  /* ===== 7 · GLASS HUD (Terminal — cyan, glassy, rim glow) ===== */
+  .t7{color:#05121a;border-radius:6px;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--cyan) 90%,#fff),var(--cyan) 55%,color-mix(in srgb,var(--cyan) 80%,#000));
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.7),inset 0 -3px 8px color-mix(in srgb,var(--cyan) 50%,#000),
+      0 6px 0 color-mix(in srgb,var(--cyan) 45%,#000),0 12px 22px rgba(0,0,0,.6),0 0 28px color-mix(in srgb,var(--cyan) 60%,transparent)}
+  .t7::after{content:"";position:absolute;left:6%;right:6%;top:3px;height:42%;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,.6),transparent);pointer-events:none}
+  .t7:active{transform:translateY(5px)}
+
+  /* ===== 8 · BRACKETED FRAME (sci-fi corner brackets, hollow) ===== */
+  .t8{background:transparent;color:var(--c);border-radius:0;padding:15px 32px;
+    border:2px solid color-mix(in srgb,var(--c) 55%,transparent);
+    box-shadow:inset 0 0 16px color-mix(in srgb,var(--c) 14%,transparent),0 6px 16px rgba(0,0,0,.4)}
+  .t8::before,.t8::after{content:"";position:absolute;width:12px;height:12px;border:2.5px solid var(--c)}
+  .t8::before{top:-2px;left:-2px;border-right:none;border-bottom:none}
+  .t8::after{bottom:-2px;right:-2px;border-left:none;border-top:none}
+  .t8:hover{box-shadow:inset 0 0 24px color-mix(in srgb,var(--c) 26%,transparent),0 0 18px color-mix(in srgb,var(--c) 40%,transparent),0 6px 16px rgba(0,0,0,.4)}
+  .t8:active{transform:translateY(3px)}
+
+  .swatchline{display:flex;gap:8px;margin-top:4px}
+  .sd{font-family:"JetBrains Mono";font-size:10.5px;color:#8b8472}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>MusterDeck · 3D Button & Texture Lab</h1>
+    <p>Eight treatments, flat → heavy hardware. <b>Hover and click-hold</b> each. #1 is our current locked baseline; #2–#8 push depth/texture. Goal: kill the flat thin-line AI look. Tell me which one (or mix) becomes the system button — and which need <b>art assets</b> vs pure CSS.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="lab"><span class="n">1 · Baseline (locked)</span><span class="d">pure CSS · extrude lip + glow</span></div>
+      <div class="scene"><button class="b t1" style="--c:var(--mustard)">Create Account</button><div class="sd">what we have now</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">2 · Machined Bevel</span><span class="d">pure CSS · chamfered metal edges</span></div>
+      <div class="scene"><button class="b t2" style="--c:var(--rust)">Post a Listing</button><div class="sd">light top / dark bottom chamfer</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">3 · Riveted Plate</span><span class="d">pure CSS · metal sheet + rivets</span></div>
+      <div class="scene"><button class="b t3" style="--c:var(--green)">New <span>Operation</span></button><div class="sd">gradient metal + corner rivets</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">4 · Worn Caution Paint</span><span class="d">CSS + SVG chip texture</span></div>
+      <div class="scene"><button class="b t4" style="--c:var(--mustard)"><span>Muster Now</span></button><div class="sd">painted button, chipped</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">5 · Engraved Stencil</span><span class="d">pure CSS · cut-into-plate</span></div>
+      <div class="scene"><button class="b t5" style="--c:var(--ox)">Settle</button><div class="sd">inset / embossed text</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">6 · Hardware Extrude (MAX)</span><span class="d">pure CSS · thick lip + sheen</span></div>
+      <div class="scene"><button class="b t6" style="--c:var(--mustard)">Launch Op</button><div class="sd">deepest press, most physical</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">7 · Glass HUD · Terminal</span><span class="d">pure CSS · cyan glass + glow</span></div>
+      <div class="scene dark"><button class="b t7">Open Console</button><div class="sd">for the purple/cyan room</div></div></div>
+
+    <div class="card"><div class="lab"><span class="n">8 · Bracketed Frame</span><span class="d">pure CSS · sci-fi corner brackets</span></div>
+      <div class="scene dark"><button class="b t8" style="--c:var(--cyan)">View Logs</button><div class="sd">hollow / secondary action</div></div></div>
+  </div>
+</body>
+</html>

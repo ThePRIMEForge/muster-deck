@@ -1,5 +1,5 @@
 import type { FoundationRoute, FoundationRouteId, FoundationViewer } from './foundationTypes';
-import { isSiteAdminOrAbove } from './permissions';
+import { isSiteAdminOrAbove } from './permissions.ts';
 
 export const appRoutes: FoundationRoute[] = [
   {

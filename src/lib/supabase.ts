@@ -619,3 +619,15 @@ export async function adminSetAccountStatus(
   });
   if (error) throw error;
 }
+
+export async function adminSetSiteRole(
+  profileId: string,
+  role: 'registered_user' | 'moderator' | 'admin'
+): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { error } = await supabase.rpc('admin_set_site_role', {
+    p_profile_id: profileId,
+    p_role: role,
+  });
+  if (error) throw error;
+}

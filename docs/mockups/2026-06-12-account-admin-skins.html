@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — Account + Admin (v2 · left-nav · Muster amber)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Saira+Condensed:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    color-scheme:dark;
+    --ac:#D4A028; --act:#D4A028; --hot:color-mix(in srgb, var(--ac) 74%, #fff 26%);
+    --bg:#161109; --bg2:#1D1810; --ink:#F3ECDB; --ink2:#B9B09C;
+    --stamp:#9C4A22; --danger:#C2473A; --red-deep:#7E2A22; --verify:#3DA3E0; --good:#84c06a;
+    --grunge:0.20; --fa:#2DE2E6; --fb:#E0B552;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; padding:0; min-height:100vh; background:radial-gradient(120% 70% at 50% -6%, #1b160d, transparent 55%), var(--bg);
+    color:var(--ink); font-family:"Saira Condensed",system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  .crt{ position:relative; isolation:isolate; min-height:100vh; background:radial-gradient(120% 80% at 50% 0%, color-mix(in srgb,var(--ac) 8%, transparent), transparent 60%), var(--bg);
+    box-shadow:inset 0 0 200px color-mix(in srgb,var(--bg) 60%, #000), inset 0 0 110px color-mix(in srgb,var(--ac) 10%, transparent), inset 0 0 3px color-mix(in srgb,var(--hot) 35%, transparent); }
+  .crt::before{ content:""; position:fixed; inset:0; z-index:40; pointer-events:none; opacity:var(--grunge); mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='220'%20height='220'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.62'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E"); background-size:230px 230px; }
+  .crt::after{ content:""; position:fixed; inset:0; z-index:41; pointer-events:none; background:radial-gradient(130% 100% at 50% 45%, transparent 64%, color-mix(in srgb,var(--bg) 32%, #000) 100%); }
+
+  .uhead{ position:relative; z-index:2; display:flex; align-items:center; gap:18px; padding:16px 34px; border-bottom:1px solid color-mix(in srgb,var(--ac) 26%, transparent); box-shadow:0 1px 0 color-mix(in srgb,var(--hot) 22%, transparent), 0 10px 30px rgba(0,0,0,.4); }
+  .uhead .mark{ font-family:"Archivo"; font-weight:900; letter-spacing:.16em; text-transform:uppercase; font-size:14px; }
+  .uhead .mark em{ font-style:normal; color:var(--ac); }
+  .uhead .crumbs{ font-family:"JetBrains Mono"; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink2); }
+  .uhead .spacer{ margin-left:auto; }
+  .tabs{ display:flex; gap:8px; }
+  .tab{ font-family:"JetBrains Mono"; font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase; padding:8px 14px; border-radius:6px; cursor:pointer; color:var(--ink2); background:transparent; border:1px solid color-mix(in srgb,var(--ac) 24%, transparent); }
+  .tab[aria-selected="true"]{ color:#1a1304; background:var(--ac); border-color:var(--ac); box-shadow:0 0 14px color-mix(in srgb,var(--ac) 40%, transparent); }
+
+  /* ===== two-column settings shell: left nav + content ===== */
+  .shell{ position:relative; z-index:2; display:grid; grid-template-columns:230px minmax(0,1fr); gap:30px; max-width:1080px; margin:0 auto; padding:28px 34px 90px; }
+  @media (max-width:760px){ .shell{ grid-template-columns:1fr; } }
+  .screen[hidden]{ display:none; }
+
+  .snav{ position:sticky; top:20px; align-self:start; display:flex; flex-direction:column; gap:6px; }
+  .snav .navttl{ font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink2); margin:0 0 8px 12px; }
+  .snav button{ text-align:left; font-family:"Archivo"; font-weight:800; font-size:13px; letter-spacing:.04em; text-transform:uppercase; padding:12px 14px; border-radius:7px; cursor:pointer; color:var(--ink2); background:transparent; border:1px solid transparent; display:flex; align-items:center; gap:10px; transition:all .14s; }
+  .snav button:hover{ color:var(--ink); border-color:color-mix(in srgb,var(--ac) 22%, transparent); }
+  .snav button[aria-selected="true"]{ color:var(--ink); background:color-mix(in srgb,var(--ac) 14%, transparent); border-color:color-mix(in srgb,var(--ac) 45%, transparent); box-shadow:inset 2px 0 0 var(--ac), 0 0 14px color-mix(in srgb,var(--ac) 14%, transparent); }
+  .snav button .ic{ width:7px; height:7px; border-radius:50%; background:currentColor; opacity:.5; }
+  .snav button[aria-selected="true"] .ic{ opacity:1; background:var(--ac); box-shadow:0 0 8px var(--ac); }
+
+  .content{ min-width:0; }
+  .pane[hidden]{ display:none; }
+  .eyebrow{ font-family:"JetBrains Mono"; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ac); margin:0 0 6px; text-shadow:0 0 8px color-mix(in srgb,var(--ac) 40%, transparent); }
+  h1.title{ font-family:"Archivo"; font-weight:900; font-size:27px; line-height:1; letter-spacing:.02em; text-transform:uppercase; margin:0 0 22px; color:var(--ink); text-shadow:0 0 10px color-mix(in srgb,var(--hot) 30%, transparent); }
+
+  .panel{ position:relative; border:2px solid color-mix(in srgb,var(--ac) 46%, transparent); border-radius:8px; padding:20px 22px; background:color-mix(in srgb,var(--bg2) 72%, transparent);
+    box-shadow:-2px 0 1px color-mix(in srgb,var(--fa) 38%, transparent), 2px 0 1px color-mix(in srgb,var(--fb) 30%, transparent), 0 0 2px color-mix(in srgb,var(--hot) 50%, transparent), 0 0 16px color-mix(in srgb,var(--ac) 18%, transparent), inset 0 0 18px color-mix(in srgb,var(--ac) 7%, transparent); }
+  .panel + .panel{ margin-top:18px; }
+  .panel.danger{ border-color:color-mix(in srgb,var(--danger) 50%, transparent); box-shadow:0 0 2px color-mix(in srgb,var(--danger) 50%, transparent), 0 0 16px color-mix(in srgb,var(--danger) 16%, transparent), inset 0 0 18px color-mix(in srgb,var(--danger) 7%, transparent); }
+  .phd{ display:flex; align-items:center; gap:10px; margin:0 0 3px; }
+  .panel h2{ font-family:"Archivo"; font-weight:800; font-size:14px; letter-spacing:.06em; text-transform:uppercase; margin:0; color:var(--ac); }
+  .panel.danger h2{ color:var(--danger); }
+  .panel .rule{ flex:1; height:1px; background:linear-gradient(90deg, color-mix(in srgb,var(--ac) 40%, transparent), transparent); }
+  .panel.danger .rule{ background:linear-gradient(90deg, color-mix(in srgb,var(--danger) 40%, transparent), transparent); }
+  .panel .hint{ font-size:12.5px; color:var(--ink2); margin:0 0 16px; }
+
+  .field{ display:block; margin:0 0 15px; }
+  .field > span{ display:block; font-family:"JetBrains Mono"; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink2); margin:0 0 6px; }
+  .field input, .field textarea{ width:100%; padding:11px 13px; border-radius:6px; color:var(--ink); background:color-mix(in srgb,var(--bg) 70%, #000); border:1.5px solid color-mix(in srgb,var(--ac) 30%, transparent); box-shadow:inset 0 0 12px color-mix(in srgb,var(--ac) 8%, transparent); outline:none; transition:border-color .14s, box-shadow .14s; font-family:inherit; resize:vertical; }
+  .field input:focus, .field textarea:focus{ border-color:color-mix(in srgb,var(--hot) 70%, transparent); box-shadow:inset 0 0 14px color-mix(in srgb,var(--ac) 14%, transparent), 0 0 0 3px color-mix(in srgb,var(--ac) 22%, transparent); }
+  .field .count{ float:right; font-family:"JetBrains Mono"; font-size:10px; color:var(--ink2); }
+  .two{ display:grid; grid-template-columns:1fr 1fr; gap:14px; } @media (max-width:560px){ .two{ grid-template-columns:1fr; } }
+
+  /* buttons */
+  .btn{ font-family:"Archivo"; font-weight:800; font-size:13px; letter-spacing:.06em; text-transform:uppercase; padding:12px 24px; border:none; border-radius:6px; cursor:pointer; position:relative; color:#1a1304;
+    background:linear-gradient(180deg, color-mix(in srgb,var(--hot) 80%,#fff 20%), var(--hot) 52%, color-mix(in srgb,var(--hot) 82%,#000));
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.5), inset 0 -3px 6px color-mix(in srgb,var(--hot) 55%,#000), 0 5px 0 color-mix(in srgb,var(--hot) 42%,#000), 0 6px 2px rgba(0,0,0,.45), 0 0 16px color-mix(in srgb,var(--ac) 35%,transparent); transition:transform .12s, filter .12s; }
+  .btn::after{ content:""; position:absolute; left:10%; right:10%; top:2px; height:40%; border-radius:5px; background:linear-gradient(180deg,rgba(255,255,255,.42),transparent); pointer-events:none; }
+  .btn:hover{ filter:brightness(1.07); } .btn:active{ transform:translateY(4px); }
+  .btn.sm{ padding:9px 16px; font-size:11px; } .btn.blue{ color:#04121c; --hot:color-mix(in srgb,var(--verify) 72%,#fff 28%); }
+  .ghost{ font-family:"Archivo"; font-weight:800; font-size:13px; letter-spacing:.06em; text-transform:uppercase; padding:11px 22px; border-radius:6px; cursor:pointer; position:relative; color:var(--act); background:transparent; border:2px solid color-mix(in srgb,var(--act) 48%, transparent); box-shadow:inset 0 0 14px color-mix(in srgb,var(--act) 12%,transparent), 0 4px 12px rgba(0,0,0,.4); transition:box-shadow .14s, transform .14s; }
+  .ghost::before,.ghost::after{ content:""; position:absolute; width:9px; height:9px; border:2px solid var(--act); }
+  .ghost::before{ top:4px; left:4px; border-right:none; border-bottom:none; border-top-left-radius:5px; }
+  .ghost::after{ bottom:4px; right:4px; border-left:none; border-top:none; border-bottom-right-radius:5px; }
+  .ghost:hover{ box-shadow:inset 0 0 22px color-mix(in srgb,var(--act) 20%,transparent), 0 0 16px color-mix(in srgb,var(--act) 36%,transparent), 0 4px 12px rgba(0,0,0,.4); }
+  .ghost.sm{ padding:7px 13px; font-size:11px; } .ghost.danger{ color:var(--danger); border-color:color-mix(in srgb,var(--danger) 55%, transparent); }
+  .ghost.danger::before,.ghost.danger::after{ border-color:var(--danger); }
+  .savebar{ display:flex; align-items:center; gap:14px; margin-top:18px; }
+  .ok{ font-family:"JetBrains Mono"; font-size:12px; color:var(--fa); text-shadow:0 0 8px color-mix(in srgb,var(--fa) 40%,transparent); }
+
+  /* avatar uploader (320×320) */
+  .idgrid{ display:grid; grid-template-columns:150px 1fr; gap:24px; } @media (max-width:560px){ .idgrid{ grid-template-columns:1fr; } }
+  .avbox{ width:134px; height:134px; border-radius:10px; border:2px dashed color-mix(in srgb,var(--ac) 40%, transparent); background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 45%,#000),color-mix(in srgb,var(--stamp) 60%,#000)); display:grid; place-items:center; font-family:"Archivo"; font-weight:900; font-size:44px; color:#1a1304; overflow:hidden; }
+  .avup .note{ font-family:"JetBrains Mono"; font-size:9.5px; color:var(--ink2); margin-top:8px; letter-spacing:.05em; }
+  .avup .ghost.sm{ margin-top:9px; }
+
+  /* verified badge */
+  .vbadge svg{ width:20px; height:20px; vertical-align:middle; filter:drop-shadow(0 0 5px color-mix(in srgb,var(--verify) 60%, transparent)); }
+  .nameline{ font-family:"Archivo"; font-weight:900; font-size:18px; letter-spacing:.03em; }
+
+  /* RSI verify */
+  .steps{ counter-reset:s; margin:0 0 16px; padding:0; list-style:none; }
+  .steps li{ counter-increment:s; position:relative; padding:7px 0 7px 34px; font-size:13.5px; color:var(--ink2); border-bottom:1px dashed color-mix(in srgb,var(--ac) 14%, transparent); }
+  .steps li::before{ content:counter(s); position:absolute; left:0; top:6px; width:22px; height:22px; border-radius:5px; border:1px solid color-mix(in srgb,var(--ac) 45%, transparent); color:var(--ac); font-family:"JetBrains Mono"; font-weight:700; font-size:11px; display:grid; place-items:center; }
+  .steps li a{ color:var(--fa); }
+  .codebox{ display:flex; align-items:center; gap:10px; margin:6px 0 12px; flex-wrap:wrap; }
+  .codebox code{ flex:1; min-width:220px; font-family:"JetBrains Mono"; font-weight:700; font-size:15px; letter-spacing:.06em; color:var(--ink); background:color-mix(in srgb,var(--bg) 70%, #000); border:1.5px solid color-mix(in srgb,var(--ac) 40%, transparent); border-radius:6px; padding:11px 13px; box-shadow:inset 0 0 14px color-mix(in srgb,var(--ac) 10%, transparent); }
+  .statusline{ font-family:"JetBrains Mono"; font-size:12px; margin-top:10px; display:flex; align-items:center; gap:8px; }
+  .statusline.pending{ color:var(--fb); } .statusline.ok{ color:var(--verify); }
+  .gate{ font-family:"JetBrains Mono"; font-size:11px; color:var(--ink2); margin-top:12px; padding:9px 12px; border-left:2px solid color-mix(in srgb,var(--fb) 50%, transparent); background:color-mix(in srgb,var(--fb) 7%, transparent); }
+
+  /* linked + toggle */
+  .idrow{ display:flex; align-items:center; gap:14px; padding:13px 14px; border-radius:8px; border:1px solid color-mix(in srgb,var(--ac) 22%, transparent); background:color-mix(in srgb,var(--bg) 50%, transparent); }
+  .idrow + .idrow{ margin-top:10px; }
+  .idrow .who{ font-family:"Archivo"; font-weight:800; font-size:14px; letter-spacing:.04em; text-transform:uppercase; }
+  .idrow .sub{ font-size:12px; color:var(--ink2); }
+  .idrow .spacer{ margin-left:auto; }
+  .chip{ font-family:"JetBrains Mono"; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; padding:4px 10px; border-radius:5px; border:1px solid; }
+  .chip.on{ color:var(--fa); border-color:color-mix(in srgb,var(--fa) 50%, transparent); text-shadow:0 0 8px color-mix(in srgb,var(--fa) 40%, transparent); }
+  .chip.off{ color:var(--ink2); border-color:color-mix(in srgb,var(--ink2) 30%, transparent); }
+  .toggle{ position:relative; width:46px; height:25px; border-radius:20px; cursor:pointer; background:color-mix(in srgb,var(--bg) 60%, #000); border:1.5px solid color-mix(in srgb,var(--ink2) 30%, transparent); transition:all .16s; flex:none; }
+  .toggle .dot{ position:absolute; top:2px; left:2px; width:19px; height:19px; border-radius:50%; background:var(--ink2); transition:all .16s; }
+  .toggle[aria-checked="true"]{ background:color-mix(in srgb,var(--ac) 30%, transparent); border-color:var(--ac); box-shadow:0 0 12px color-mix(in srgb,var(--ac) 35%, transparent); }
+  .toggle[aria-checked="true"] .dot{ left:23px; background:var(--hot); box-shadow:0 0 8px var(--hot); }
+  .toggle.dis{ opacity:.25; pointer-events:none; }
+
+  /* game loops */
+  .loops{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; } @media (max-width:560px){ .loops{ grid-template-columns:1fr 1fr; } }
+  .loop{ display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:7px; cursor:pointer; border:1px solid color-mix(in srgb,var(--ac) 20%, transparent); background:color-mix(in srgb,var(--bg) 45%, transparent); font-size:13px; color:var(--ink2); transition:all .14s; user-select:none; }
+  .loop .box{ width:18px; height:18px; border-radius:4px; border:1.5px solid color-mix(in srgb,var(--ac) 45%, transparent); display:grid; place-items:center; font-size:12px; color:#1a1304; }
+  .loop[aria-checked="true"]{ color:var(--ink); border-color:var(--ac); box-shadow:inset 0 0 14px color-mix(in srgb,var(--ac) 10%, transparent), 0 0 12px color-mix(in srgb,var(--ac) 18%, transparent); }
+  .loop[aria-checked="true"] .box{ background:var(--ac); }
+
+  /* notifications matrix */
+  .matrix{ width:100%; }
+  .mrow{ display:grid; grid-template-columns:1fr 70px 70px 80px; align-items:center; gap:8px; padding:12px 6px; border-bottom:1px solid color-mix(in srgb,var(--ac) 14%, transparent); }
+  .mrow.head{ font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2); border-bottom:1px solid color-mix(in srgb,var(--ac) 30%, transparent); }
+  .mrow.head span:not(:first-child){ text-align:center; }
+  .mrow .cat{ } .mrow .cat .nm{ font-family:"Archivo"; font-weight:800; font-size:13.5px; } .mrow .cat .sub{ font-size:11.5px; color:var(--ink2); }
+  .mrow .cell{ display:flex; justify-content:center; }
+  .mrow.fc{ background:color-mix(in srgb,var(--ac) 7%, transparent); border-radius:6px; }
+  .mrow.fc .nm{ color:var(--hot); }
+
+  .stamp{ position:absolute; top:-12px; right:18px; z-index:3; border:2.5px solid var(--stamp); color:var(--stamp); font-family:"Archivo"; font-weight:900; font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:4px 9px; border-radius:6px; transform:rotate(-6deg); background:var(--bg); }
+
+  /* ===== brand slide-to-confirm (metal slab + chevrons) ===== */
+  .slide{ --w:300px; --h:54px; --pad:5px; position:relative; width:var(--w); height:var(--h); max-width:100%; border-radius:8px; overflow:hidden; cursor:grab; user-select:none; touch-action:none;
+    background:linear-gradient(180deg,#1d1810,#14110b); border:2px solid #3a342a; box-shadow:inset 0 3px 8px rgba(0,0,0,.75),inset 0 -1px 0 rgba(255,255,255,.05),0 8px 18px rgba(0,0,0,.5); }
+  .slide.grabbing{ cursor:grabbing; }
+  .chev{ position:absolute; inset:0; background-repeat:repeat-x; background-position:left center; pointer-events:none; }
+  .chev.red{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='54'><path d='M5 14 L17 27 L5 40' fill='none' stroke='%23C2473A' stroke-width='7' stroke-linecap='square'/></svg>"); opacity:.95; clip-path:inset(0 calc(100% - var(--x,0px)) 0 0); }
+  .chev.grey{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='54'><path d='M5 14 L17 27 L5 40' fill='none' stroke='%236E6A60' stroke-width='7' stroke-linecap='square'/></svg>"); opacity:.5; clip-path:inset(0 0 0 var(--x,0px)); animation:nudge 1.6s ease-in-out infinite; }
+  @keyframes nudge{ 0%,100%{ background-position-x:0 } 50%{ background-position-x:8px } }
+  .slide.armed .chev.grey,.slide.done .chev.grey{ animation:none; }
+  .slide .label{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:"Archivo"; font-weight:800; text-transform:uppercase; letter-spacing:.1em; font-size:12.5px; color:var(--ink); pointer-events:none; text-shadow:0 1px 2px rgba(0,0,0,.7); padding-left:44px; }
+  .slide.done .label{ color:#fff; }
+  .slide .handle{ position:absolute; top:var(--pad); left:var(--pad); height:calc(var(--h) - var(--pad)*2 - 4px); width:54px; border-radius:6px; display:grid; place-items:center;
+    background:linear-gradient(180deg,#b9b3a6,#8a857a 48%,#5f5b52); box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -3px 6px rgba(0,0,0,.5),0 5px 0 #2e2b24,0 9px 14px rgba(0,0,0,.6); transition:box-shadow .12s, transform .12s; will-change:left; }
+  .slide.grabbing .handle{ box-shadow:inset 0 2px 0 rgba(255,255,255,.5),inset 0 -2px 5px rgba(0,0,0,.5),0 2px 0 #2e2b24,0 4px 8px rgba(0,0,0,.6); transform:translateY(2px); }
+  .handle .grip{ display:flex; gap:3px; } .handle .grip i{ width:2px; height:16px; background:linear-gradient(180deg,#4a463e,#2c2a24); box-shadow:1px 0 0 rgba(255,255,255,.35); }
+  .handle .arrow{ position:absolute; right:8px; color:#3a362e; font-size:15px; font-weight:900; }
+  .slide.done .handle{ background:linear-gradient(180deg,#d98a7e,var(--danger) 48%,var(--red-deep)); box-shadow:inset 0 2px 0 rgba(255,255,255,.4),0 5px 0 #4a1812,0 9px 14px rgba(0,0,0,.6); }
+  .slide.done .handle .grip,.slide.done .handle .arrow{ display:none; } .handle .chk{ display:none; color:#fff; font-size:20px; font-weight:900; } .slide.done .handle .chk{ display:block; }
+  .slide.sm{ --w:188px; --h:42px; } .slide.sm .handle{ width:42px; } .slide.sm .label{ font-size:11px; padding-left:34px; }
+
+  /* ===== admin table ===== */
+  .stats{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px; } @media (max-width:760px){ .stats{ grid-template-columns:repeat(2,1fr); } }
+  .stat{ border:1px solid color-mix(in srgb,var(--ac) 28%, transparent); border-radius:8px; padding:13px 15px; background:color-mix(in srgb,var(--bg2) 60%, transparent); }
+  .stat .n{ font-family:"Archivo"; font-weight:900; font-size:24px; color:var(--ink); line-height:1; }
+  .stat .l{ font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2); margin-top:5px; }
+  .stat.live .n{ color:var(--good); } .stat.warn .n{ color:var(--fb); } .stat.bad .n{ color:var(--danger); } .stat.live .l::before{ content:"● "; color:var(--good); }
+  .toolbar{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .search{ flex:1; max-width:300px; } .search input{ width:100%; padding:9px 12px; border-radius:6px; color:var(--ink); background:color-mix(in srgb,var(--bg) 70%, #000); border:1.5px solid color-mix(in srgb,var(--ac) 26%, transparent); outline:none; }
+  .filterpills{ display:flex; gap:6px; } .fp{ font-family:"JetBrains Mono"; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; padding:7px 11px; border-radius:5px; cursor:pointer; color:var(--ink2); border:1px solid color-mix(in srgb,var(--ac) 22%, transparent); background:transparent; }
+  .fp[aria-pressed="true"]{ color:#1a1304; background:var(--ac); border-color:var(--ac); }
+  .trow{ display:grid; grid-template-columns:1.7fr .9fr 1fr 1fr 1.1fr; align-items:center; gap:12px; padding:13px 16px; }
+  .trow.head{ font-family:"JetBrains Mono"; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink2); border-bottom:1px solid color-mix(in srgb,var(--ac) 26%, transparent); }
+  .trow.row{ border-radius:8px; border:1px solid transparent; transition:background .14s, border-color .14s; }
+  .trow.row:hover{ background:color-mix(in srgb,var(--bg2) 60%, transparent); border-color:color-mix(in srgb,var(--ac) 24%, transparent); }
+  .trow .u{ display:flex; align-items:center; gap:11px; }
+  .av{ width:30px; height:30px; border-radius:6px; background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 60%, #000),color-mix(in srgb,var(--stamp) 70%, #000)); display:grid; place-items:center; font-family:"Archivo"; font-weight:900; font-size:12px; color:#1a1304; }
+  .u .name{ font-family:"Archivo"; font-weight:800; font-size:14px; color:var(--ink); cursor:pointer; display:flex; align-items:center; gap:5px; } .u .name:hover{ text-decoration:underline; text-decoration-color:var(--ac); }
+  .u .name svg{ width:14px; height:14px; }
+  .u .hd{ font-family:"JetBrains Mono"; font-size:10.5px; color:var(--ink2); }
+  .small{ font-size:12.5px; color:var(--ink2); font-family:"JetBrains Mono"; }
+  .acts{ display:flex; gap:8px; justify-content:flex-end; }
+  .pill{ font-family:"JetBrains Mono"; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; border-radius:20px; border:1px solid; display:inline-flex; align-items:center; gap:6px; }
+  .pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; box-shadow:0 0 8px currentColor; }
+  .pill.active{ color:var(--good); border-color:color-mix(in srgb,var(--good) 45%, transparent); }
+  .pill.timeout{ color:var(--fb); border-color:color-mix(in srgb,var(--fb) 45%, transparent); }
+  .pill.banned{ color:var(--danger); border-color:color-mix(in srgb,var(--danger) 50%, transparent); }
+  .row.is-banned{ opacity:.62; }
+
+  .teamgrid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; } @media (max-width:760px){ .teamgrid{ grid-template-columns:1fr; } }
+  .person{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:8px; border:1px solid color-mix(in srgb,var(--ac) 20%, transparent); background:color-mix(in srgb,var(--bg) 45%, transparent); }
+  .person + .person{ margin-top:10px; } .person .meta{ flex:1; } .person .nm{ font-family:"Archivo"; font-weight:800; font-size:14px; } .person .rl{ font-family:"JetBrains Mono"; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ac); }
+  .stub-tag{ position:absolute; top:14px; right:16px; font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--fb); border:1px solid color-mix(in srgb,var(--fb) 40%, transparent); border-radius:5px; padding:3px 8px; }
+  .chart{ display:flex; align-items:flex-end; gap:8px; height:130px; padding:14px 4px 0; } .chart i{ flex:1; background:linear-gradient(180deg,var(--ac),color-mix(in srgb,var(--ac) 30%, transparent)); border-radius:4px 4px 0 0; opacity:.8; }
+  .health{ display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:8px; border:1px solid color-mix(in srgb,var(--ac) 22%, transparent); background:color-mix(in srgb,var(--bg) 45%, transparent); } .health + .health{ margin-top:10px; }
+  .dot-ok{ width:10px; height:10px; border-radius:50%; background:var(--good); box-shadow:0 0 10px var(--good); } .dot-warn{ width:10px; height:10px; border-radius:50%; background:var(--fb); box-shadow:0 0 10px var(--fb); }
+  .health .meta{ flex:1; } .health .nm{ font-family:"Archivo"; font-weight:800; font-size:14px; } .health .st{ font-family:"JetBrains Mono"; font-size:11px; color:var(--ink2); }
+
+  /* ===== modal ===== */
+  .scrim{ position:fixed; inset:0; z-index:60; background:rgba(5,4,2,.72); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; padding:24px; }
+  .scrim.open{ display:flex; }
+  .modal{ width:min(560px,100%); max-height:88vh; overflow:auto; border-radius:10px; border:2px solid color-mix(in srgb,var(--ac) 50%, transparent); background:linear-gradient(180deg,#1d1810,#161109);
+    box-shadow:0 0 2px color-mix(in srgb,var(--hot) 50%, transparent), 0 0 30px color-mix(in srgb,var(--ac) 22%, transparent), 0 30px 60px rgba(0,0,0,.6); padding:22px 24px 26px; }
+  .modal .mhd{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .modal .mhd .av{ width:40px; height:40px; font-size:15px; } .modal .mhd .nm{ font-family:"Archivo"; font-weight:900; font-size:18px; } .modal .mhd .hd{ font-family:"JetBrains Mono"; font-size:11px; color:var(--ink2); }
+  .modal .x{ margin-left:auto; cursor:pointer; color:var(--ink2); border:1px solid color-mix(in srgb,var(--ac) 26%, transparent); border-radius:5px; width:28px; height:28px; display:grid; place-items:center; background:transparent; }
+  .opt{ border:1px solid color-mix(in srgb,var(--ac) 24%, transparent); border-radius:8px; padding:14px 16px; margin-top:14px; }
+  .opt.ban{ border-color:color-mix(in srgb,var(--danger) 40%, transparent); }
+  .opt h4{ font-family:"Archivo"; font-weight:800; font-size:13px; letter-spacing:.05em; text-transform:uppercase; margin:0 0 5px; color:var(--ac); } .opt.ban h4{ color:var(--danger); }
+  .opt p{ font-size:12.5px; color:var(--ink2); margin:0 0 12px; }
+  .notify-note{ font-family:"JetBrains Mono"; font-size:11px; color:var(--ink2); margin-top:16px; padding:9px 12px; border-left:2px solid color-mix(in srgb,var(--fa) 50%, transparent); background:color-mix(in srgb,var(--fa) 6%, transparent); }
+  /* history timeline */
+  .tl{ list-style:none; margin:14px 0 0; padding:0; }
+  .tl li{ position:relative; padding:0 0 16px 22px; border-left:1px solid color-mix(in srgb,var(--ac) 26%, transparent); }
+  .tl li::before{ content:""; position:absolute; left:-5px; top:3px; width:9px; height:9px; border-radius:50%; background:var(--ac); box-shadow:0 0 8px var(--ac); }
+  .tl li.bad::before{ background:var(--danger); box-shadow:0 0 8px var(--danger); } .tl li.warn::before{ background:var(--fb); box-shadow:0 0 8px var(--fb); } .tl li.good::before{ background:var(--good); box-shadow:0 0 8px var(--good); }
+  .tl .when{ font-family:"JetBrains Mono"; font-size:11px; color:var(--ink2); } .tl .what{ font-size:13px; } .tl .who{ font-size:11px; color:var(--ink2); }
+  .kv{ display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-size:13px; margin-top:10px; } .kv .k{ font-family:"JetBrains Mono"; font-size:11px; color:var(--ink2); text-transform:uppercase; letter-spacing:.08em; }
+</style>
+</head>
+<body>
+<div class="crt">
+  <header class="uhead">
+    <span class="mark">MUSTER<em>DECK</em></span>
+    <span class="crumbs" id="crumbs">/ account / profile</span>
+    <span class="spacer"></span>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-screen="account">User Settings</button>
+      <button class="tab" role="tab" aria-selected="false" data-screen="admin">Admin Portal</button>
+    </div>
+  </header>
+
+  <!-- ================= ACCOUNT ================= -->
+  <section class="screen shell" id="account">
+    <nav class="snav" id="acctnav">
+      <p class="navttl">Settings</p>
+      <button data-pane="a-profile" aria-selected="true"><span class="ic"></span>Profile</button>
+      <button data-pane="a-security" aria-selected="false"><span class="ic"></span>Security</button>
+      <button data-pane="a-notify" aria-selected="false"><span class="ic"></span>Notifications</button>
+    </nav>
+    <div class="content">
+
+      <!-- PROFILE -->
+      <div class="pane" id="a-profile">
+        <p class="eyebrow">Profile</p><h1 class="title">Profile</h1>
+        <div class="panel">
+          <span class="stamp">Muster</span>
+          <div class="phd"><h2>Identity</h2><span class="rule"></span></div>
+          <p class="hint">Visible to crews you operate with.</p>
+          <div class="idgrid">
+            <div class="avup">
+              <div class="avbox">V</div>
+              <button class="ghost sm">Upload</button>
+              <div class="note">PNG/JPG · ≤320×320px</div>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                <span class="nameline">Vanguard-7</span>
+                <span class="vbadge" title="RSI verified"><svg viewBox="0 0 24 24"><path fill="var(--verify)" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.2L12 24l-2.6-1.9-3.2.2-1-3L2.6 17.4l1-3-1-3 2.6-1.9 1-3 3.2.2z"/><path fill="#fff" d="M10.6 15.2l-2.5-2.5 1.3-1.3 1.2 1.2 3.6-3.6 1.3 1.3z"/></svg></span>
+              </div>
+              <label class="field"><span>Callsign</span><input value="Vanguard-7" /></label>
+              <label class="field"><span>Primary organization</span><input value="Aurora Industrial" /></label>
+              <label class="field"><span>Bio <i class="count">86 / 280</i></span><textarea rows="3">Logistics lead. Cargo runs, salvage hauls, and the occasional bounty when the contract's right.</textarea></label>
+            </div>
+          </div>
+          <div class="savebar"><button class="btn">Save Changes</button><span class="ok">✓ Saved</span></div>
+        </div>
+
+        <div class="panel">
+          <div class="phd"><h2>RSI Verification</h2><span class="rule"></span></div>
+          <p class="hint">Prove you own your RSI account to earn the verified badge. <b style="color:var(--ink)">Your callsign must match your RSI handle exactly.</b></p>
+          <ol class="steps">
+            <li>Generate your one-time code below.</li>
+            <li>Paste it into the <b>Short Bio</b> on your <a href="https://robertsspaceindustries.com/en/account/profile" target="_blank" rel="noopener">RSI profile ↗</a>.</li>
+            <li>Save on RSI, return, press <b>Verify</b> — we read your public citizen page &amp; match the code.</li>
+          </ol>
+          <div class="codebox"><code id="rsicode">MUSTERDECK-7F3A9K2QXR4P8M1D</code><button class="ghost sm" id="copybtn">Copy</button><button class="btn sm blue" id="verifybtn">Verify</button></div>
+          <div class="statusline pending" id="rsistatus">⏳ Awaiting code in your RSI bio…</div>
+          <div class="gate">⚠ Callsign “Vanguard-7” must equal RSI handle. Mismatch → verification fails.</div>
+        </div>
+
+        <div class="panel">
+          <div class="phd"><h2>Game Loops</h2><span class="rule"></span></div>
+          <p class="hint">Pick what you play — helps crews recruit you for the right ops. <i style="color:var(--ink2)">(starter list — give me the canonical set)</i></p>
+          <div class="loops" id="loops"></div>
+          <div class="savebar"><button class="btn">Save Changes</button></div>
+        </div>
+      </div>
+
+      <!-- SECURITY -->
+      <div class="pane" id="a-security" hidden>
+        <p class="eyebrow">Security</p><h1 class="title">Security</h1>
+        <div class="panel">
+          <div class="phd"><h2>Linked accounts (SSO)</h2><span class="rule"></span></div>
+          <p class="hint">Sign in with Discord or Google.</p>
+          <div class="idrow"><div><div class="who">Discord</div><div class="sub">Presence + crew notifications</div></div><span class="spacer"></span><span class="chip on">Linked</span><button class="ghost sm">Unlink</button></div>
+          <div class="idrow"><div><div class="who">Google</div><div class="sub">Sign-in</div></div><span class="spacer"></span><span class="chip off">Not linked</span><button class="ghost sm">Link</button></div>
+        </div>
+        <div class="panel">
+          <div class="phd"><h2>Email &amp; password</h2><span class="rule"></span></div>
+          <p class="hint">Add an email + password so you can sign in without Discord/Google too.</p>
+          <label class="field"><span>Email</span><input type="email" value="prime@aurora-ind.example" /></label>
+          <div class="two">
+            <label class="field"><span>New password</span><input type="password" value="········" /></label>
+            <label class="field"><span>Confirm password</span><input type="password" value="········" /></label>
+          </div>
+          <div class="savebar"><button class="btn">Save Changes</button></div>
+        </div>
+        <div class="panel danger">
+          <div class="phd"><h2>Danger Zone</h2><span class="rule"></span></div>
+          <p class="hint">Permanently deletes your account, all listings you've posted, and all applications you've submitted. <b style="color:var(--danger)">Cannot be undone.</b></p>
+          <div class="slide" id="terminate"><div class="chev red"></div><div class="chev grey"></div><div class="label">Slide to terminate account</div><div class="handle"><span class="grip"><i></i><i></i><i></i></span><span class="arrow">›</span><span class="chk">✓</span></div></div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="pane" id="a-notify" hidden>
+        <p class="eyebrow">Notifications</p><h1 class="title">Notifications</h1>
+        <div class="panel">
+          <div class="phd"><h2>Channels</h2><span class="rule"></span></div>
+          <p class="hint">Choose how each kind of update reaches you. Newsletter is email-only; Fleet Command is in-app/desktop (high volume).</p>
+          <div class="matrix" id="matrix">
+            <div class="mrow head"><span>Category</span><span>Email</span><span>In-app</span><span>Desktop</span></div>
+          </div>
+          <div class="savebar"><button class="btn">Save Changes</button><span class="ok">✓ Saved</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= ADMIN ================= -->
+  <section class="screen shell" id="admin" hidden>
+    <nav class="snav" id="adminnav">
+      <p class="navttl">Admin</p>
+      <button data-pane="m-status" aria-selected="true"><span class="ic"></span>Status</button>
+      <button data-pane="m-users" aria-selected="false"><span class="ic"></span>Users</button>
+      <button data-pane="m-team" aria-selected="false"><span class="ic"></span>Team</button>
+      <button data-pane="m-analytics" aria-selected="false"><span class="ic"></span>Analytics</button>
+      <button data-pane="m-system" aria-selected="false"><span class="ic"></span>System</button>
+    </nav>
+    <div class="content">
+      <!-- STATUS -->
+      <div class="pane" id="m-status">
+        <p class="eyebrow">Site controls</p><h1 class="title">Status</h1>
+        <div class="stats">
+          <div class="stat"><div class="n">1,284</div><div class="l">Total users</div></div>
+          <div class="stat live"><div class="n">47</div><div class="l">Active now</div></div>
+          <div class="stat"><div class="n">312</div><div class="l">Active 7d</div></div>
+          <div class="stat warn"><div class="n">8</div><div class="l">Timed out</div></div>
+          <div class="stat bad"><div class="n">3</div><div class="l">Banned</div></div>
+        </div>
+        <div class="panel"><div class="phd"><h2>System at a glance</h2><span class="rule"></span></div>
+          <div class="health"><span class="dot-ok"></span><div class="meta"><div class="nm">App + API</div><div class="st">Operational · p95 142ms</div></div></div>
+          <div class="health"><span class="dot-ok"></span><div class="meta"><div class="nm">Database</div><div class="st">Healthy · 38% pool</div></div></div>
+          <div class="health"><span class="dot-warn"></span><div class="meta"><div class="nm">RSI verification worker</div><div class="st">Degraded · last run 14m ago</div></div></div>
+        </div>
+      </div>
+      <!-- USERS -->
+      <div class="pane" id="m-users" hidden>
+        <p class="eyebrow">Site controls</p><h1 class="title">Users</h1>
+        <div class="panel" style="padding:16px 16px 10px;">
+          <div class="toolbar"><div class="search"><input placeholder="Search callsign, RSI, Discord…" /></div><span class="spacer" style="margin-left:auto;"></span>
+            <div class="filterpills"><button class="fp" aria-pressed="true">All</button><button class="fp" aria-pressed="false">Active</button><button class="fp" aria-pressed="false">Timed out</button><button class="fp" aria-pressed="false">Banned</button></div></div>
+          <div class="table">
+            <div class="trow head"><span>User</span><span>Status</span><span>RSI</span><span>Last active</span><span style="text-align:right;">Actions</span></div>
+            <div class="trow row">
+              <div class="u"><div class="av">VG</div><div><div class="name" data-history="Vanguard-7">Vanguard-7 <svg viewBox="0 0 24 24"><path fill="var(--verify)" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.2L12 24l-2.6-1.9-3.2.2-1-3L2.6 17.4l1-3-1-3 2.6-1.9 1-3 3.2.2z"/><path fill="#fff" d="M10.6 15.2l-2.5-2.5 1.3-1.3 1.2 1.2 3.6-3.6 1.3 1.3z"/></svg></div><div class="hd">vanguard_seven</div></div></div>
+              <span><span class="pill active">Active</span></span><span class="small">vanguard_seven</span><span class="small">2026-06-11</span>
+              <span class="acts"><button class="ghost sm" data-manage="Vanguard-7">Manage</button></span>
+            </div>
+            <div class="trow row">
+              <div class="u"><div class="av">KX</div><div><div class="name" data-history="Kestrel-X">Kestrel-X</div><div class="hd">kestrel_x</div></div></div>
+              <span><span class="pill timeout">Timed out · 14h</span></span><span class="small">kestrel_x</span><span class="small">2026-06-09</span>
+              <span class="acts"><button class="ghost sm" data-manage="Kestrel-X">Manage</button></span>
+            </div>
+            <div class="trow row is-banned">
+              <div class="u"><div class="av">GH</div><div><div class="name" data-history="Ghost-Actual">Ghost-Actual</div><div class="hd">ghost_actual</div></div></div>
+              <span><span class="pill banned">Banned</span></span><span class="small">—</span><span class="small">2026-04-02</span>
+              <span class="acts"><button class="ghost sm" data-manage="Ghost-Actual">Manage</button></span>
+            </div>
+          </div>
+        </div>
+        <div class="legend" style="margin-top:18px;font-family:'JetBrains Mono';font-size:11px;color:var(--ink2);border-top:1px solid color-mix(in srgb,var(--ac) 18%,transparent);padding-top:14px;">
+          Click a <b style="color:var(--ac)">name</b> → moderation history · click <b style="color:var(--ac)">Manage</b> → action modal (ban / timeout, each slide-to-confirm).
+        </div>
+      </div>
+      <!-- TEAM -->
+      <div class="pane" id="m-team" hidden>
+        <p class="eyebrow">Site controls</p><h1 class="title">Team</h1>
+        <div class="teamgrid">
+          <div class="panel"><div class="phd"><h2>Administrators</h2><span class="rule"></span></div><p class="hint">Full site control.</p>
+            <div class="person"><div class="av">TP</div><div class="meta"><div class="nm">The_Prime</div><div class="rl">Site Admin · owner</div></div><button class="ghost sm">Manage</button></div>
+            <div class="person"><div class="av">BG</div><div class="meta"><div class="nm">blairg23</div><div class="rl">Site Admin</div></div><button class="ghost sm">Manage</button></div></div>
+          <div class="panel"><div class="phd"><h2>Moderators</h2><span class="rule"></span></div><p class="hint">Can ban/timeout, can't change site settings.</p>
+            <div class="person"><div class="av">NV</div><div class="meta"><div class="nm">Nova-Lead</div><div class="rl">Moderator</div></div><button class="ghost sm">Manage</button></div>
+            <button class="ghost sm" style="margin-top:12px;">+ Add moderator</button></div>
+        </div>
+      </div>
+      <!-- ANALYTICS -->
+      <div class="pane" id="m-analytics" hidden>
+        <p class="eyebrow">Site controls</p><h1 class="title">Analytics</h1>
+        <div class="panel" style="position:relative;"><span class="stub-tag">Stub · GA not wired</span>
+          <div class="phd"><h2>Site traffic</h2><span class="rule"></span></div><p class="hint">Visitors &amp; traffic via Google Analytics.</p>
+          <div class="stats" style="grid-template-columns:repeat(4,1fr);"><div class="stat"><div class="n">9.2k</div><div class="l">Visitors 30d</div></div><div class="stat"><div class="n">31k</div><div class="l">Pageviews</div></div><div class="stat"><div class="n">2m 14s</div><div class="l">Avg session</div></div><div class="stat"><div class="n">38%</div><div class="l">Bounce</div></div></div>
+          <div class="chart"><i style="height:40%"></i><i style="height:62%"></i><i style="height:55%"></i><i style="height:78%"></i><i style="height:90%"></i><i style="height:70%"></i><i style="height:84%"></i><i style="height:96%"></i><i style="height:60%"></i><i style="height:72%"></i></div>
+          <button class="ghost sm" style="margin-top:14px;">Connect Google Analytics</button></div>
+      </div>
+      <!-- SYSTEM -->
+      <div class="pane" id="m-system" hidden>
+        <p class="eyebrow">Site controls</p><h1 class="title">System</h1>
+        <div class="panel" style="position:relative;"><span class="stub-tag">Stub · backend later</span>
+          <div class="phd"><h2>System health</h2><span class="rule"></span></div>
+          <div class="health"><span class="dot-ok"></span><div class="meta"><div class="nm">App server</div><div class="st">Operational · uptime 12d 4h</div></div><span class="small">v2.4.1</span></div>
+          <div class="health"><span class="dot-ok"></span><div class="meta"><div class="nm">Database</div><div class="st">Healthy · 38% pool · 2.1GB</div></div><button class="ghost sm">Check</button></div>
+          <div class="health"><span class="dot-warn"></span><div class="meta"><div class="nm">RSI verification worker</div><div class="st">Degraded · last run 14m ago</div></div><button class="ghost sm">Logs</button></div></div>
+        <div class="panel danger"><div class="phd"><h2>Restart server</h2><span class="rule"></span></div>
+          <p class="hint">Restarts the app server. Active sessions briefly drop.</p>
+          <div class="slide" id="restart"><div class="chev red"></div><div class="chev grey"></div><div class="label">Slide to restart server</div><div class="handle"><span class="grip"><i></i><i></i><i></i></span><span class="arrow">›</span><span class="chk">✓</span></div></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== Manage modal ===== -->
+<div class="scrim" id="manageScrim">
+  <div class="modal">
+    <div class="mhd"><div class="av" id="mAv">VG</div><div><div class="nm" id="mName">Vanguard-7</div><div class="hd" id="mHd">vanguard_seven · Active</div></div><button class="x" data-close>✕</button></div>
+    <div class="opt"><h4>Timeout · 24 hours</h4><p>Cannot use comms, chat, or create events for 24h — or until a mod reinstates. Every timeout is logged with a date.</p>
+      <div class="slide sm" id="slTimeout"><div class="chev red"></div><div class="chev grey"></div><div class="label">Slide to timeout</div><div class="handle"><span class="grip"><i></i><i></i><i></i></span><span class="arrow">›</span><span class="chk">✓</span></div></div></div>
+    <div class="opt ban"><h4>Ban</h4><p>Cannot return unless they plead their case and prove innocence via email or Discord. Reversible by a mod (Unban).</p>
+      <div class="slide sm" id="slBan"><div class="chev red"></div><div class="chev grey"></div><div class="label">Slide to ban</div><div class="handle"><span class="grip"><i></i><i></i><i></i></span><span class="arrow">›</span><span class="chk">✓</span></div></div></div>
+    <div class="notify-note">✦ Ban / timeout notifies the user by email or Discord (once that channel is connected).</div>
+  </div>
+</div>
+
+<!-- ===== History modal ===== -->
+<div class="scrim" id="histScrim">
+  <div class="modal">
+    <div class="mhd"><div class="av" id="hAv">KX</div><div><div class="nm" id="hName">Kestrel-X</div><div class="hd">Moderation history</div></div><button class="x" data-close>✕</button></div>
+    <div class="kv"><span class="k">Joined</span><span>2026-02-14</span><span class="k">Last active</span><span>2026-06-09 · 14:21</span><span class="k">RSI</span><span>kestrel_x · verified</span></div>
+    <ul class="tl">
+      <li class="warn"><div class="when">2026-06-09 02:10</div><div class="what">Timed out · 24h — spam in crew chat</div><div class="who">by Nova-Lead</div></li>
+      <li class="good"><div class="when">2026-05-20 18:40</div><div class="what">Reinstated after timeout</div><div class="who">by The_Prime</div></li>
+      <li class="warn"><div class="when">2026-05-19 18:40</div><div class="what">Timed out · 24h — harassment report</div><div class="who">by Nova-Lead</div></li>
+      <li><div class="when">2026-02-14 09:02</div><div class="what">Account created</div></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const crumbs=$('#crumbs');
+  // top screen tabs
+  $$('.tab').forEach(t=>t.addEventListener('click',()=>{
+    $$('.tab').forEach(x=>x.setAttribute('aria-selected','false')); t.setAttribute('aria-selected','true');
+    const id=t.dataset.screen; $$('.screen').forEach(s=>s.hidden=(s.id!==id));
+    const sub=document.querySelector('#'+(id==='account'?'acctnav':'adminnav')+' [aria-selected="true"]');
+    crumbs.textContent='/ '+id+' / '+(sub?sub.textContent.trim().toLowerCase():'');
+  }));
+  // left subnav (both screens)
+  $$('.snav button').forEach(b=>b.addEventListener('click',()=>{
+    const nav=b.closest('.snav'); nav.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected','false')); b.setAttribute('aria-selected','true');
+    const id=b.dataset.pane; b.closest('.screen').querySelectorAll('.pane').forEach(p=>p.hidden=(p.id!==id));
+    const scr=b.closest('.screen').id; crumbs.textContent='/ '+scr+' / '+b.textContent.trim().toLowerCase();
+  }));
+  $$('.fp').forEach(p=>p.addEventListener('click',()=>{ p.parentElement.querySelectorAll('.fp').forEach(x=>x.setAttribute('aria-pressed','false')); p.setAttribute('aria-pressed','true'); }));
+  $$('.toggle').forEach(t=>t.addEventListener('click',()=>{ if(t.classList.contains('dis'))return; t.setAttribute('aria-checked', t.getAttribute('aria-checked')==='true'?'false':'true'); }));
+
+  // game loops
+  const LOOPS=['Bounty Hunting','Mining','Salvage','Refuelling','Refining','Cargo Hauling','Trading','Combat (PvP)','Combat (PvE)','Exploration','Medical / Rescue','Racing','FPS / Ground','Piracy','Engineering','Scouting / Recon','Data Running','Hacking'];
+  const preset=new Set(['Cargo Hauling','Salvage','Bounty Hunting']);
+  $('#loops').innerHTML=LOOPS.map(l=>`<div class="loop" role="checkbox" aria-checked="${preset.has(l)}"><span class="box">✓</span>${l}</div>`).join('');
+  $$('.loop').forEach(l=>l.addEventListener('click',()=>l.setAttribute('aria-checked', l.getAttribute('aria-checked')==='true'?'false':'true')));
+
+  // notifications matrix
+  const CATS=[
+    {nm:'MusterDeck Newsletter', sub:'Product news + community', email:true, inapp:false, push:false},
+    {nm:'Rally Point', sub:'Listing joins · changes to listings you joined', email:true, inapp:true, push:true},
+    {nm:'DMs & Group chat', sub:'Direct + group messages', email:true, inapp:true, push:true},
+    {nm:'Proving Grounds', sub:'Brackets · match updates', email:true, inapp:true, push:true},
+    {nm:'S.P.O.I.L.S.', sub:'Invites · settlement notifications', email:true, inapp:true, push:true},
+    {nm:'Fleet Command', sub:'Ops, assignments, alerts (high volume)', email:false, inapp:true, push:true, fc:true},
+  ];
+  $('#matrix').innerHTML='<div class="mrow head"><span>Category</span><span>Email</span><span>In-app</span><span>Desktop</span></div>'+
+    CATS.map(c=>`<div class="mrow ${c.fc?'fc':''}"><div class="cat"><div class="nm">${c.nm}</div><div class="sub">${c.sub}</div></div>
+      <span class="cell"><span class="toggle ${c.email?'':'dis'}" role="switch" aria-checked="${c.email?'true':'false'}"><span class="dot"></span></span></span>
+      <span class="cell"><span class="toggle ${c.inapp?'':'dis'}" role="switch" aria-checked="${c.inapp?'true':'false'}"><span class="dot"></span></span></span>
+      <span class="cell"><span class="toggle ${c.push?'':'dis'}" role="switch" aria-checked="${c.push?'true':'false'}"><span class="dot"></span></span></span></div>`).join('');
+  $$('#matrix .toggle').forEach(t=>t.addEventListener('click',()=>{ if(t.classList.contains('dis'))return; t.setAttribute('aria-checked', t.getAttribute('aria-checked')==='true'?'false':'true'); }));
+
+  // RSI verify demo
+  $('#copybtn').addEventListener('click',()=>{ navigator.clipboard?.writeText($('#rsicode').textContent); $('#copybtn').textContent='Copied'; setTimeout(()=>$('#copybtn').textContent='Copy',1200); });
+  $('#verifybtn').addEventListener('click',()=>{ const s=$('#rsistatus'); s.className='statusline pending'; s.textContent='⏳ Reading your RSI citizen page…'; setTimeout(()=>{ s.className='statusline ok'; s.textContent='✓ Verified — badge applied (callsign matches handle).'; },1400); });
+
+  // brand slide-to-confirm
+  function wire(slide){
+    if(!slide) return; const handle=slide.querySelector('.handle'), label=slide.querySelector('.label');
+    let dragging=false, startX=0, x=0, max=0, hw=0;
+    const measure=()=>{ hw=handle.offsetWidth; max=slide.clientWidth-hw-10; };
+    const setX=px=>{ x=Math.max(0,Math.min(max,px)); slide.style.setProperty('--x',x+'px'); handle.style.left=(5+x)+'px'; label.style.opacity=1-(x/max)*1.25; };
+    const down=e=>{ if(slide.classList.contains('done'))return; measure(); dragging=true; slide.classList.add('grabbing'); startX=(e.touches?e.touches[0].clientX:e.clientX)-x; };
+    const move=e=>{ if(!dragging)return; const cx=(e.touches?e.touches[0].clientX:e.clientX); setX(cx-startX); slide.classList.toggle('armed', x>max*0.6); };
+    const up=()=>{ if(!dragging)return; dragging=false; slide.classList.remove('grabbing');
+      if(x>=max*0.92){ setX(max); slide.classList.add('done'); label.textContent='Confirmed ✓'; label.style.opacity=1; }
+      else { slide.classList.remove('armed'); const b=setInterval(()=>{ x-=Math.max(6,x*0.25); if(x<=0){x=0;clearInterval(b);} setX(x); },14); } };
+    handle.addEventListener('mousedown',down); handle.addEventListener('touchstart',down,{passive:true});
+    window.addEventListener('mousemove',move); window.addEventListener('touchmove',move,{passive:true});
+    window.addEventListener('mouseup',up); window.addEventListener('touchend',up); window.addEventListener('resize',measure); measure();
+  }
+  $$('.slide').forEach(wire);
+
+  // modals
+  function openScrim(id){ $(id).classList.add('open'); } function closeScrim(s){ s.classList.remove('open'); }
+  $$('[data-manage]').forEach(b=>b.addEventListener('click',()=>{ const n=b.dataset.manage; $('#mName').textContent=n; $('#mAv').textContent=n.slice(0,2).toUpperCase(); $('#mHd').textContent=(n.toLowerCase().replace(/[^a-z0-9]/g,'_'))+' · status'; openScrim('#manageScrim'); }));
+  $$('[data-history]').forEach(b=>b.addEventListener('click',()=>{ const n=b.dataset.history; $('#hName').textContent=n; $('#hAv').textContent=n.slice(0,2).toUpperCase(); openScrim('#histScrim'); }));
+  $$('[data-close]').forEach(x=>x.addEventListener('click',e=>closeScrim(e.target.closest('.scrim'))));
+  $$('.scrim').forEach(s=>s.addEventListener('click',e=>{ if(e.target===s) closeScrim(s); }));
+</script>
+</body>
+</html>

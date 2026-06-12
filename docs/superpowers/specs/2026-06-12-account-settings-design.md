@@ -56,7 +56,7 @@ Flow:
 ### 3.3 Game Loops
 - Checkbox grid; user selects the loops they play. Used by Rally Point / crews for recruiting.
 - **New schema:** `game_loops` catalog table (`id`, `slug`, `label`, `sort`, `active`) + `profile_game_loops` join (`profile_id`, `game_loop_id`). RLS: owner-write on the join, public-read.
-- **Catalog (confirmed by Christoph 2026-06-12; can still grow):** Bounty Hunting, Mining, Salvage, Refuelling, Refining, Cargo Hauling, Trading, Combat (PvP), Combat (PvE), Exploration, Medical/Rescue, Racing, FPS/Ground, Piracy, Engineering, Scouting/Recon.
+- **Catalog (confirmed by Christoph 2026-06-12; can still grow):** Bounty Hunting, Mining, Salvage, Refuelling, Refining, Cargo Hauling, Trading, Combat (PvP), Combat (PvE), Exploration, Medical/Rescue, Racing, FPS/Ground, Piracy, Engineering, Scouting/Recon, Data, Running, Hacking.
 - Save Changes (section-scoped).
 
 ## 4. Security tab

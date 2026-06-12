@@ -1426,7 +1426,12 @@ function App() {
   }
 
   return (
-    <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+    <AppFrame
+      activeRoute={foundationRoute}
+      viewer={foundationViewer}
+      onRouteChange={setFoundationRoute}
+      immersive
+    >
     <div className="app-shell">
       <aside className="left-rail">
         <div className="brand-block">
@@ -2433,7 +2438,12 @@ function ShipRequestRow({
           <span>Filled</span>
         </div>
         <div className="meter" aria-label={`${fillRate}% of required positions filled`}>
-          <span style={{ width: `${fillRate}%` }} />
+          <span
+            style={{
+              width: `${fillRate}%`,
+              backgroundColor: `hsl(${Math.round((fillRate / 100) * 120)}, 70%, 46%)`,
+            }}
+          />
         </div>
         <div className="crew-numbers">
           <strong>

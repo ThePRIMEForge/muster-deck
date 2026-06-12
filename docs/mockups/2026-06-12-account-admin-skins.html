@@ -470,7 +470,7 @@
   $$('.toggle').forEach(t=>t.addEventListener('click',()=>{ if(t.classList.contains('dis'))return; t.setAttribute('aria-checked', t.getAttribute('aria-checked')==='true'?'false':'true'); }));
 
   // game loops
-  const LOOPS=['Bounty Hunting','Mining','Salvage','Cargo Hauling','Trading','Combat (PvP)','Combat (PvE)','Exploration','Medical / Rescue','Racing','FPS / Ground','Industry / Refining','Piracy','Engineering','Scouting / Recon'];
+  const LOOPS=['Bounty Hunting','Mining','Salvage','Refuelling','Refining','Cargo Hauling','Trading','Combat (PvP)','Combat (PvE)','Exploration','Medical / Rescue','Racing','FPS / Ground','Piracy','Engineering','Scouting / Recon'];
   const preset=new Set(['Cargo Hauling','Salvage','Bounty Hunting']);
   $('#loops').innerHTML=LOOPS.map(l=>`<div class="loop" role="checkbox" aria-checked="${preset.has(l)}"><span class="box">✓</span>${l}</div>`).join('');
   $$('.loop').forEach(l=>l.addEventListener('click',()=>l.setAttribute('aria-checked', l.getAttribute('aria-checked')==='true'?'false':'true')));

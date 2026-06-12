@@ -497,7 +497,7 @@
 
   // brand slide-to-confirm
   function wire(slide){
-    if(!slide) return; const handle=slide.querySelector('.handle'), label=slide.querySelector('.label'); const base=label.textContent;
+    if(!slide) return; const handle=slide.querySelector('.handle'), label=slide.querySelector('.label');
     let dragging=false, startX=0, x=0, max=0, hw=0;
     const measure=()=>{ hw=handle.offsetWidth; max=slide.clientWidth-hw-10; };
     const setX=px=>{ x=Math.max(0,Math.min(max,px)); slide.style.setProperty('--x',x+'px'); handle.style.left=(5+x)+'px'; label.style.opacity=1-(x/max)*1.25; };

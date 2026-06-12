@@ -13,9 +13,19 @@ type AppFrameProps = {
   viewer: FoundationViewer;
   onRouteChange: (route: FoundationRouteId) => void;
   children: ReactNode;
+  /** Immersive pillars (e.g. Fleet Command) render full-bleed with no
+   *  foundation header, notification strip, or footer — they carry their own
+   *  in-surface header and maximise working space. */
+  immersive?: boolean;
 };
 
-export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFrameProps) {
+export function AppFrame({
+  activeRoute,
+  viewer,
+  onRouteChange,
+  children,
+  immersive = false,
+}: AppFrameProps) {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const pillarRoutes = appRoutes.filter((route) => route.module);
   const signedIn = isSignedIn(viewer);
@@ -23,6 +33,15 @@ export function AppFrame({ activeRoute, viewer, onRouteChange, children }: AppFr
   function handleAccountMenuRoute(route: FoundationRouteId) {
     setIsAccountMenuOpen(false);
     onRouteChange(route);
+  }
+
+  if (immersive) {
+    return (
+      <div className="foundation-shell foundation-shell--immersive">
+        <main className="foundation-main">{children}</main>
+        <ConsentBanner onRouteChange={onRouteChange} />
+      </div>
+    );
   }
 
   return (

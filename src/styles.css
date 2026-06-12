@@ -1,28 +1,34 @@
 :root {
-  color: #f3eede;
-  background: #0e0c08;
-  /* v2 brand palette (2026-06-11) — see docs/brand/musterdeck-brand-identity-guide.md
-     Token NAMES retained for compatibility; VALUES repointed to v2 master-brand (mustard). */
-  --md-bg: #14130e;
-  --md-bg-elevated: #1c1b16;
-  --md-surface: #1c1b16;
-  --md-surface-raised: #25241d;
-  --md-surface-muted: #211f18;
-  --md-border-subtle: rgba(243, 238, 222, 0.1);
-  --md-border-strong: rgba(243, 238, 222, 0.18);
-  --md-border-caution: rgba(212, 160, 40, 0.5);
-  --md-text: #f3eede;
-  --md-text-secondary: #c8c1ad;
-  --md-text-muted: #8b8472;
-  --md-mustard: #d4a028;
-  --md-mustard-hot: #e3b651;
-  --md-mustard-deep: #8a6818;
-  --md-olive: #3a352a; /* olive retired in v2 — repointed to warm neutral */
-  --md-olive-muted: #25241d;
-  --md-caution-orange: #c1632e;
-  --md-success: #5bb87a;
-  --md-focus: rgba(212, 160, 40, 0.45);
-  --md-panel-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+  color: #f5f0e6;
+  background: #050505;
+  --md-bg: #070808;
+  --md-bg-elevated: #0d0f0f;
+  --md-surface: #141615;
+  --md-surface-raised: #1b1e1b;
+  --md-surface-muted: #24281f;
+  --md-border-subtle: rgba(245, 240, 230, 0.1);
+  --md-border-strong: rgba(245, 240, 230, 0.18);
+  --md-border-caution: rgba(214, 154, 47, 0.5);
+  --md-text: #f5f0e6;
+  --md-text-secondary: #c9c2b2;
+  --md-text-muted: #9f988b;
+  --md-mustard: #d69a2f;
+  --md-mustard-hot: #e0b552;
+  --md-mustard-deep: #8d611e;
+  --md-olive: #4f5a3f;
+  --md-olive-muted: #303728;
+  --md-caution-orange: #bd6537;
+  --md-success: #4ade80;
+  --md-focus: rgba(224, 181, 82, 0.45);
+  /* Fleet Command pillar identity — radar green / military olive · scanlines */
+  --md-radar-green: #7fa356;
+  --md-radar-green-hot: #93b86a;
+  --md-radar-bg: #080d07;
+  --md-radar-bg2: #0f160c;
+  --md-radar-ink: #dde6cf;
+  --md-radar-ink2: #92a07e;
+  --md-radar-stamp: #566b34;
+  --md-panel-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
   --md-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --md-texture-opacity: 0.14;
   --md-heading-font: "Archivo", Bahnschrift, "Arial Narrow", sans-serif;
@@ -70,12 +76,61 @@ img {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr) 280px;
   min-height: 100vh;
+  position: relative;
+  /* Pillar recolor: remap the semantic tokens for the Fleet Command working
+     surface only. The foundation header (outside .app-shell) stays dark. */
+  --md-bg: var(--md-radar-bg);
+  --md-bg-elevated: var(--md-radar-bg2);
+  --md-surface: var(--md-radar-bg2);
+  --md-surface-raised: #16210f;
+  --md-surface-muted: #1a2512;
+  --md-text: var(--md-radar-ink);
+  --md-text-secondary: var(--md-radar-ink2);
+  --md-text-muted: var(--md-radar-ink2);
+  /* Broad accent sits on BASE green; the brighter hot green is reserved for
+     important things (primary buttons, active states) via explicit rules. */
+  --md-mustard: var(--md-radar-green);
+  --md-mustard-hot: var(--md-radar-green);
+  --md-mustard-deep: var(--md-radar-stamp);
+  --md-border-subtle: rgba(127, 163, 86, 0.16);
+  --md-border-strong: rgba(127, 163, 86, 0.3);
+  --md-border-caution: rgba(127, 163, 86, 0.42);
+  --md-focus: rgba(127, 163, 86, 0.45);
+  color: var(--md-radar-ink);
+  isolation: isolate;
+  /* Faint phosphor wash, no scanlines. */
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(127, 163, 86, 0.08), transparent 60%),
+    var(--md-radar-bg);
+  /* Phosphor edge glow hugging the screen. */
+  box-shadow:
+    inset 0 0 160px rgba(8, 13, 7, 0.6),
+    inset 0 0 90px rgba(127, 163, 86, 0.12),
+    inset 0 0 3px rgba(147, 184, 106, 0.35);
+}
+
+/* Pillar accents that are hard-coded rather than tokenised get a scoped
+   radar-green override inside the Fleet Command shell. */
+.app-shell .left-rail,
+.app-shell .member-rail {
+  background: rgba(8, 13, 7, 0.92);
+  border-color: rgba(127, 163, 86, 0.2);
+}
+
+.app-shell .brand-mark {
+  border-color: rgba(127, 163, 86, 0.5);
+  background: #11190d;
+  color: var(--md-radar-green-hot);
+}
+
+.app-shell .eyebrow {
+  color: var(--md-radar-green);
 }
 
 .left-rail,
 .member-rail {
   background: rgba(8, 8, 8, 0.92);
-  border-color: rgba(229, 168, 72, 0.16);
+  border-color: rgba(127, 163, 86, 0.16);
   border-style: solid;
 }
 
@@ -113,9 +168,9 @@ img {
   place-items: center;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(229, 168, 72, 0.45);
+  border: 1px solid rgba(127, 163, 86, 0.45);
   background: #15110b;
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
 }
 
 .eyebrow {
@@ -206,7 +261,7 @@ h3 {
 }
 
 .filter-button strong {
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   font-size: 0.72rem;
 }
 
@@ -316,7 +371,7 @@ h3 {
 .setup-panel,
 .change-log {
   min-width: 0;
-  border: 1px solid rgba(229, 168, 72, 0.16);
+  border: 1px solid rgba(127, 163, 86, 0.16);
   background: rgba(12, 12, 11, 0.88);
 }
 
@@ -349,7 +404,7 @@ h3 {
   width: 22px;
   height: 22px;
   color: #050505;
-  background: #f0b64d;
+  background: var(--md-mustard-hot);
 }
 
 .setup-content {
@@ -434,12 +489,12 @@ h3 {
 .profile-picker button.active,
 .mode-picker button.active {
   color: #050505;
-  background: #f0b64d;
+  background: var(--md-mustard-hot);
 }
 
 .setup-secondary {
-  color: #f0b64d;
-  border-color: rgba(240, 182, 77, 0.32);
+  color: var(--md-mustard-hot);
+  border-color: rgba(127, 163, 86, 0.32);
 }
 
 .setup-submit {
@@ -450,7 +505,7 @@ h3 {
 
 .setup-roster-panel {
   min-width: 0;
-  border: 1px solid rgba(229, 168, 72, 0.16);
+  border: 1px solid rgba(127, 163, 86, 0.16);
   background: rgba(12, 12, 11, 0.88);
 }
 
@@ -545,9 +600,9 @@ h3 {
 }
 
 .edit-line-button {
-  color: #f0b64d;
-  border: 1px solid rgba(240, 182, 77, 0.28);
-  background: rgba(240, 182, 77, 0.06);
+  color: var(--md-mustard-hot);
+  border: 1px solid rgba(127, 163, 86, 0.28);
+  background: rgba(127, 163, 86, 0.06);
 }
 
 .remove-line-button {
@@ -606,14 +661,14 @@ h3 {
   place-items: center;
   width: 27px;
   height: 27px;
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   border: 1px solid rgba(245, 240, 230, 0.1);
   background: transparent;
 }
 
 .command-history {
   min-width: 0;
-  border: 1px solid rgba(229, 168, 72, 0.16);
+  border: 1px solid rgba(127, 163, 86, 0.16);
   background: rgba(12, 12, 11, 0.88);
 }
 
@@ -623,7 +678,7 @@ h3 {
   bottom: 16px;
   z-index: 10;
   width: min(360px, calc(100vw - 32px));
-  border: 1px solid rgba(229, 168, 72, 0.24);
+  border: 1px solid rgba(127, 163, 86, 0.24);
   background: rgba(8, 8, 8, 0.94);
   box-shadow: 0 14px 50px rgba(0, 0, 0, 0.42);
 }
@@ -651,7 +706,7 @@ h3 {
   color: #050505;
   font-size: 0.7rem;
   font-weight: 900;
-  background: #f0b64d;
+  background: var(--md-mustard-hot);
 }
 
 .message-list {
@@ -708,7 +763,7 @@ h3 {
 }
 
 .icon-action.gold {
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
 }
 
 .icon-action.primary {
@@ -723,8 +778,8 @@ h3 {
   gap: 1px;
   overflow: hidden;
   margin-bottom: 16px;
-  border: 1px solid rgba(229, 168, 72, 0.16);
-  background: rgba(229, 168, 72, 0.16);
+  border: 1px solid rgba(127, 163, 86, 0.16);
+  background: rgba(127, 163, 86, 0.16);
 }
 
 .summary-band > div {
@@ -814,7 +869,7 @@ h3 {
 }
 
 .view-switch button.active {
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   background: rgba(126, 33, 20, 0.42);
 }
 
@@ -832,7 +887,7 @@ h3 {
   grid-template-columns: 68px minmax(0, 1fr) 132px;
   gap: 8px;
   min-width: 0;
-  border: 1px solid rgba(229, 168, 72, 0.16);
+  border: 1px solid rgba(127, 163, 86, 0.16);
   background: rgba(14, 14, 13, 0.92);
 }
 
@@ -917,7 +972,7 @@ h3 {
   z-index: 1;
   width: 38px;
   height: 38px;
-  background: #f0b64d;
+  background: var(--md-mustard-hot);
   clip-path: polygon(
     50% 0%,
     61% 34%,
@@ -930,12 +985,12 @@ h3 {
     2% 34%,
     39% 34%
   );
-  filter: drop-shadow(0 0 4px rgba(240, 182, 77, 0.38));
+  filter: drop-shadow(0 0 4px rgba(127, 163, 86, 0.38));
   transform: translateX(-50%);
 }
 
 .crew-marker.admiral .crew-dot {
-  box-shadow: 0 0 0 2px rgba(240, 182, 77, 0.28);
+  box-shadow: 0 0 0 2px rgba(127, 163, 86, 0.28);
 }
 
 .ship-main {
@@ -1005,13 +1060,13 @@ h3 {
   max-width: 120px;
   overflow: hidden;
   padding: 3px 7px;
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   font-size: 0.7rem;
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
-  border: 1px solid rgba(240, 182, 77, 0.44);
-  background: rgba(240, 182, 77, 0.08);
+  border: 1px solid rgba(127, 163, 86, 0.44);
+  background: rgba(127, 163, 86, 0.08);
 }
 
 .ship-meta {
@@ -1045,7 +1100,7 @@ h3 {
 }
 
 .expand-button {
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
 }
 
 .remove-line-button {
@@ -1083,13 +1138,13 @@ h3 {
   font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
-  border: 1px solid rgba(229, 168, 72, 0.22);
+  border: 1px solid rgba(127, 163, 86, 0.22);
   background: rgba(126, 33, 20, 0.32);
 }
 
 .signup-actions button:hover {
-  color: #f0b64d;
-  border-color: rgba(240, 182, 77, 0.52);
+  color: var(--md-mustard-hot);
+  border-color: rgba(127, 163, 86, 0.52);
 }
 
 .signup-actions button:disabled {
@@ -1116,8 +1171,8 @@ h3 {
   justify-content: space-between;
   gap: 8px;
   padding: 5px 7px;
-  border: 1px solid rgba(229, 168, 72, 0.2);
-  background: rgba(229, 168, 72, 0.08);
+  border: 1px solid rgba(127, 163, 86, 0.2);
+  background: rgba(127, 163, 86, 0.08);
 }
 
 .fill-heading strong {
@@ -1127,7 +1182,7 @@ h3 {
 }
 
 .fill-heading span {
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -1154,7 +1209,11 @@ h3 {
 .meter span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #b3481f, #eab308);
+  /* Colour is set inline from the fill rate (red → orange → yellow → green). */
+  background-color: #b3481f;
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .crew-flags {
@@ -1324,7 +1383,7 @@ h3 {
 .member-group-title strong {
   min-width: 0;
   overflow: hidden;
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   font-size: 0.72rem;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -1340,7 +1399,7 @@ h3 {
   font-size: 0.66rem;
   text-overflow: ellipsis;
   white-space: nowrap;
-  border: 1px solid rgba(240, 182, 77, 0.35);
+  border: 1px solid rgba(127, 163, 86, 0.35);
 }
 
 .member-row {
@@ -1357,12 +1416,12 @@ h3 {
 .checkin-button {
   align-self: center;
   padding: 4px 6px;
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
-  border: 1px solid rgba(240, 182, 77, 0.28);
-  background: rgba(240, 182, 77, 0.06);
+  border: 1px solid rgba(127, 163, 86, 0.28);
+  background: rgba(127, 163, 86, 0.06);
 }
 
 .member-actions {
@@ -1395,7 +1454,7 @@ h3 {
   width: min(620px, 100%);
   max-height: calc(100vh - 44px);
   overflow: auto;
-  border: 1px solid rgba(229, 168, 72, 0.28);
+  border: 1px solid rgba(127, 163, 86, 0.28);
   background: #0c0c0b;
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.52);
 }
@@ -1418,7 +1477,7 @@ h3 {
   place-items: center;
   width: 34px;
   height: 34px;
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
   border: 1px solid rgba(245, 240, 230, 0.12);
   background: rgba(255, 255, 255, 0.035);
 }
@@ -1550,7 +1609,7 @@ h3 {
 
 .member-copy em {
   font-style: normal;
-  color: #f0b64d;
+  color: var(--md-mustard-hot);
 }
 
 @media (min-width: 901px) {
@@ -2037,6 +2096,327 @@ h3 {
 
 .foundation-main .app-shell {
   min-height: calc(100vh - 205px);
+}
+
+/* Immersive pillars: no chrome, so the working surface owns the full viewport. */
+.foundation-shell--immersive,
+.foundation-shell--immersive .foundation-main,
+.foundation-shell--immersive .foundation-main .app-shell {
+  min-height: 100vh;
+}
+
+.foundation-shell--immersive .foundation-main {
+  display: block;
+}
+
+/* Drop the foundation mustard wash + map-dot overlay so only the radar-green
+   surface shows in an immersive pillar. */
+.foundation-shell--immersive {
+  background: var(--md-radar-bg);
+}
+
+.foundation-shell--immersive::before {
+  display: none;
+}
+
+/* ── Fleet Command CRT / terminal screen treatment ───────────────────── */
+
+/* Grunge — a distressed noise grain blended over the whole terminal. */
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='220'%20height='220'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.62'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+/* Screen vignette + gentle flicker sitting over the content (no scanlines). */
+.app-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(130% 100% at 50% 50%, transparent 62%, rgba(4, 7, 4, 0.5) 100%);
+  animation: crt-flicker 4.5s steps(60) infinite;
+}
+
+@keyframes crt-flicker {
+  0%,
+  100% {
+    opacity: 0.96;
+  }
+  50% {
+    opacity: 1;
+  }
+  52% {
+    opacity: 0.93;
+  }
+  54% {
+    opacity: 0.99;
+  }
+}
+
+/* Phosphor bloom on the terminal headers. */
+.app-shell .brand-block h1 {
+  text-shadow:
+    0 0 8px rgba(147, 184, 106, 0.45),
+    0 0 22px rgba(127, 163, 86, 0.25);
+}
+
+.app-shell .eyebrow {
+  text-shadow: 0 0 8px rgba(127, 163, 86, 0.4);
+}
+
+/* Glowing terminal lines — soften the dividers, thicken the rails a touch,
+   and give the panel borders a phosphor halo. */
+.app-shell .left-rail {
+  border-right-width: 2px;
+  border-color: rgba(127, 163, 86, 0.6);
+  box-shadow:
+    3px 0 1px rgba(45, 226, 230, 0.2),
+    -2px 0 1px rgba(212, 160, 40, 0.16),
+    1px 0 2px rgba(147, 184, 106, 0.75),
+    2px 0 20px rgba(127, 163, 86, 0.42);
+}
+
+.app-shell .member-rail {
+  border-left-width: 2px;
+  border-color: rgba(127, 163, 86, 0.6);
+  box-shadow:
+    -3px 0 1px rgba(45, 226, 230, 0.2),
+    2px 0 1px rgba(212, 160, 40, 0.16),
+    -1px 0 2px rgba(147, 184, 106, 0.75),
+    -2px 0 20px rgba(127, 163, 86, 0.42);
+}
+
+.app-shell .ship-card,
+.app-shell .setup-roster-panel,
+.app-shell .setup-secondary,
+.app-shell .orders-feed,
+.app-shell .command-history,
+.app-shell .change-log,
+.app-shell .summary-band,
+.app-shell .fill-heading,
+.app-shell .owner-chip,
+.app-shell .modal {
+  border-width: 2px;
+  border-color: rgba(127, 163, 86, 0.5);
+  /* CRT line: RGB misconvergence fringe + tight bright halo + wide soft bloom. */
+  box-shadow:
+    -2px 0 1px rgba(45, 226, 230, 0.45),
+    2px 0 1px rgba(212, 160, 40, 0.36),
+    0 0 2px rgba(147, 184, 106, 0.55),
+    0 0 15px rgba(127, 163, 86, 0.26),
+    inset 0 0 16px rgba(127, 163, 86, 0.09);
+}
+
+/* No hard corners — round every box in the terminal. */
+.app-shell button,
+.app-shell input,
+.app-shell select,
+.app-shell textarea,
+.app-shell section,
+.app-shell article,
+.app-shell .ship-card,
+.app-shell .owner-chip,
+.app-shell .setup-roster-panel,
+.app-shell .setup-secondary,
+.app-shell .orders-feed,
+.app-shell .command-history,
+.app-shell .change-log,
+.app-shell .summary-band,
+.app-shell .fill-heading,
+.app-shell .filter-button,
+.app-shell .member-row,
+.app-shell .modal {
+  border-radius: 8px;
+}
+
+.app-shell .brand-mark {
+  border-radius: 10px;
+}
+
+/* Hover lift — interactive tiles glow brighter when pointed at. */
+.app-shell .ship-card,
+.app-shell .member-row,
+.app-shell .filter-button,
+.app-shell .owner-chip {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.app-shell .ship-card:hover,
+.app-shell .member-row:hover,
+.app-shell .filter-button:hover,
+.app-shell .owner-chip:hover {
+  border-color: rgba(147, 184, 106, 0.65);
+  box-shadow:
+    0 0 16px rgba(127, 163, 86, 0.32),
+    inset 0 0 14px rgba(127, 163, 86, 0.08);
+}
+
+/* ── Brand button system (locked 2026-06-11), radar-green accent ───────── */
+
+/* Primary = "Hardware Extrude" (scaled). Bright green = top of the hierarchy. */
+.app-shell .checkin-button {
+  --_a: var(--md-radar-green-hot);
+  position: relative;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 6px;
+  color: #0c1207;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='90'%20height='90'%3E%3Cfilter%20id='b'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23b)'/%3E%3C/svg%3E"),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--_a) 78%, #fff 22%),
+      var(--_a) 52%,
+      color-mix(in srgb, var(--_a) 82%, #000)
+    );
+  background-size:
+    90px 90px,
+    auto;
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 6px color-mix(in srgb, var(--_a) 55%, #000),
+    0 4px 0 color-mix(in srgb, var(--_a) 42%, #000),
+    0 5px 2px rgba(0, 0, 0, 0.45),
+    0 0 16px color-mix(in srgb, var(--_a) 35%, transparent);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+}
+
+.app-shell .checkin-button::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 2px;
+  height: 40%;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
+  pointer-events: none;
+}
+
+.app-shell .checkin-button:hover {
+  filter: brightness(1.08);
+}
+
+.app-shell .checkin-button:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 5px color-mix(in srgb, var(--_a) 55%, #000),
+    0 1px 0 color-mix(in srgb, var(--_a) 42%, #000),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Secondary = "Nested Brackets" Pair A (scaled). Applied to role commands. */
+.app-shell .mini-command {
+  --_a: var(--md-radar-green);
+  position: relative;
+  padding: 7px 14px;
+  border-radius: 6px;
+  color: var(--_a);
+  background: transparent;
+  border: 2px solid color-mix(in srgb, var(--_a) 52%, transparent);
+  box-shadow:
+    inset 0 0 14px color-mix(in srgb, var(--_a) 14%, transparent),
+    0 4px 12px rgba(0, 0, 0, 0.4);
+  transition:
+    box-shadow 0.13s ease,
+    transform 0.13s ease,
+    color 0.13s ease;
+}
+
+.app-shell .mini-command::before,
+.app-shell .mini-command::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--_a);
+}
+
+.app-shell .mini-command::before {
+  top: 3px;
+  left: 3px;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 4px;
+}
+
+.app-shell .mini-command::after {
+  bottom: 3px;
+  right: 3px;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 4px;
+}
+
+.app-shell .mini-command:hover {
+  color: color-mix(in srgb, var(--_a) 100%, #fff 12%);
+  box-shadow:
+    inset 0 0 22px color-mix(in srgb, var(--_a) 22%, transparent),
+    0 0 16px color-mix(in srgb, var(--_a) 40%, transparent),
+    0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.app-shell .mini-command:active {
+  transform: translateY(2px);
+}
+
+/* ── Orange does not map to Fleet Command (rust = Rally). Remap to hierarchy ── */
+
+/* Primary actions → solid BRIGHT radar-green (most important). */
+.app-shell .setup-submit,
+.app-shell .icon-action.primary {
+  border: none;
+  color: #0c1207;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--md-radar-green-hot) 80%, #fff 20%),
+    var(--md-radar-green-hot) 54%,
+    color-mix(in srgb, var(--md-radar-green-hot) 82%, #000)
+  );
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.5),
+    0 0 16px rgba(127, 163, 86, 0.35);
+}
+
+/* Active filter / team tab → bright accent, reads as the selected (important) one. */
+.app-shell .filter-button.active,
+.app-shell .team-filter.active {
+  border-color: rgba(147, 184, 106, 0.75);
+  background: rgba(127, 163, 86, 0.16);
+  color: var(--md-radar-ink);
+  box-shadow:
+    0 0 12px rgba(127, 163, 86, 0.28),
+    inset 0 0 12px rgba(127, 163, 86, 0.08);
+}
+
+/* Destructive actions → muted red (danger signal, not Rally orange). */
+.app-shell .danger-action,
+.app-shell .remove-line-button {
+  border-color: rgba(193, 63, 50, 0.7);
+  background: rgba(120, 30, 24, 0.4);
+  color: #e08b80;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell::after {
+    animation: none;
+  }
 }
 
 .foundation-page {

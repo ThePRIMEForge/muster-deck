@@ -1151,7 +1151,7 @@ function App() {
       }
 
       if (prompt.nextRole === 'fleet_admiral' && member.operationRole === 'fleet_admiral') {
-        return { ...member, operationRole: 'officer' as const };
+        return { ...member, operationRole: 'fleet_officer' as const };
       }
 
       return member;
@@ -1427,7 +1427,12 @@ function App() {
   }
 
   return (
-    <AppFrame activeRoute={foundationRoute} viewer={foundationViewer} onRouteChange={setFoundationRoute}>
+    <AppFrame
+      activeRoute={foundationRoute}
+      viewer={foundationViewer}
+      onRouteChange={setFoundationRoute}
+      immersive
+    >
     <div className="app-shell">
       <aside className="left-rail">
         <div className="brand-block">
@@ -1435,8 +1440,8 @@ function App() {
             <Ship size={24} />
           </div>
           <div>
-            <p className="eyebrow">Star Citizen</p>
-            <h1>Fleet Manager</h1>
+            <p className="eyebrow">Command an Operation</p>
+            <h1>Fleet Command</h1>
           </div>
         </div>
 
@@ -2434,7 +2439,12 @@ function ShipRequestRow({
           <span>Filled</span>
         </div>
         <div className="meter" aria-label={`${fillRate}% of required positions filled`}>
-          <span style={{ width: `${fillRate}%` }} />
+          <span
+            style={{
+              width: `${fillRate}%`,
+              backgroundColor: `hsl(${Math.round((fillRate / 100) * 120)}, 70%, 46%)`,
+            }}
+          />
         </div>
         <div className="crew-numbers">
           <strong>
@@ -2543,12 +2553,28 @@ function MemberGroup({
                   onClick={() =>
                     onRequestRoleChange(
                       member.id,
-                      member.operationRole === 'officer' ? 'crew' : 'officer',
+                      member.operationRole === 'fleet_officer' ? 'crew' : 'fleet_officer',
                     )
                   }
                   type="button"
                 >
-                  {member.operationRole === 'officer' ? 'Remove Officer' : 'Make Officer'}
+                  {member.operationRole === 'fleet_officer'
+                    ? 'Remove Fleet Officer'
+                    : 'Make Fleet Officer'}
+                </button>
+                <button
+                  className="mini-command"
+                  onClick={() =>
+                    onRequestRoleChange(
+                      member.id,
+                      member.operationRole === 'team_officer' ? 'crew' : 'team_officer',
+                    )
+                  }
+                  type="button"
+                >
+                  {member.operationRole === 'team_officer'
+                    ? 'Remove Team Officer'
+                    : 'Make Team Officer'}
                 </button>
               </>
             )}

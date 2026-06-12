@@ -1359,6 +1359,7 @@ function App() {
         <AuthScreen
           mode={foundationRoute === 'login' ? 'login' : 'signup'}
           onSuccess={() => setFoundationRoute('hub')}
+          onRouteChange={setFoundationRoute}
         />
       </AppFrame>
     );

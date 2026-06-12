@@ -1,19 +1,24 @@
 import { useState } from 'react';
+import type { FoundationRouteId } from '../../lib/foundationTypes';
 import { foundationCopy } from '../../lib/foundationCopy';
 import { hasSupabaseConfig, supabase } from '../../lib/supabase';
 
 type AuthScreenProps = {
   mode: 'login' | 'signup';
   onSuccess?: () => void;
+  onRouteChange?: (route: FoundationRouteId) => void;
 };
 
-export function AuthScreen({ mode, onSuccess }: AuthScreenProps) {
+export function AuthScreen({ mode, onSuccess, onRouteChange }: AuthScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [consentGiven, setConsentGiven] = useState(false);
 
   const title = mode === 'login' ? foundationCopy.auth.loginTitle : foundationCopy.auth.signupTitle;
+  const requiresConsent = mode === 'signup';
+  const signupBlocked = requiresConsent && !consentGiven;
 
   async function handleOAuth(provider: 'discord' | 'google') {
     if (!supabase) return;
@@ -54,7 +59,7 @@ export function AuthScreen({ mode, onSuccess }: AuthScreenProps) {
         <button
           className="foundation-provider-button"
           type="button"
-          disabled={loading || !hasSupabaseConfig}
+          disabled={loading || !hasSupabaseConfig || signupBlocked}
           onClick={() => void handleOAuth('discord')}
         >
           {foundationCopy.auth.discord}
@@ -62,7 +67,7 @@ export function AuthScreen({ mode, onSuccess }: AuthScreenProps) {
         <button
           className="foundation-provider-button"
           type="button"
-          disabled={loading || !hasSupabaseConfig}
+          disabled={loading || !hasSupabaseConfig || signupBlocked}
           onClick={() => void handleOAuth('google')}
         >
           {foundationCopy.auth.google}
@@ -89,12 +94,39 @@ export function AuthScreen({ mode, onSuccess }: AuthScreenProps) {
         <button
           className="foundation-primary"
           type="button"
-          disabled={loading || !email || !password || !hasSupabaseConfig}
+          disabled={loading || !email || !password || !hasSupabaseConfig || signupBlocked}
           onClick={() => void handleEmailAuth()}
         >
           {foundationCopy.auth.email}
         </button>
-        {mode === 'signup' && <p className="form-note">{foundationCopy.auth.terms}</p>}
+        {requiresConsent && (
+          <label className="consent-label">
+            <input
+              type="checkbox"
+              checked={consentGiven}
+              onChange={(e) => setConsentGiven(e.target.checked)}
+            />
+            <span>
+              {foundationCopy.auth.consentPrefix}{' '}
+              <button
+                type="button"
+                className="inline-link"
+                onClick={() => onRouteChange?.('terms')}
+              >
+                {foundationCopy.auth.termsLink}
+              </button>{' '}
+              {foundationCopy.auth.consentAnd}{' '}
+              <button
+                type="button"
+                className="inline-link"
+                onClick={() => onRouteChange?.('privacy')}
+              >
+                {foundationCopy.auth.privacyLink}
+              </button>
+              {foundationCopy.auth.consentSuffix}
+            </span>
+          </label>
+        )}
       </div>
     </section>
   );

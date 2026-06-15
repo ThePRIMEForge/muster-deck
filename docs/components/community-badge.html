@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Component — Made by the Community badge + Unofficial fan site disclaimer</title>
+<!--
+  ============================================================================
+  MusterDeck reusable component: MADE BY THE COMMUNITY
+  ============================================================================
+  Two pieces meant to travel together. Reuse on the landing page footer, the
+  in-app hub, and the marketing site:
+
+    1. .combadge-img  — the "Made by the Community" badge image
+    2. .disclaimer    — the unofficial Star Citizen fan-site legal/trademark note
+
+  HOW TO REUSE
+  ------------
+  - Copy the <style id="combadge-css"> block and the markup block.
+  - Asset path:
+      * Standalone preview (this file):  ../../public/brand/made-by-community.webp
+      * In the Vite app (public/ = web root):  /brand/made-by-community.webp
+    Update the <img src> to match where you mount it.
+  - The disclaimer text is the canonical trademark/affiliation notice. Keep it
+    verbatim wherever player-facing pages mention Star Citizen.
+
+  Open this file directly in a browser to preview the component in isolation.
+  ============================================================================
+-->
+<style id="combadge-css">
+  :root{ --ink2:#C7BFAA; --font:"Archivo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+
+  /* the badge */
+  .combadge-img{width:clamp(64px,6vw,92px);height:auto;opacity:.9;display:block}
+
+  /* the unofficial fan-site disclaimer */
+  .disclaimer{color:#857c66;font-size:clamp(9px,.72vw,11px);line-height:1.55;max-width:48ch;font-family:var(--font)}
+  .disclaimer b{color:#9a9079}
+
+  /* groups them as one footer block */
+  .md-community{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+
+  /* preview-only chrome (delete when copying into a host page) */
+  .demo{min-height:100vh;display:flex;align-items:center;padding:6vw;
+    background:radial-gradient(50vmax 50vmax at 20% 80%, rgba(70,52,28,.18), transparent 60%),linear-gradient(180deg,#070a0f,#0a0a0c)}
+</style>
+</head>
+<body>
+<div class="demo">
+
+  <!-- ===================== MARKUP ===================== -->
+  <div class="md-community">
+    <img class="combadge-img" src="../../public/brand/made-by-community.webp" alt="Made by the Community">
+    <div class="disclaimer"><b>Unofficial Star Citizen fan site.</b> Not endorsed by or affiliated with the Cloud Imperium or Roberts Space Industries group of companies. Star Citizen&reg;, Squadron 42&reg;, Roberts Space Industries&reg;, and Cloud Imperium&reg; are registered trademarks of Cloud Imperium Rights LLC. All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.</div>
+  </div>
+
+</div>
+</body>
+</html>

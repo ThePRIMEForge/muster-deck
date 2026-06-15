@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Component — Become a supporter (button + blurb + Patreon modal)</title>
+<!--
+  ============================================================================
+  MusterDeck reusable component: BECOME A SUPPORTER
+  ============================================================================
+  Three pieces meant to travel together and be reused across the landing page,
+  in-app screens, and the marketing site:
+
+    1. .md-support-blurb  — the one-line "free, supporters keep it running" note
+    2. .b-patreon         — the "Become a supporter" button
+    3. #tierOverlay       — the supporter modal (Captain / Admiral / Praetorian)
+                            with the holographic cast-open reveal animation
+
+  HOW TO REUSE
+  ------------
+  - Copy the <style id="supporter-css"> block, the markup block, and the
+    <script id="supporter-js"> block into the target page.
+  - Any element with class .b-patreon opens the modal (you can have several).
+  - Requires the brand tokens in :root (--ac, --ink, --ink2). If the host page
+    already defines them, drop the :root rule here.
+  - Tiers/prices/perks are confirmed; wording is still open to polish.
+    Patreon handles payments — wire each .pick button to the matching tier URL.
+
+  Open this file directly in a browser to preview the component in isolation.
+  ============================================================================
+-->
+<style id="supporter-css">
+  :root{ --ac:#D4A028; --ink:#F3ECDB; --ink2:#C7BFAA;
+    --font:"Archivo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+
+  /* ---- 1. free / supporters blurb (sits directly above the button) ---- */
+  .md-support-blurb{color:var(--ink2);font-size:clamp(12px,1vw,14px);line-height:1.5;max-width:42ch}
+
+  /* ---- 2. the "Become a supporter" button ---- */
+  .b-patreon{display:inline-block;background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;
+    padding:clamp(8px,.8vw,11px) clamp(14px,1.2vw,18px);border-radius:7px;font-weight:800;font-size:clamp(12px,.9vw,13px);
+    border:none;cursor:pointer;font-family:var(--font);box-shadow:0 3px 0 #7a5a12, inset 0 1px 0 rgba(255,255,255,.4)}
+
+  /* ---- 3. supporter modal: shell + holographic reveal ---- */
+  .overlay{position:fixed;inset:0;z-index:300;background:rgba(4,3,2,0);backdrop-filter:blur(0px);
+    display:none;align-items:center;justify-content:center;padding:4vh 16px;font-family:var(--font);color:var(--ink);
+    transition:background .35s ease, backdrop-filter .35s ease}
+  .overlay.visible{display:flex}
+  .overlay.open{background:rgba(4,3,2,.76);backdrop-filter:blur(5px)}
+  .tmodal{position:relative;width:min(960px,calc(100vw - 32px));min-width:0;max-height:92vh;overflow:auto;background:#0f0b06;
+    border:1px solid #2a2418;border-top:4px solid var(--ac);border-radius:16px;padding:clamp(18px,3vw,36px);
+    clip-path:inset(0 calc(50% - 1px) 0 calc(50% - 1px) round 2px);transform:translate(var(--dx,0),var(--dy,0)) scale(.98);opacity:0;
+    box-shadow:0 0 0 1px rgba(45,226,230,.9), 0 0 30px 4px rgba(45,226,230,.7);
+    transition:clip-path .45s cubic-bezier(.2,.9,.2,1), transform .45s cubic-bezier(.2,.9,.2,1), opacity .16s ease, box-shadow .6s ease}
+  .overlay.open .tmodal{clip-path:inset(0 0 0 0 round 16px);transform:translate(0,0) scale(1);opacity:1;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(212,160,40,.22);
+    transition:opacity .5s ease .5s, clip-path .55s cubic-bezier(.2,.9,.2,1) .5s, transform .55s cubic-bezier(.2,.9,.2,1) .5s, box-shadow .6s ease .5s}
+  .tmodal::after{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;mix-blend-mode:screen;opacity:0;
+    background:repeating-linear-gradient(0deg, rgba(45,226,230,.05) 0 2px, transparent 2px 5px);transition:opacity .8s ease}
+  .overlay.open .tmodal::after{opacity:.35;animation:holoflick 3s steps(60) infinite}
+  @keyframes holoflick{0%,97%,100%{opacity:.32}98%{opacity:.12}99%{opacity:.4}}
+  @media (prefers-reduced-motion:reduce){ .tmodal{clip-path:none;transform:none;transition:opacity .2s ease} .overlay.open .tmodal::after{animation:none} }
+  .tmhead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .tmhead .k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ac);font-weight:800}
+  .tmhead h3{font-size:clamp(22px,2.6vw,32px);font-weight:800;margin-top:5px}
+  .tclose{background:none;border:1px solid #3a3424;color:var(--ink2);width:40px;height:40px;border-radius:10px;font-size:19px;cursor:pointer;flex:none;line-height:1}
+  .tintro{color:var(--ink2);font-size:14px;line-height:1.6;max-width:66ch;margin:10px 0 26px}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+  .tier{position:relative;border:1px solid #2a2418;border-radius:13px;padding:24px 20px;background:#150f08;display:flex;flex-direction:column}
+  .tier.feat{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac), 0 0 38px rgba(212,160,40,.18)}
+  .ribbon{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--ac);color:#1a1305;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;white-space:nowrap}
+  .tier .tn{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);font-weight:800}
+  .tier .price{font-size:36px;font-weight:800;margin:8px 0 0;line-height:1}
+  .tier .price span{font-size:13px;color:var(--ink2);font-weight:600}
+  .tier .tdesc{font-size:13px;color:var(--ink2);font-style:italic;margin:6px 0 4px}
+  .tier ul{list-style:none;margin:16px 0 20px;flex:1;padding:0}
+  .tier li{font-size:13px;color:var(--ink);opacity:.86;line-height:1.45;padding:8px 0 8px 24px;position:relative;border-top:1px solid #221c11}
+  .tier li:first-child{border-top:none}
+  .tier li:before{content:"\2713";position:absolute;left:0;color:var(--ac);font-weight:800}
+  .tier .pick{padding:12px;border-radius:8px;font-weight:800;cursor:pointer;border:1.5px solid var(--ac);background:transparent;color:var(--ac);font-family:inherit;font-size:14px}
+  .tier.feat .pick{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;border:none;box-shadow:0 3px 0 #7a5a12}
+  .tnote{text-align:center;color:#8a8068;font-size:12px;margin-top:20px}
+  @media(max-width:760px){.tiers{grid-template-columns:1fr}}
+
+  /* preview-only chrome (delete when copying into a host page) */
+  .demo{min-height:100vh;display:flex;flex-direction:column;align-items:flex-start;gap:14px;justify-content:center;
+    padding:6vw;background:radial-gradient(60vmax 60vmax at 78% 30%, rgba(40,52,72,.22), transparent 60%),linear-gradient(180deg,#070a0f,#0a0a0c)}
+</style>
+</head>
+<body>
+
+<!-- ===================== MARKUP: blurb + button ===================== -->
+<div class="demo">
+  <div class="md-support-blurb">MusterDeck is free, built by Star Citizen players in their own time. Supporters keep it running.</div>
+  <button class="b-patreon">Become a supporter</button>
+</div>
+
+<!-- ===================== MARKUP: supporter modal ===================== -->
+<div class="overlay" id="tierOverlay">
+  <div class="tmodal" role="dialog" aria-modal="true" aria-label="Become a supporter">
+    <div class="tmhead"><div><div class="k">Support MusterDeck</div><h3>Become a supporter</h3></div><button class="tclose" aria-label="Close">&times;</button></div>
+    <p class="tintro">MusterDeck is free to use and always will be. Supporters keep the servers running and unlock extra tools to run a sharper operation. Pick a level that fits. Change or cancel any time on Patreon.</p>
+    <div class="tiers">
+      <div class="tier"><div class="tn">Captain</div><div class="price">$1<span>/month</span></div><div class="tdesc">Back the project and wear it.</div><ul><li>Supporter badge on your callsign</li><li>Your name in the in-app credits</li><li>Supporter channel on the MusterDeck Discord</li></ul><button class="pick">Choose Captain</button></div>
+      <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs</li><li>Manage the org bank, even across multiple accounts</li><li>Save and reuse Fleet Command staffing templates</li></ul><button class="pick">Choose Admiral</button></div>
+      <div class="tier"><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground</li><li>Build brackets, manage signups, and run events</li><li>Publish standings and leaderboards to the public board</li></ul><button class="pick">Choose Praetorian</button></div>
+    </div>
+    <div class="tnote">Tiers, prices, and perks confirmed. Exact wording still open to polish. Payments handled by Patreon.</div>
+  </div>
+</div>
+
+<!-- ===================== BEHAVIOUR ===================== -->
+<script id="supporter-js">
+  // Opens the supporter modal from any .b-patreon button, with the holographic
+  // cast-open reveal originating near the click point. Close via X, backdrop, or Esc.
+  (function(){
+    const ov=document.getElementById('tierOverlay'); if(!ov) return;
+    const m=ov.querySelector('.tmodal');
+    function open(e){
+      const cx=e&&e.clientX?e.clientX:innerWidth/2, cy=e&&e.clientY?e.clientY:innerHeight/2;
+      m.style.setProperty('--dx',((cx-innerWidth/2)*0.22).toFixed(0)+'px');
+      m.style.setProperty('--dy',((cy-innerHeight/2)*0.22).toFixed(0)+'px');
+      ov.classList.add('visible'); void ov.offsetWidth; ov.classList.add('open');
+    }
+    function close(){ ov.classList.remove('open'); setTimeout(()=>{ if(!ov.classList.contains('open')) ov.classList.remove('visible'); },560); }
+    document.querySelectorAll('.b-patreon').forEach(b=>b.addEventListener('click',open));
+    ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
+    ov.querySelectorAll('.tclose').forEach(b=>b.addEventListener('click',close));
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape' && ov.classList.contains('open')) close(); });
+  })();
+</script>
+</body>
+</html>

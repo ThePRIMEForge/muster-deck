@@ -583,6 +583,23 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
 }
 
+// --- Public profile ---
+
+export type PublicProfileRow = {
+  display_name: string;
+  rsi_handle: string;
+  rsi_verification_status: string;
+  primary_org: string | null;
+  patreon_tier: string;
+};
+
+export async function getPublicProfile(rsiHandle: string): Promise<PublicProfileRow | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.rpc('get_public_profile', { p_rsi_handle: rsiHandle });
+  if (error || !data?.length) return null;
+  return (data as PublicProfileRow[])[0];
+}
+
 // --- Admin ---
 
 export type AdminProfileRow = {

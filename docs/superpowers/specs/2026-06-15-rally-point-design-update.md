@@ -19,7 +19,7 @@ The draft locked the listing model, visibility, and Discover board, but left the
 - **Three-tier access model** with Patreon monetization (new).
 - **Per-op header image** (new) and **built-in Op Channel + status updates** (new; realizes the draft's Messaging/Notifications dependencies).
 
-> The "promote a Rally op into a full Fleet Command operation" handoff remains **out of scope** (separate future ticket), per the 2026-06-10 draft §2.
+> **Now in scope (reversing the draft):** the 2026-06-10 draft treated "promote a Rally op into Fleet Command" as out of scope. This update brings it in as a **Tier-3 cross-module handoff** — the host can port a live op into Fleet Command, S.P.O.I.L.S., *or* Proving Ground (see §4.6).
 
 ---
 
@@ -36,7 +36,7 @@ Three access levels, plus a three-tier Patreon ladder on top of the free member 
 ### Patreon tiers
 1. **Tier 1 — "Captain"** — supporter badge only. **No feature unlocks.**
 2. **Tier 2** — feature unlocks. **This is the real value tier.** Unlocks: synced **Discord event** on ops, **custom header-image upload**.
-3. **Tier 3** — everything in Tier 2 plus **tournament tools** (primarily Proving Ground; out of scope for Rally Point build).
+3. **Tier 3** (highest) — everything in Tier 2 plus **tournament tools** (Proving Ground) and the **cross-module handoff**: port a live op into Fleet Command, S.P.O.I.L.S., or Proving Ground (§4.6).
 
 **Gating pattern.** Guests hitting any gated action (Post an Op, Join, Offer a ship, Message, locked nav) get a **"Create a free account" modal**. Free members hitting a Tier-2 feature (Discord event, custom image) get an **"Upgrade to Patreon" modal** showing the tier ladder with Tier 2 highlighted. Same visual pattern, different purpose.
 
@@ -115,6 +115,16 @@ Member home (no approval queues, since join is instant):
 - **Joined** — ops you're in, with host + your seat/role; **Open · Leave op**.
 - **Past** — ended ops with **View summary** / **Run it again** (re-post).
 
+### 4.6 Host controls & cross-module handoff (Tier 3)
+On an **existing** op (post-creation), the host's listing view carries a controls cluster: **Message the crew** (op channel), **Edit op · notify crew**, **Start event**, **End event** — and, gated to **Tier 3 (`praetorian`, the highest tier)**, **Hand off to a module**: port the op's data (crew/roster, system, start time, title, vibe) to **seed a new instance** in another MusterDeck module:
+- **→ Fleet Command** — spin up a full fleet operation from this crew.
+- **→ S.P.O.I.L.S.** — open a loot-split ledger for the haul.
+- **→ Proving Ground** — seed a tournament bracket.
+
+Handoff is **only available after the op exists** (created/started), never at post time. It is a one-way seed (the Rally op stays as-is; the target module gets a pre-filled new instance the host then runs).
+
+**Backend (to spec):** a per-target port mapping (Rally listing → `fleet_event` / S.P.O.I.L.S. ledger / Proving Ground bracket). Each target module owns a "create from payload" entry point; Rally Point builds the payload and the Tier-3 entitlement check. This is its own integration sub-project (one slice per target module).
+
 ---
 
 ## 5 · Header images
@@ -166,6 +176,7 @@ Two layered comms features plus a built-in channel:
 - No Fleet Command lock/officer/approval machinery in Rally Point.
 - **Required to post:** Activity (≥1) · Title · Start time · Region · Time commitment. Crew count is **optional / open-ended**.
 - **Come-prepared** is a two-state toggle: "Come prepared" ⇄ "We'll provide all you need."
+- **Tier-3 cross-module handoff** (new, reverses the draft): host can port a live op into Fleet Command / S.P.O.I.L.S. / Proving Ground, post-creation only.
 
 ---
 
@@ -175,7 +186,8 @@ Two layered comms features plus a built-in channel:
 1. **Data model** — listing tables (with `crew_shape` enum, roles vs roster), `op_messages`, header-image refs, Patreon-tier read; RLS posture; ties to `profiles` / `ships` / `friendships`; status derivation. *(Carried from the draft §9.4 — still the biggest gap.)*
 2. **Header-image backend** — preset library + custom-upload storage, limits, **moderation**.
 3. **Discord event integration** — exact sync mechanism + which Tier-2 entitlement check gates it.
-4. **Patreon entitlement** — how tier is verified/stored and checked server-side for gating.
+4. **Patreon entitlement** — how tier is verified/stored and checked server-side for gating (Tier 2 = `admiral` for Discord/image; Tier 3 = `praetorian` for handoff).
+4a. **Cross-module handoff** — per-target port mapping (Rally listing → `fleet_event` / S.P.O.I.L.S. ledger / Proving Ground bracket); each target's "create from payload" entry point. One slice per module.
 5. **Mission-catalog sourcing** and **recurring/series** — still carried from the draft §9.5–9.6.
 6. **Visual tweak** — warm the CRT chromatic fringe for the rust palette.
 

@@ -80,6 +80,101 @@ Keep lines under 72 chars. Reference related issues or decisions where relevant.
 | `.github/ISSUE_TEMPLATE/epic.md` | A grouping of related tickets |
 | `.github/pull_request_template.md` | Every PR, no exceptions |
 
+**These templates are mandatory. Freeform bodies are never acceptable, even for small or
+trivial issues and PRs.**
+
+### How to use the PR template
+
+1. Read `.github/pull_request_template.md` in full before writing anything.
+2. Copy every section header and its placeholder text verbatim into your PR body.
+3. Fill in each section. Leave a section blank rather than deleting it.
+4. Pass the completed body via `--body` when calling `gh pr create`. Do not rely on
+   GitHub's auto-population -- it does not work when `--body` is omitted in non-interactive
+   environments.
+
+```bash
+# Read the template
+cat .github/pull_request_template.md
+
+# Then create the PR with the filled-in body:
+gh pr create \
+  --repo ThePRIMEForge/muster-deck \
+  --title "type(scope): description (#NNN)" \
+  --head BRANCH \
+  --base main \
+  --body "$(cat <<'BODY'
+## 🧾 Title
+...
+
+## 🧠 Description
+...
+
+## 🧩 Changes Included
+- [ ] ...
+
+## 🎯 Purpose
+...
+
+## 🔗 Related Issues / Epics
+- **Closes:** #NNN
+
+## 🧪 Testing
+1. ...
+
+## 🧰 Developer Notes
+...
+BODY
+)"
+```
+
+### How to use issue templates
+
+1. Read the relevant template file in full before writing anything:
+   - Implementation task: `.github/ISSUE_TEMPLATE/ticket.md`
+   - Multi-ticket initiative: `.github/ISSUE_TEMPLATE/epic.md`
+2. Copy every section header and placeholder verbatim.
+3. Fill in each section. Do not delete sections -- leave them with a dash or "N/A" if
+   nothing applies.
+4. Pass the completed body via `--body` when calling `gh issue create`.
+
+```bash
+# Read the template first
+cat .github/ISSUE_TEMPLATE/ticket.md
+
+# Then create the issue:
+gh issue create \
+  --repo ThePRIMEForge/muster-deck \
+  --title "Short actionable title" \
+  --body "$(cat <<'BODY'
+## 🧾 Title
+...
+
+## 🧠 Summary
+...
+
+## 📦 Scope
+...
+
+## 🚫 Out of Scope
+...
+
+## ✅ Acceptance Criteria
+- [ ] ...
+
+## 🧪 Testing / Validation
+- [ ] ...
+
+## 🧰 Implementation Notes
+
+## 🧰 Notes / Links
+
+## ✅ Addendum: Bugs Found/Fixed
+
+## ⏳ Addendum: Pending
+BODY
+)"
+```
+
 ---
 
 ## Project board

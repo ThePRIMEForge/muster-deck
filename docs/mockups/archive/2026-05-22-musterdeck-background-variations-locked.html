@@ -1,0 +1,1716 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MusterDeck Background Variations v1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Saira+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --md-yellow: #d4a028;
+        --md-yellow-sun: #e3b651;
+        --md-yellow-faded: #b68a33;
+        --md-hazard-black: #0f0e0c;
+        --md-panel-deep: #14130e;
+        --md-panel: #1c1b16;
+        --md-panel-raised: #25241d;
+        --md-panel-edge: rgba(243, 238, 222, 0.08);
+        --md-ink: #f3eede;
+        --md-ink-secondary: #c8c1ad;
+        --md-ink-muted: #8b8472;
+        --md-display: "Stardos Stencil", Impact, sans-serif;
+        --md-utility: "Saira Condensed", "Bahnschrift", "Arial Narrow", sans-serif;
+        --md-mono: "JetBrains Mono", "IBM Plex Mono", "Courier New", monospace;
+        color: var(--md-ink);
+        background: var(--md-panel-deep);
+        font-family: var(--md-utility);
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        background: var(--md-panel-deep);
+        min-width: 320px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .shell { max-width: 1280px; margin: 0 auto; padding: 56px 24px 96px; }
+
+      .page-eyebrow {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--md-yellow);
+        margin: 0 0 12px;
+      }
+      h1.page-title {
+        font-family: var(--md-display);
+        font-weight: 700;
+        font-size: clamp(36px, 4.5vw, 56px);
+        line-height: 1;
+        margin: 0 0 14px;
+      }
+      .page-lede { max-width: 760px; color: var(--md-ink-secondary); margin: 0 0 48px; }
+
+      .variant {
+        margin: 40px 0;
+        border: 1px solid var(--md-panel-edge);
+        background: rgba(28, 27, 22, 0.5);
+      }
+      .variant-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--md-panel-edge);
+        background: rgba(0, 0, 0, 0.28);
+        flex-wrap: wrap;
+      }
+      .variant-meta {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--md-ink-muted);
+      }
+      .variant-meta b { color: var(--md-yellow); font-weight: 500; }
+      .variant-name {
+        font-family: var(--md-display);
+        font-size: 22px;
+        letter-spacing: 0.03em;
+        margin: 0;
+      }
+      .variant-target {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--md-yellow);
+      }
+
+      .preview {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 8;
+        background: var(--md-panel-deep);
+        overflow: hidden;
+      }
+      .preview svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .variant-notes {
+        padding: 16px 20px 22px;
+        font-size: 13px;
+        color: var(--md-ink-secondary);
+        line-height: 1.55;
+        border-top: 1px solid var(--md-panel-edge);
+      }
+      .variant-notes b { color: var(--md-ink); font-weight: 600; }
+      .variant-notes ul { margin: 8px 0 0; padding: 0 0 0 18px; }
+      .variant-notes li { margin: 4px 0; }
+
+      /* SVG defaults */
+      svg text { font-family: "JetBrains Mono", monospace; }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <p class="page-eyebrow">BG-V1 · 2026-05-22 · Background variations</p>
+      <h1 class="page-title">Backgrounds, by surface</h1>
+      <p class="page-lede">
+        All variants stay inside the same chart vocabulary: hairline grid, mustard waypoint
+        accents, mono labels, dark warm-black base. What changes is the subject the chart is
+        plotting. Space and orbits for the operational surfaces. Surface survey for the LFG board.
+      </p>
+
+      <!-- ============================================================
+           A · ORBITAL PLOT
+           Top-down view of a small system with concentric orbits.
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>A</b></span>
+            <h2 class="variant-name">Orbital Plot</h2>
+          </div>
+          <span class="variant-target">Landing · Hub · Fleet Command</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridA" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(243,238,222,0.04)" stroke-width="1"/>
+              </pattern>
+              <pattern id="gridAMinor" width="12" height="12" patternUnits="userSpaceOnUse">
+                <path d="M 12 0 L 0 0 0 12" fill="none" stroke="rgba(243,238,222,0.02)" stroke-width="0.5"/>
+              </pattern>
+              <radialGradient id="centralBodyA" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#e3b651" stop-opacity="0.32"/>
+                <stop offset="50%" stop-color="#d4a028" stop-opacity="0.08"/>
+                <stop offset="100%" stop-color="#d4a028" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridAMinor)"/>
+            <rect width="1600" height="800" fill="url(#gridA)"/>
+
+            <!-- star field -->
+            <g fill="#f3eede" opacity="0.55">
+              <circle cx="60" cy="78" r="0.8"/>
+              <circle cx="158" cy="42" r="1.2"/>
+              <circle cx="232" cy="120" r="0.6"/>
+              <circle cx="316" cy="64" r="0.8"/>
+              <circle cx="402" cy="32" r="1.4"/>
+              <circle cx="488" cy="98" r="0.6"/>
+              <circle cx="556" cy="180" r="0.9"/>
+              <circle cx="612" cy="44" r="0.7"/>
+              <circle cx="708" cy="232" r="1.1"/>
+              <circle cx="790" cy="86" r="0.6"/>
+              <circle cx="878" cy="156" r="0.8"/>
+              <circle cx="952" cy="38" r="1.0"/>
+              <circle cx="1042" cy="112" r="0.7"/>
+              <circle cx="1118" cy="206" r="0.9"/>
+              <circle cx="1194" cy="64" r="0.8"/>
+              <circle cx="1284" cy="148" r="1.3"/>
+              <circle cx="1368" cy="76" r="0.6"/>
+              <circle cx="1444" cy="222" r="0.8"/>
+              <circle cx="1520" cy="118" r="1.0"/>
+              <circle cx="1588" cy="58" r="0.7"/>
+              <circle cx="46" cy="312" r="0.6"/>
+              <circle cx="124" cy="426" r="1.0"/>
+              <circle cx="208" cy="382" r="0.7"/>
+              <circle cx="298" cy="468" r="0.9"/>
+              <circle cx="386" cy="318" r="0.6"/>
+              <circle cx="476" cy="514" r="1.2"/>
+              <circle cx="564" cy="362" r="0.7"/>
+              <circle cx="642" cy="448" r="0.8"/>
+              <circle cx="744" cy="528" r="0.9"/>
+              <circle cx="838" cy="394" r="0.6"/>
+              <circle cx="930" cy="478" r="1.1"/>
+              <circle cx="1018" cy="336" r="0.7"/>
+              <circle cx="1098" cy="544" r="0.9"/>
+              <circle cx="1186" cy="416" r="0.6"/>
+              <circle cx="1278" cy="362" r="1.0"/>
+              <circle cx="1366" cy="498" r="0.7"/>
+              <circle cx="1454" cy="386" r="0.9"/>
+              <circle cx="1542" cy="468" r="0.8"/>
+              <circle cx="92" cy="618" r="0.7"/>
+              <circle cx="186" cy="722" r="1.1"/>
+              <circle cx="272" cy="664" r="0.6"/>
+              <circle cx="364" cy="742" r="0.8"/>
+              <circle cx="448" cy="676" r="0.9"/>
+              <circle cx="528" cy="762" r="0.7"/>
+              <circle cx="616" cy="688" r="1.0"/>
+              <circle cx="704" cy="752" r="0.6"/>
+              <circle cx="794" cy="674" r="0.8"/>
+              <circle cx="888" cy="738" r="1.2"/>
+              <circle cx="976" cy="660" r="0.7"/>
+              <circle cx="1064" cy="746" r="0.9"/>
+              <circle cx="1152" cy="678" r="0.6"/>
+              <circle cx="1244" cy="754" r="0.8"/>
+              <circle cx="1332" cy="688" r="1.0"/>
+              <circle cx="1424" cy="728" r="0.7"/>
+              <circle cx="1512" cy="660" r="0.9"/>
+            </g>
+
+            <!-- central body -->
+            <g transform="translate(800 400)">
+              <circle r="80" fill="url(#centralBodyA)"/>
+              <circle r="9" fill="#e3b651"/>
+              <circle r="14" fill="none" stroke="rgba(212,160,40,0.4)" stroke-width="1"/>
+              <line x1="-22" y1="0" x2="-15" y2="0" stroke="rgba(212,160,40,0.5)" stroke-width="0.8"/>
+              <line x1="15" y1="0" x2="22" y2="0" stroke="rgba(212,160,40,0.5)" stroke-width="0.8"/>
+              <line x1="0" y1="-22" x2="0" y2="-15" stroke="rgba(212,160,40,0.5)" stroke-width="0.8"/>
+              <line x1="0" y1="15" x2="0" y2="22" stroke="rgba(212,160,40,0.5)" stroke-width="0.8"/>
+              <text x="22" y="-14" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">STANTON-A</text>
+            </g>
+
+            <!-- orbits (concentric, gently tilted) -->
+            <g transform="translate(800 400) rotate(-8)" fill="none" stroke="rgba(212,160,40,0.22)" stroke-width="1">
+              <ellipse rx="220" ry="170"/>
+              <ellipse rx="380" ry="290" stroke="rgba(212,160,40,0.18)"/>
+              <ellipse rx="560" ry="420" stroke="rgba(212,160,40,0.14)"/>
+              <ellipse rx="720" ry="540" stroke="rgba(212,160,40,0.10)"/>
+            </g>
+
+            <!-- orbit position phase ticks -->
+            <g transform="translate(800 400) rotate(-8)" stroke="rgba(212,160,40,0.35)" stroke-width="0.8">
+              <line x1="220" y1="0" x2="232" y2="0"/>
+              <line x1="-220" y1="0" x2="-232" y2="0"/>
+              <line x1="0" y1="170" x2="0" y2="180"/>
+              <line x1="0" y1="-170" x2="0" y2="-180"/>
+              <line x1="380" y1="0" x2="394" y2="0"/>
+              <line x1="-380" y1="0" x2="-394" y2="0"/>
+              <line x1="0" y1="290" x2="0" y2="302"/>
+              <line x1="0" y1="-290" x2="0" y2="-302"/>
+            </g>
+
+            <!-- planet 1 on inner orbit, with target reticle -->
+            <g transform="translate(800 400) rotate(-8) translate(155 -72) rotate(8)">
+              <circle r="5" fill="#d4a028"/>
+              <circle r="11" fill="none" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+              <line x1="-18" y1="0" x2="-12" y2="0" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+              <line x1="12" y1="0" x2="18" y2="0" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+              <line x1="0" y1="-18" x2="0" y2="-12" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+              <line x1="0" y1="12" x2="0" y2="18" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+              <text x="22" y="3" fill="rgba(212,160,40,0.85)" font-size="10" letter-spacing="2">HUR · WP-104</text>
+            </g>
+
+            <!-- planet 2 on second orbit -->
+            <g transform="translate(800 400) rotate(-8) translate(-310 156) rotate(8)">
+              <circle r="6" fill="#d4a028"/>
+              <circle r="12" fill="none" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+              <line x1="-20" y1="0" x2="-14" y2="0" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+              <line x1="14" y1="0" x2="20" y2="0" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+              <line x1="0" y1="-20" x2="0" y2="-14" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+              <line x1="0" y1="14" x2="0" y2="20" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+              <text x="-30" y="32" fill="rgba(212,160,40,0.8)" font-size="10" letter-spacing="2">CRU · WP-217</text>
+            </g>
+
+            <!-- planet 3 on third orbit -->
+            <g transform="translate(800 400) rotate(-8) translate(480 220) rotate(8)">
+              <circle r="4" fill="#d4a028"/>
+              <circle r="9" fill="none" stroke="rgba(212,160,40,0.45)" stroke-width="0.8"/>
+              <text x="14" y="4" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">MICTLAN</text>
+            </g>
+
+            <!-- slingshot trajectory (dashed) -->
+            <path
+              d="M 200 720 Q 480 560 720 480 Q 880 432 940 360 Q 1020 270 1180 220 Q 1340 180 1500 80"
+              fill="none"
+              stroke="rgba(212,160,40,0.55)"
+              stroke-width="1.2"
+              stroke-dasharray="6 8"
+            />
+            <!-- arrowhead -->
+            <g transform="translate(1500 80) rotate(-40)">
+              <path d="M 0 0 L -10 -4 L -10 4 Z" fill="rgba(212,160,40,0.7)"/>
+            </g>
+
+            <!-- trajectory labels -->
+            <text x="280" y="708" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">DEP 09:42</text>
+            <text x="900" y="350" fill="rgba(212,160,40,0.65)" font-size="9" letter-spacing="2">GRAV ASSIST</text>
+            <text x="1240" y="200" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">ARR 11:14</text>
+
+            <!-- edge bearing ticks -->
+            <g stroke="rgba(243,238,222,0.18)" stroke-width="0.8">
+              <line x1="0" y1="80" x2="6" y2="80"/>
+              <line x1="0" y1="160" x2="6" y2="160"/>
+              <line x1="0" y1="240" x2="6" y2="240"/>
+              <line x1="0" y1="320" x2="6" y2="320"/>
+              <line x1="0" y1="400" x2="6" y2="400"/>
+              <line x1="0" y1="480" x2="6" y2="480"/>
+              <line x1="0" y1="560" x2="6" y2="560"/>
+              <line x1="0" y1="640" x2="6" y2="640"/>
+              <line x1="0" y1="720" x2="6" y2="720"/>
+              <line x1="1594" y1="80" x2="1600" y2="80"/>
+              <line x1="1594" y1="160" x2="1600" y2="160"/>
+              <line x1="1594" y1="240" x2="1600" y2="240"/>
+              <line x1="1594" y1="320" x2="1600" y2="320"/>
+              <line x1="1594" y1="400" x2="1600" y2="400"/>
+              <line x1="1594" y1="480" x2="1600" y2="480"/>
+              <line x1="1594" y1="560" x2="1600" y2="560"/>
+              <line x1="1594" y1="640" x2="1600" y2="640"/>
+              <line x1="1594" y1="720" x2="1600" y2="720"/>
+            </g>
+
+            <!-- corner stamp -->
+            <text x="24" y="56" fill="rgba(243,238,222,0.4)" font-size="10" letter-spacing="3">STANTON · ORBITAL PLOT · 4.8.0</text>
+            <text x="24" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">PLT-A · 2026-05-22</text>
+            <text x="1428" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">RNG 14.2 AU</text>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> top-down view of a small system. Central star with halo, three concentric orbits, three planets at orbital positions with target reticles, one dashed slingshot trajectory crossing the system. Loudest of the four space variants.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           B · COURSE PLOT — Angled orbits + emphasized gravity assist
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>B</b></span>
+            <h2 class="variant-name">Course Plot</h2>
+          </div>
+          <span class="variant-target">Landing · Hub · Fleet Command</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridB" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(243,238,222,0.025)" stroke-width="1"/>
+              </pattern>
+              <radialGradient id="centralBodyB" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#e3b651" stop-opacity="0.42"/>
+                <stop offset="40%" stop-color="#d4a028" stop-opacity="0.12"/>
+                <stop offset="100%" stop-color="#d4a028" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridB)"/>
+
+            <!-- sparse star field -->
+            <g fill="#f3eede" opacity="0.45">
+              <circle cx="48" cy="82" r="0.8"/>
+              <circle cx="172" cy="146" r="1.1"/>
+              <circle cx="276" cy="58" r="0.6"/>
+              <circle cx="384" cy="124" r="0.8"/>
+              <circle cx="488" cy="32" r="1.3"/>
+              <circle cx="586" cy="190" r="0.6"/>
+              <circle cx="708" cy="84" r="0.8"/>
+              <circle cx="828" cy="48" r="0.9"/>
+              <circle cx="936" cy="162" r="0.6"/>
+              <circle cx="1054" cy="76" r="0.8"/>
+              <circle cx="1182" cy="220" r="1.2"/>
+              <circle cx="1308" cy="58" r="0.7"/>
+              <circle cx="1422" cy="138" r="0.6"/>
+              <circle cx="1548" cy="92" r="1.0"/>
+              <circle cx="86" cy="312" r="0.7"/>
+              <circle cx="198" cy="252" r="1.0"/>
+              <circle cx="306" cy="382" r="0.6"/>
+              <circle cx="436" cy="298" r="0.8"/>
+              <circle cx="552" cy="416" r="0.7"/>
+              <circle cx="672" cy="334" r="1.1"/>
+              <circle cx="794" cy="288" r="0.6"/>
+              <circle cx="906" cy="442" r="0.8"/>
+              <circle cx="1042" cy="316" r="0.9"/>
+              <circle cx="1156" cy="438" r="0.6"/>
+              <circle cx="1284" cy="288" r="1.0"/>
+              <circle cx="1392" cy="412" r="0.7"/>
+              <circle cx="1502" cy="332" r="0.9"/>
+              <circle cx="64" cy="552" r="0.8"/>
+              <circle cx="172" cy="654" r="1.0"/>
+              <circle cx="288" cy="592" r="0.7"/>
+              <circle cx="412" cy="682" r="0.9"/>
+              <circle cx="528" cy="568" r="0.6"/>
+              <circle cx="652" cy="694" r="1.2"/>
+              <circle cx="788" cy="608" r="0.7"/>
+              <circle cx="902" cy="722" r="0.8"/>
+              <circle cx="1024" cy="588" r="0.6"/>
+              <circle cx="1142" cy="712" r="0.9"/>
+              <circle cx="1278" cy="612" r="0.7"/>
+              <circle cx="1396" cy="688" r="1.0"/>
+              <circle cx="1518" cy="608" r="0.8"/>
+            </g>
+
+            <!-- central star -->
+            <g transform="translate(820 420)">
+              <circle r="120" fill="url(#centralBodyB)"/>
+              <circle r="12" fill="#e3b651"/>
+              <circle r="18" fill="none" stroke="rgba(212,160,40,0.45)" stroke-width="1"/>
+              <text x="28" y="-20" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">SOL · PRIMARY</text>
+            </g>
+
+            <!-- orbits rotated at different angles for 3D feel -->
+            <g fill="none">
+              <ellipse cx="820" cy="420" rx="240" ry="80" stroke="rgba(212,160,40,0.22)" stroke-width="1" transform="rotate(-14 820 420)"/>
+              <ellipse cx="820" cy="420" rx="420" ry="150" stroke="rgba(212,160,40,0.18)" stroke-width="1" transform="rotate(-22 820 420)"/>
+              <ellipse cx="820" cy="420" rx="620" ry="220" stroke="rgba(212,160,40,0.14)" stroke-width="1" transform="rotate(-32 820 420)"/>
+            </g>
+
+            <!-- planets on orbits -->
+            <g>
+              <!-- planet on inner orbit -->
+              <g transform="translate(540 348)">
+                <circle r="6" fill="#d4a028"/>
+                <circle r="12" fill="none" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+                <text x="-18" y="-22" fill="rgba(212,160,40,0.8)" font-size="10" letter-spacing="2">CRU · WP-104</text>
+              </g>
+              <!-- planet on middle orbit (gravity assist) -->
+              <g transform="translate(1180 540)">
+                <circle r="9" fill="#d4a028"/>
+                <circle r="16" fill="none" stroke="rgba(212,160,40,0.7)" stroke-width="1"/>
+                <circle r="22" fill="none" stroke="rgba(212,160,40,0.32)" stroke-width="0.6" stroke-dasharray="2 3"/>
+                <text x="-46" y="42" fill="rgba(212,160,40,0.9)" font-size="11" letter-spacing="2">HUR · GRAV ASSIST</text>
+              </g>
+              <!-- planet on outer orbit -->
+              <g transform="translate(280 644)">
+                <circle r="5" fill="#d4a028"/>
+                <circle r="10" fill="none" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+                <text x="14" y="4" fill="rgba(212,160,40,0.75)" font-size="10" letter-spacing="2">ARC-217</text>
+              </g>
+              <!-- destination at right edge -->
+              <g transform="translate(1500 180)">
+                <circle r="6" fill="#d4a028"/>
+                <circle r="13" fill="none" stroke="rgba(212,160,40,0.65)" stroke-width="0.8"/>
+                <line x1="-20" y1="0" x2="-15" y2="0" stroke="rgba(212,160,40,0.65)" stroke-width="0.8"/>
+                <line x1="15" y1="0" x2="20" y2="0" stroke="rgba(212,160,40,0.65)" stroke-width="0.8"/>
+                <line x1="0" y1="-20" x2="0" y2="-15" stroke="rgba(212,160,40,0.65)" stroke-width="0.8"/>
+                <line x1="0" y1="15" x2="0" y2="20" stroke="rgba(212,160,40,0.65)" stroke-width="0.8"/>
+                <text x="-52" y="-26" fill="rgba(212,160,40,0.85)" font-size="10" letter-spacing="2">TGT · MICTLAN</text>
+              </g>
+            </g>
+
+            <!-- slingshot course path: from ARC, swings through HUR, exits toward TGT -->
+            <path
+              d="M 280 644 Q 580 600 880 580 Q 1080 568 1180 540 Q 1230 524 1240 504 Q 1252 478 1232 458 Q 1208 432 1220 410 Q 1252 372 1320 320 Q 1410 252 1500 180"
+              fill="none"
+              stroke="rgba(212,160,40,0.7)"
+              stroke-width="1.4"
+              stroke-dasharray="0"
+            />
+            <!-- pre-burn segment dashed -->
+            <path
+              d="M 80 736 Q 180 690 280 644"
+              fill="none"
+              stroke="rgba(212,160,40,0.5)"
+              stroke-width="1.2"
+              stroke-dasharray="4 6"
+            />
+            <!-- arrowhead at TGT -->
+            <g transform="translate(1500 180) rotate(-44)">
+              <path d="M 0 0 L -10 -4 L -10 4 Z" fill="rgba(212,160,40,0.8)"/>
+            </g>
+
+            <!-- maneuver labels -->
+            <text x="120" y="708" fill="rgba(212,160,40,0.65)" font-size="10" letter-spacing="2">BURN · T-00:08</text>
+            <text x="640" y="572" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">TRANSFER ORBIT</text>
+            <text x="1280" y="376" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">SLINGSHOT EXIT</text>
+
+            <!-- corner labels -->
+            <text x="24" y="56" fill="rgba(243,238,222,0.42)" font-size="10" letter-spacing="3">FLT-COURSE · 4.8.0</text>
+            <text x="24" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">PLT-B · 2026-05-22</text>
+            <text x="1428" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">ETA 11:14:23</text>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> angled orbits with one emphasized course plot. The path enters the chart on a dashed pre-burn, becomes solid for the transfer orbit, swings around a planet for a gravity assist, and exits toward the target. Reads as an active flight plan rather than a static map.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           C · SECTOR CHART — Tactical grid, multiple connected bodies
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>C</b></span>
+            <h2 class="variant-name">Sector Chart</h2>
+          </div>
+          <span class="variant-target">Landing · Hub · Fleet Command</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridC" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(243,238,222,0.05)" stroke-width="1"/>
+              </pattern>
+              <pattern id="gridCMinor" width="15" height="15" patternUnits="userSpaceOnUse">
+                <path d="M 15 0 L 0 0 0 15" fill="none" stroke="rgba(243,238,222,0.022)" stroke-width="0.5"/>
+              </pattern>
+              <pattern id="hatchC" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="rgba(212,160,40,0.4)" stroke-width="1"/>
+              </pattern>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridCMinor)"/>
+            <rect width="1600" height="800" fill="url(#gridC)"/>
+
+            <!-- sparse star field -->
+            <g fill="#f3eede" opacity="0.4">
+              <circle cx="76" cy="92" r="0.7"/>
+              <circle cx="248" cy="68" r="0.9"/>
+              <circle cx="412" cy="148" r="0.6"/>
+              <circle cx="586" cy="82" r="0.8"/>
+              <circle cx="724" cy="192" r="0.7"/>
+              <circle cx="892" cy="58" r="1.1"/>
+              <circle cx="1042" cy="138" r="0.6"/>
+              <circle cx="1208" cy="78" r="0.8"/>
+              <circle cx="1376" cy="218" r="0.7"/>
+              <circle cx="1518" cy="62" r="0.9"/>
+              <circle cx="142" cy="288" r="0.6"/>
+              <circle cx="312" cy="416" r="0.8"/>
+              <circle cx="478" cy="352" r="0.7"/>
+              <circle cx="652" cy="438" r="1.0"/>
+              <circle cx="828" cy="362" r="0.6"/>
+              <circle cx="994" cy="432" r="0.8"/>
+              <circle cx="1162" cy="372" r="0.7"/>
+              <circle cx="1318" cy="442" r="0.9"/>
+              <circle cx="1488" cy="358" r="0.6"/>
+              <circle cx="82" cy="568" r="0.8"/>
+              <circle cx="226" cy="688" r="0.7"/>
+              <circle cx="378" cy="612" r="0.9"/>
+              <circle cx="538" cy="702" r="0.6"/>
+              <circle cx="708" cy="632" r="0.8"/>
+              <circle cx="872" cy="718" r="1.0"/>
+              <circle cx="1038" cy="642" r="0.7"/>
+              <circle cx="1196" cy="712" r="0.6"/>
+              <circle cx="1352" cy="638" r="0.8"/>
+              <circle cx="1512" cy="708" r="0.9"/>
+            </g>
+
+            <!-- contested hatched zone -->
+            <polygon
+              points="980,180 1200,140 1280,260 1240,420 1080,460 920,360"
+              fill="url(#hatchC)"
+              fill-opacity="0.5"
+              stroke="rgba(212,160,40,0.5)"
+              stroke-width="1"
+              stroke-dasharray="4 4"
+            />
+            <text x="1060" y="306" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="3">CONTESTED · SEC-04</text>
+
+            <!-- bodies / waypoints -->
+            <g>
+              <!-- A: top-left -->
+              <g transform="translate(240 280)">
+                <circle r="8" fill="#d4a028"/>
+                <circle r="16" fill="none" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+                <line x1="-24" y1="0" x2="-18" y2="0" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+                <line x1="18" y1="0" x2="24" y2="0" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+                <line x1="0" y1="-24" x2="0" y2="-18" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+                <line x1="0" y1="18" x2="0" y2="24" stroke="rgba(212,160,40,0.55)" stroke-width="0.8"/>
+                <text x="28" y="-4" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="2">WP-104 · CRU</text>
+                <text x="28" y="14" fill="rgba(243,238,222,0.48)" font-size="9" letter-spacing="2">3.4 AU · 224°</text>
+              </g>
+              <!-- B: center -->
+              <g transform="translate(760 520)">
+                <circle r="10" fill="#d4a028"/>
+                <circle r="18" fill="none" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+                <line x1="-28" y1="0" x2="-22" y2="0" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+                <line x1="22" y1="0" x2="28" y2="0" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+                <line x1="0" y1="-28" x2="0" y2="-22" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+                <line x1="0" y1="22" x2="0" y2="28" stroke="rgba(212,160,40,0.6)" stroke-width="0.8"/>
+                <text x="30" y="-6" fill="rgba(212,160,40,0.9)" font-size="12" letter-spacing="2">WP-217 · HUR</text>
+                <text x="30" y="14" fill="rgba(243,238,222,0.5)" font-size="9" letter-spacing="2">STANDBY · 09:42</text>
+              </g>
+              <!-- C: bottom-right -->
+              <g transform="translate(1340 620)">
+                <circle r="7" fill="#d4a028"/>
+                <circle r="14" fill="none" stroke="rgba(212,160,40,0.5)" stroke-width="0.8"/>
+                <text x="-32" y="32" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="2">WP-322 · MICTLAN</text>
+              </g>
+              <!-- D: top-right secondary -->
+              <g transform="translate(1450 220)">
+                <circle r="5" fill="#d4a028"/>
+                <circle r="10" fill="none" stroke="rgba(212,160,40,0.45)" stroke-width="0.8"/>
+                <text x="-20" y="-22" fill="rgba(212,160,40,0.75)" font-size="10" letter-spacing="2">FIX-09</text>
+              </g>
+            </g>
+
+            <!-- connections -->
+            <g fill="none">
+              <path d="M 240 280 Q 480 360 760 520" stroke="rgba(212,160,40,0.65)" stroke-width="1.4"/>
+              <path d="M 760 520 Q 1080 600 1340 620" stroke="rgba(212,160,40,0.5)" stroke-width="1.2" stroke-dasharray="6 6"/>
+              <path d="M 240 280 Q 800 200 1450 220" stroke="rgba(212,160,40,0.3)" stroke-width="1" stroke-dasharray="2 6"/>
+              <path d="M 760 520 Q 1100 380 1450 220" stroke="rgba(212,160,40,0.32)" stroke-width="0.8" stroke-dasharray="3 5"/>
+            </g>
+
+            <!-- distance labels along the connections -->
+            <text x="440" y="412" fill="rgba(212,160,40,0.55)" font-size="9" letter-spacing="2">2.8 AU</text>
+            <text x="1080" y="552" fill="rgba(212,160,40,0.5)" font-size="9" letter-spacing="2">4.1 AU · DASHED</text>
+            <text x="900" y="220" fill="rgba(212,160,40,0.4)" font-size="9" letter-spacing="2">FIX TRIANGULATION</text>
+
+            <!-- edge ticks (with labels) -->
+            <g stroke="rgba(243,238,222,0.16)" stroke-width="0.8">
+              <line x1="0" y1="100" x2="6" y2="100"/>
+              <line x1="0" y1="200" x2="6" y2="200"/>
+              <line x1="0" y1="300" x2="6" y2="300"/>
+              <line x1="0" y1="400" x2="6" y2="400"/>
+              <line x1="0" y1="500" x2="6" y2="500"/>
+              <line x1="0" y1="600" x2="6" y2="600"/>
+              <line x1="0" y1="700" x2="6" y2="700"/>
+              <line x1="100" y1="0" x2="100" y2="6"/>
+              <line x1="300" y1="0" x2="300" y2="6"/>
+              <line x1="500" y1="0" x2="500" y2="6"/>
+              <line x1="700" y1="0" x2="700" y2="6"/>
+              <line x1="900" y1="0" x2="900" y2="6"/>
+              <line x1="1100" y1="0" x2="1100" y2="6"/>
+              <line x1="1300" y1="0" x2="1300" y2="6"/>
+              <line x1="1500" y1="0" x2="1500" y2="6"/>
+            </g>
+
+            <text x="24" y="56" fill="rgba(243,238,222,0.42)" font-size="10" letter-spacing="3">SECTOR CHART · STANTON-04</text>
+            <text x="24" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">PLT-C · 2026-05-22</text>
+            <text x="1380" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">BRG 224° · RNG 14.2</text>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> tactical sector view. Stronger grid, three waypoints connected by solid and dashed routes, a hatched contested zone, distance and bearing call-outs. Reads as a current operational picture rather than astronomy.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           D · JUMP CORRIDOR — Wide system map
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>D</b></span>
+            <h2 class="variant-name">Jump Corridor</h2>
+          </div>
+          <span class="variant-target">Landing · Hub · Fleet Command</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridD" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(243,238,222,0.03)" stroke-width="1"/>
+              </pattern>
+              <radialGradient id="systemHaloD" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#e3b651" stop-opacity="0.28"/>
+                <stop offset="100%" stop-color="#d4a028" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridD)"/>
+
+            <!-- denser star field for "wide view" -->
+            <g fill="#f3eede" opacity="0.5">
+              <circle cx="38" cy="62" r="0.7"/>
+              <circle cx="92" cy="118" r="0.9"/>
+              <circle cx="156" cy="44" r="0.6"/>
+              <circle cx="216" cy="148" r="1.1"/>
+              <circle cx="278" cy="92" r="0.7"/>
+              <circle cx="342" cy="42" r="0.8"/>
+              <circle cx="404" cy="138" r="0.6"/>
+              <circle cx="468" cy="82" r="0.9"/>
+              <circle cx="534" cy="172" r="0.7"/>
+              <circle cx="598" cy="106" r="0.6"/>
+              <circle cx="664" cy="58" r="1.2"/>
+              <circle cx="728" cy="142" r="0.7"/>
+              <circle cx="794" cy="88" r="0.8"/>
+              <circle cx="858" cy="38" r="0.6"/>
+              <circle cx="924" cy="158" r="0.9"/>
+              <circle cx="988" cy="92" r="0.6"/>
+              <circle cx="1052" cy="44" r="1.0"/>
+              <circle cx="1118" cy="138" r="0.7"/>
+              <circle cx="1182" cy="78" r="0.8"/>
+              <circle cx="1248" cy="172" r="0.6"/>
+              <circle cx="1312" cy="106" r="0.9"/>
+              <circle cx="1378" cy="44" r="0.7"/>
+              <circle cx="1444" cy="138" r="0.6"/>
+              <circle cx="1510" cy="86" r="0.8"/>
+              <circle cx="1576" cy="156" r="1.0"/>
+              <circle cx="46" cy="252" r="0.8"/>
+              <circle cx="116" cy="338" r="0.6"/>
+              <circle cx="184" cy="282" r="0.9"/>
+              <circle cx="252" cy="362" r="0.7"/>
+              <circle cx="324" cy="298" r="0.6"/>
+              <circle cx="392" cy="382" r="1.1"/>
+              <circle cx="462" cy="312" r="0.7"/>
+              <circle cx="534" cy="392" r="0.8"/>
+              <circle cx="608" cy="328" r="0.6"/>
+              <circle cx="676" cy="412" r="0.9"/>
+              <circle cx="746" cy="342" r="0.7"/>
+              <circle cx="816" cy="402" r="0.8"/>
+              <circle cx="886" cy="328" r="0.6"/>
+              <circle cx="956" cy="412" r="1.0"/>
+              <circle cx="1024" cy="348" r="0.7"/>
+              <circle cx="1092" cy="402" r="0.6"/>
+              <circle cx="1162" cy="336" r="0.9"/>
+              <circle cx="1232" cy="418" r="0.7"/>
+              <circle cx="1302" cy="356" r="0.8"/>
+              <circle cx="1372" cy="402" r="0.6"/>
+              <circle cx="1442" cy="346" r="1.0"/>
+              <circle cx="1512" cy="412" r="0.7"/>
+              <circle cx="1578" cy="338" r="0.8"/>
+              <circle cx="56" cy="492" r="0.7"/>
+              <circle cx="128" cy="568" r="0.8"/>
+              <circle cx="194" cy="522" r="0.6"/>
+              <circle cx="262" cy="608" r="0.9"/>
+              <circle cx="332" cy="542" r="0.7"/>
+              <circle cx="404" cy="618" r="0.6"/>
+              <circle cx="472" cy="552" r="1.1"/>
+              <circle cx="546" cy="628" r="0.7"/>
+              <circle cx="614" cy="568" r="0.8"/>
+              <circle cx="684" cy="638" r="0.6"/>
+              <circle cx="754" cy="572" r="0.9"/>
+              <circle cx="824" cy="652" r="0.7"/>
+              <circle cx="892" cy="582" r="0.8"/>
+              <circle cx="962" cy="658" r="0.6"/>
+              <circle cx="1032" cy="588" r="1.0"/>
+              <circle cx="1102" cy="668" r="0.7"/>
+              <circle cx="1172" cy="592" r="0.8"/>
+              <circle cx="1242" cy="668" r="0.6"/>
+              <circle cx="1312" cy="612" r="0.9"/>
+              <circle cx="1382" cy="688" r="0.7"/>
+              <circle cx="1452" cy="618" r="0.8"/>
+              <circle cx="1522" cy="692" r="0.6"/>
+              <circle cx="92" cy="712" r="0.8"/>
+              <circle cx="216" cy="742" r="0.9"/>
+              <circle cx="342" cy="708" r="0.6"/>
+              <circle cx="468" cy="748" r="0.7"/>
+              <circle cx="594" cy="722" r="0.8"/>
+              <circle cx="720" cy="752" r="0.6"/>
+              <circle cx="846" cy="728" r="1.0"/>
+              <circle cx="972" cy="758" r="0.7"/>
+              <circle cx="1098" cy="732" r="0.6"/>
+              <circle cx="1224" cy="752" r="0.9"/>
+              <circle cx="1350" cy="722" r="0.7"/>
+              <circle cx="1476" cy="748" r="0.8"/>
+            </g>
+
+            <!-- four systems with halos -->
+            <g>
+              <g transform="translate(220 230)">
+                <circle r="56" fill="url(#systemHaloD)"/>
+                <circle r="8" fill="#e3b651"/>
+                <text x="-30" y="-66" fill="rgba(212,160,40,0.85)" font-size="13" letter-spacing="3">STANTON</text>
+                <text x="-30" y="-50" fill="rgba(243,238,222,0.48)" font-size="9" letter-spacing="2">SEC-04 · HOME</text>
+              </g>
+              <g transform="translate(720 380)">
+                <circle r="48" fill="url(#systemHaloD)"/>
+                <circle r="7" fill="#e3b651"/>
+                <text x="-18" y="-58" fill="rgba(212,160,40,0.85)" font-size="13" letter-spacing="3">PYRO</text>
+                <text x="-22" y="-42" fill="rgba(243,238,222,0.48)" font-size="9" letter-spacing="2">SEC-09 · WILD</text>
+              </g>
+              <g transform="translate(1240 240)">
+                <circle r="44" fill="url(#systemHaloD)"/>
+                <circle r="6" fill="#e3b651"/>
+                <text x="-26" y="-54" fill="rgba(212,160,40,0.85)" font-size="13" letter-spacing="3">MAGNUS</text>
+                <text x="-22" y="-38" fill="rgba(243,238,222,0.42)" font-size="9" letter-spacing="2">SEC-12</text>
+              </g>
+              <g transform="translate(1100 620)">
+                <circle r="40" fill="url(#systemHaloD)"/>
+                <circle r="5" fill="#e3b651"/>
+                <text x="-22" y="50" fill="rgba(212,160,40,0.78)" font-size="13" letter-spacing="3">TERRA</text>
+                <text x="-22" y="66" fill="rgba(243,238,222,0.42)" font-size="9" letter-spacing="2">SEC-18</text>
+              </g>
+            </g>
+
+            <!-- jump corridors (background) -->
+            <g fill="none">
+              <path d="M 220 230 L 720 380" stroke="rgba(212,160,40,0.65)" stroke-width="1.4"/>
+              <path d="M 720 380 L 1240 240" stroke="rgba(212,160,40,0.4)" stroke-width="1" stroke-dasharray="4 5"/>
+              <path d="M 220 230 Q 700 100 1240 240" stroke="rgba(212,160,40,0.25)" stroke-width="0.8" stroke-dasharray="2 6"/>
+              <path d="M 720 380 L 1100 620" stroke="rgba(212,160,40,0.35)" stroke-width="1" stroke-dasharray="3 5"/>
+              <path d="M 1240 240 Q 1300 460 1100 620" stroke="rgba(212,160,40,0.28)" stroke-width="0.8" stroke-dasharray="2 6"/>
+            </g>
+
+            <!-- jump point markers (small diamonds at midpoints) -->
+            <g fill="rgba(212,160,40,0.85)">
+              <g transform="translate(470 305) rotate(45)"><rect x="-3" y="-3" width="6" height="6"/></g>
+              <g transform="translate(980 310) rotate(45)"><rect x="-3" y="-3" width="6" height="6"/></g>
+              <g transform="translate(910 500) rotate(45)"><rect x="-3" y="-3" width="6" height="6"/></g>
+            </g>
+
+            <!-- corridor labels -->
+            <text x="370" y="280" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">CORRIDOR · ST-PY</text>
+            <text x="940" y="290" fill="rgba(212,160,40,0.5)" font-size="9" letter-spacing="2">CORRIDOR · PY-MG</text>
+            <text x="860" y="540" fill="rgba(212,160,40,0.45)" font-size="9" letter-spacing="2">CORRIDOR · PY-TR</text>
+
+            <!-- compass rose top-right -->
+            <g transform="translate(1480 132)">
+              <circle r="34" fill="none" stroke="rgba(212,160,40,0.35)" stroke-width="0.8"/>
+              <line x1="0" y1="-34" x2="0" y2="34" stroke="rgba(212,160,40,0.4)" stroke-width="0.8"/>
+              <line x1="-34" y1="0" x2="34" y2="0" stroke="rgba(212,160,40,0.4)" stroke-width="0.8"/>
+              <text x="-3" y="-40" fill="rgba(212,160,40,0.8)" font-size="9" letter-spacing="2">N</text>
+              <text x="38" y="3" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">E</text>
+              <text x="-3" y="48" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">S</text>
+              <text x="-44" y="3" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">W</text>
+            </g>
+
+            <!-- edge ticks -->
+            <g stroke="rgba(243,238,222,0.15)" stroke-width="0.8">
+              <line x1="0" y1="100" x2="6" y2="100"/>
+              <line x1="0" y1="200" x2="6" y2="200"/>
+              <line x1="0" y1="300" x2="6" y2="300"/>
+              <line x1="0" y1="400" x2="6" y2="400"/>
+              <line x1="0" y1="500" x2="6" y2="500"/>
+              <line x1="0" y1="600" x2="6" y2="600"/>
+              <line x1="0" y1="700" x2="6" y2="700"/>
+              <line x1="1594" y1="100" x2="1600" y2="100"/>
+              <line x1="1594" y1="200" x2="1600" y2="200"/>
+              <line x1="1594" y1="300" x2="1600" y2="300"/>
+              <line x1="1594" y1="400" x2="1600" y2="400"/>
+              <line x1="1594" y1="500" x2="1600" y2="500"/>
+              <line x1="1594" y1="600" x2="1600" y2="600"/>
+              <line x1="1594" y1="700" x2="1600" y2="700"/>
+            </g>
+
+            <text x="24" y="56" fill="rgba(243,238,222,0.42)" font-size="10" letter-spacing="3">JUMP CORRIDOR MAP · LIVE</text>
+            <text x="24" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">PLT-D · 2026-05-22</text>
+            <text x="1380" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">4 SYSTEMS · 5 GATES</text>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> wide system map. Four named systems sit at chart positions with halo glows, hairline jump corridors connect them with diamond jump-point markers at midpoints, and a compass rose anchors the orientation. Reads as a strategic overview rather than a single mission.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           E · SURFACE SURVEY — Planet-side, mining + tactical
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>E</b></span>
+            <h2 class="variant-name">Surface Survey</h2>
+          </div>
+          <span class="variant-target">Rally Point · LFG board</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridE" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(243,238,222,0.035)" stroke-width="1"/>
+              </pattern>
+              <pattern id="gridEMinor" width="15" height="15" patternUnits="userSpaceOnUse">
+                <path d="M 15 0 L 0 0 0 15" fill="none" stroke="rgba(243,238,222,0.018)" stroke-width="0.5"/>
+              </pattern>
+              <pattern id="hatchE" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="rgba(180,58,42,0.4)" stroke-width="1"/>
+              </pattern>
+              <!-- pickaxe glyph -->
+              <symbol id="pickaxe" viewBox="-12 -12 24 24">
+                <path d="M -9 -7 Q -2 -10 8 -4 L 7 -2 Q -1 -8 -8 -5 Z" fill="rgba(212,160,40,0.85)"/>
+                <path d="M 0 -6 L 6 8" stroke="rgba(212,160,40,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+              </symbol>
+              <!-- gem glyph -->
+              <symbol id="gem" viewBox="-8 -8 16 16">
+                <path d="M 0 -7 L 6 -1 L 4 6 L -4 6 L -6 -1 Z" fill="none" stroke="rgba(212,160,40,0.85)" stroke-width="1.2"/>
+                <path d="M -6 -1 L 6 -1 M 0 -7 L 0 6" stroke="rgba(212,160,40,0.5)" stroke-width="0.6"/>
+              </symbol>
+              <!-- ore cluster -->
+              <symbol id="ore" viewBox="-10 -10 20 20">
+                <circle cx="-3" cy="-2" r="3" fill="rgba(212,160,40,0.7)"/>
+                <circle cx="3" cy="-3" r="2.2" fill="rgba(212,160,40,0.55)"/>
+                <circle cx="0" cy="3" r="2.8" fill="rgba(212,160,40,0.65)"/>
+                <circle cx="-4" cy="3" r="1.8" fill="rgba(212,160,40,0.5)"/>
+                <circle cx="4" cy="2" r="2" fill="rgba(212,160,40,0.6)"/>
+              </symbol>
+              <!-- attack target -->
+              <symbol id="reticle" viewBox="-16 -16 32 32">
+                <circle r="13" fill="none" stroke="rgba(180,58,42,0.85)" stroke-width="1.4"/>
+                <circle r="7" fill="none" stroke="rgba(180,58,42,0.65)" stroke-width="1"/>
+                <circle r="2" fill="rgba(180,58,42,0.9)"/>
+                <line x1="-15" y1="0" x2="-9" y2="0" stroke="rgba(180,58,42,0.85)" stroke-width="1.2"/>
+                <line x1="9" y1="0" x2="15" y2="0" stroke="rgba(180,58,42,0.85)" stroke-width="1.2"/>
+                <line x1="0" y1="-15" x2="0" y2="-9" stroke="rgba(180,58,42,0.85)" stroke-width="1.2"/>
+                <line x1="0" y1="9" x2="0" y2="15" stroke="rgba(180,58,42,0.85)" stroke-width="1.2"/>
+              </symbol>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridEMinor)"/>
+            <rect width="1600" height="800" fill="url(#gridE)"/>
+
+            <!-- contour lines (irregular hand-feel) -->
+            <g fill="none" stroke="rgba(212,160,40,0.22)" stroke-width="1">
+              <path d="M -60 220 Q 180 160 380 200 T 740 200 Q 880 196 1020 230 T 1380 250 Q 1500 254 1660 230"/>
+              <path d="M -60 280 Q 200 226 400 260 T 760 260 Q 900 256 1040 296 T 1400 320 Q 1520 322 1660 300"/>
+              <path d="M -60 360 Q 220 304 440 332 T 800 320 Q 940 320 1080 360 T 1440 380 Q 1540 384 1660 360"/>
+              <path d="M -60 460 Q 240 408 480 432 T 840 420 Q 980 420 1120 460 T 1460 480 Q 1560 482 1660 460"/>
+              <path d="M -60 560 Q 220 516 460 540 T 820 530 Q 960 530 1100 570 T 1480 590 Q 1580 594 1660 568"/>
+              <path d="M -60 660 Q 200 624 440 644 T 800 632 Q 940 634 1080 668 T 1440 692 Q 1560 698 1660 678"/>
+            </g>
+
+            <!-- elevation labels riding the contours -->
+            <g fill="rgba(212,160,40,0.55)" font-size="9" letter-spacing="2">
+              <text x="280" y="194">ELV 1240</text>
+              <text x="980" y="290">ELV 1180</text>
+              <text x="540" y="425">ELV 1100</text>
+              <text x="1260" y="475">ELV 1050</text>
+              <text x="320" y="654">ELV 940</text>
+            </g>
+
+            <!-- claim / op boundary polygon -->
+            <polygon
+              points="280,280 540,240 720,300 740,520 540,580 320,540"
+              fill="rgba(212,160,40,0.05)"
+              stroke="rgba(212,160,40,0.5)"
+              stroke-width="1"
+              stroke-dasharray="6 6"
+            />
+            <text x="380" y="320" fill="rgba(212,160,40,0.8)" font-size="11" letter-spacing="3">AURUM-3 · CLAIM</text>
+
+            <!-- mining deposits (within and around claim) -->
+            <g>
+              <use href="#ore" x="380" y="380" width="20" height="20"/>
+              <text x="396" y="400" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">QUANT</text>
+
+              <use href="#ore" x="486" y="346" width="20" height="20"/>
+              <text x="502" y="366" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">TARANITE</text>
+
+              <use href="#ore" x="580" y="440" width="20" height="20"/>
+              <text x="596" y="460" fill="rgba(212,160,40,0.65)" font-size="9" letter-spacing="2">AGRICIUM</text>
+
+              <use href="#gem" x="442" y="486" width="16" height="16"/>
+              <text x="456" y="510" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">GEM · BERYL</text>
+
+              <use href="#gem" x="630" y="358" width="16" height="16"/>
+              <text x="644" y="376" fill="rgba(212,160,40,0.65)" font-size="9" letter-spacing="2">GEM · TOPAZ</text>
+
+              <use href="#pickaxe" x="358" y="478" width="22" height="22"/>
+              <text x="376" y="500" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">WORK ORDER</text>
+
+              <use href="#pickaxe" x="660" y="498" width="22" height="22"/>
+              <text x="678" y="520" fill="rgba(212,160,40,0.65)" font-size="9" letter-spacing="2">CREW ROTATION</text>
+            </g>
+
+            <!-- tactical: hostile zone hatched -->
+            <polygon
+              points="980,420 1180,400 1280,500 1240,640 1080,680 940,580"
+              fill="url(#hatchE)"
+              fill-opacity="0.5"
+              stroke="rgba(180,58,42,0.6)"
+              stroke-width="1"
+              stroke-dasharray="4 4"
+            />
+            <text x="1040" y="540" fill="rgba(180,58,42,0.95)" font-size="11" letter-spacing="3">HOSTILE · SEC-04-B</text>
+
+            <!-- tactical: attack targets -->
+            <use href="#reticle" x="1060" y="480" width="32" height="32"/>
+            <text x="1078" y="468" fill="rgba(180,58,42,0.85)" font-size="10" letter-spacing="2">OBJ ALPHA</text>
+
+            <use href="#reticle" x="1180" y="600" width="32" height="32"/>
+            <text x="1196" y="588" fill="rgba(180,58,42,0.85)" font-size="10" letter-spacing="2">OBJ BRAVO</text>
+
+            <!-- friendly waypoints (numbered circles) -->
+            <g>
+              <g transform="translate(900 220)">
+                <circle r="11" fill="none" stroke="rgba(212,160,40,0.8)" stroke-width="1.2"/>
+                <text x="-4" y="4" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="1">1</text>
+                <text x="14" y="4" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">RALLY · BASIN</text>
+              </g>
+              <g transform="translate(820 656)">
+                <circle r="11" fill="none" stroke="rgba(212,160,40,0.75)" stroke-width="1.2"/>
+                <text x="-4" y="4" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="1">2</text>
+                <text x="14" y="4" fill="rgba(212,160,40,0.65)" font-size="9" letter-spacing="2">FALLBACK</text>
+              </g>
+              <g transform="translate(1380 220)">
+                <circle r="11" fill="none" stroke="rgba(212,160,40,0.7)" stroke-width="1.2"/>
+                <text x="-4" y="4" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="1">3</text>
+                <text x="-46" y="-14" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">EXTRACT POINT</text>
+              </g>
+            </g>
+
+            <!-- supply lines / dashed paths -->
+            <g fill="none" stroke="rgba(212,160,40,0.4)" stroke-width="1" stroke-dasharray="3 5">
+              <path d="M 900 220 Q 700 260 540 330"/>
+              <path d="M 540 330 Q 580 480 820 656"/>
+              <path d="M 820 656 Q 1100 720 1380 220"/>
+            </g>
+
+            <!-- corner stamps -->
+            <text x="24" y="56" fill="rgba(243,238,222,0.42)" font-size="10" letter-spacing="3">SURFACE SURVEY · HUR-L1 · 4.8.0</text>
+            <text x="24" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">PLT-E · 2026-05-22</text>
+            <text x="1340" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">SCALE 1:25000 · MAG-N 04°</text>
+
+            <!-- map scale bar bottom-left -->
+            <g transform="translate(50 740)">
+              <line x1="0" y1="0" x2="120" y2="0" stroke="rgba(212,160,40,0.55)" stroke-width="1"/>
+              <line x1="0" y1="-4" x2="0" y2="4" stroke="rgba(212,160,40,0.55)" stroke-width="1"/>
+              <line x1="40" y1="-3" x2="40" y2="3" stroke="rgba(212,160,40,0.5)" stroke-width="0.8"/>
+              <line x1="80" y1="-3" x2="80" y2="3" stroke="rgba(212,160,40,0.5)" stroke-width="0.8"/>
+              <line x1="120" y1="-4" x2="120" y2="4" stroke="rgba(212,160,40,0.55)" stroke-width="1"/>
+              <text x="0" y="-8" fill="rgba(212,160,40,0.7)" font-size="8" letter-spacing="2">0</text>
+              <text x="110" y="-8" fill="rgba(212,160,40,0.7)" font-size="8" letter-spacing="2">5KM</text>
+            </g>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> planet-side surface map. Topographic contour lines with elevation labels, a dashed claim boundary marking a mining operation (AURUM-3), industrial symbol set (ore clusters, gem markers, pickaxes for work orders), a red hatched hostile zone with two attack reticles, three numbered friendly waypoints, supply-line dashes between them, and a map scale bar. Supports both industrial and combat LFG copy on the same canvas.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           F · PYRO SYSTEM — wild, lawless, rust-tinged
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>F</b></span>
+            <h2 class="variant-name">Pyro System</h2>
+          </div>
+          <span class="variant-target">Landing · Fleet Command · Wild ops</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridF" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(243,238,222,0.03)" stroke-width="1"/>
+              </pattern>
+              <radialGradient id="pyroStar" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#d4a028" stop-opacity="0.16"/>
+                <stop offset="30%" stop-color="#bd6537" stop-opacity="0.35"/>
+                <stop offset="65%" stop-color="#9c4a22" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#9c4a22" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="pyroCore" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#e3b651"/>
+                <stop offset="55%" stop-color="#bd6537"/>
+                <stop offset="100%" stop-color="#7a3614"/>
+              </radialGradient>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridF)"/>
+
+            <!-- sparse star field -->
+            <g fill="#f3eede" opacity="0.4">
+              <circle cx="52" cy="78" r="0.7"/>
+              <circle cx="148" cy="124" r="0.9"/>
+              <circle cx="234" cy="58" r="0.6"/>
+              <circle cx="328" cy="172" r="0.8"/>
+              <circle cx="412" cy="42" r="1.0"/>
+              <circle cx="498" cy="116" r="0.6"/>
+              <circle cx="592" cy="78" r="0.7"/>
+              <circle cx="678" cy="142" r="1.2"/>
+              <circle cx="762" cy="56" r="0.6"/>
+              <circle cx="848" cy="124" r="0.8"/>
+              <circle cx="932" cy="36" r="0.7"/>
+              <circle cx="1018" cy="148" r="0.9"/>
+              <circle cx="1102" cy="68" r="0.6"/>
+              <circle cx="1188" cy="142" r="1.1"/>
+              <circle cx="1272" cy="48" r="0.7"/>
+              <circle cx="1358" cy="116" r="0.8"/>
+              <circle cx="1442" cy="62" r="0.6"/>
+              <circle cx="1528" cy="138" r="0.9"/>
+              <circle cx="38" cy="318" r="0.7"/>
+              <circle cx="142" cy="402" r="0.8"/>
+              <circle cx="228" cy="352" r="0.6"/>
+              <circle cx="318" cy="468" r="1.0"/>
+              <circle cx="402" cy="322" r="0.7"/>
+              <circle cx="488" cy="496" r="0.6"/>
+              <circle cx="572" cy="372" r="0.9"/>
+              <circle cx="658" cy="448" r="0.7"/>
+              <circle cx="742" cy="316" r="0.6"/>
+              <circle cx="828" cy="492" r="1.1"/>
+              <circle cx="912" cy="376" r="0.7"/>
+              <circle cx="998" cy="438" r="0.9"/>
+              <circle cx="1084" cy="328" r="0.6"/>
+              <circle cx="1168" cy="478" r="0.8"/>
+              <circle cx="1252" cy="368" r="0.7"/>
+              <circle cx="1338" cy="492" r="0.6"/>
+              <circle cx="1422" cy="332" r="1.0"/>
+              <circle cx="1508" cy="442" r="0.7"/>
+              <circle cx="62" cy="612" r="0.8"/>
+              <circle cx="156" cy="688" r="0.6"/>
+              <circle cx="246" cy="628" r="0.9"/>
+              <circle cx="336" cy="712" r="0.7"/>
+              <circle cx="428" cy="652" r="0.6"/>
+              <circle cx="518" cy="722" r="1.0"/>
+              <circle cx="608" cy="668" r="0.7"/>
+              <circle cx="698" cy="742" r="0.8"/>
+              <circle cx="788" cy="672" r="0.6"/>
+              <circle cx="878" cy="752" r="0.9"/>
+              <circle cx="968" cy="672" r="0.7"/>
+              <circle cx="1058" cy="732" r="0.6"/>
+              <circle cx="1148" cy="688" r="0.8"/>
+              <circle cx="1238" cy="752" r="0.9"/>
+              <circle cx="1328" cy="668" r="0.7"/>
+              <circle cx="1418" cy="722" r="0.6"/>
+              <circle cx="1508" cy="668" r="0.8"/>
+            </g>
+
+            <!-- Pyro central star (red giant) with bigger halo -->
+            <g transform="translate(820 410)">
+              <circle r="180" fill="url(#pyroStar)"/>
+              <circle r="22" fill="url(#pyroCore)"/>
+              <circle r="30" fill="none" stroke="rgba(189,101,55,0.5)" stroke-width="0.8"/>
+              <text x="38" y="-26" fill="rgba(189,101,55,0.9)" font-size="11" letter-spacing="3">PYRO · PRIMARY</text>
+              <text x="38" y="-12" fill="rgba(189,101,55,0.6)" font-size="9" letter-spacing="2">RED GIANT · UNSTABLE</text>
+            </g>
+
+            <!-- Chaotic asteroid debris rings (broken arcs, not clean ellipses) -->
+            <g fill="none" stroke="rgba(189,101,55,0.32)" stroke-width="1">
+              <path d="M 820 110 A 360 200 0 0 1 1180 250" stroke-dasharray="3 4"/>
+              <path d="M 460 530 A 360 200 0 0 1 720 600" stroke-dasharray="3 4"/>
+              <path d="M 920 600 A 360 200 0 0 1 1200 540" stroke-dasharray="3 4"/>
+              <!-- inner debris -->
+              <path d="M 700 280 A 200 110 0 0 1 940 280" stroke-dasharray="2 5" stroke="rgba(189,101,55,0.4)"/>
+              <path d="M 700 540 A 200 110 0 0 0 940 540" stroke-dasharray="2 5" stroke="rgba(189,101,55,0.4)"/>
+            </g>
+            <!-- random asteroid dots in the debris rings -->
+            <g fill="rgba(189,101,55,0.55)">
+              <circle cx="820" cy="108" r="1.5"/>
+              <circle cx="900" cy="118" r="2"/>
+              <circle cx="980" cy="138" r="1.2"/>
+              <circle cx="1050" cy="170" r="2.2"/>
+              <circle cx="1118" cy="200" r="1.4"/>
+              <circle cx="1160" cy="232" r="1.6"/>
+              <circle cx="480" cy="528" r="1.3"/>
+              <circle cx="540" cy="558" r="2"/>
+              <circle cx="616" cy="582" r="1.4"/>
+              <circle cx="682" cy="596" r="1.8"/>
+              <circle cx="940" cy="602" r="1.6"/>
+              <circle cx="1020" cy="592" r="1.3"/>
+              <circle cx="1090" cy="572" r="2"/>
+              <circle cx="1162" cy="550" r="1.4"/>
+            </g>
+
+            <!-- Planets — labelled with Pyro nomenclature -->
+            <g>
+              <!-- Pyro I — innermost, scorched -->
+              <g transform="translate(700 376)">
+                <circle r="4" fill="#bd6537"/>
+                <circle r="8" fill="none" stroke="rgba(189,101,55,0.6)" stroke-width="0.8"/>
+                <text x="-44" y="-12" fill="rgba(189,101,55,0.75)" font-size="10" letter-spacing="2">PYRO I · BRIA</text>
+                <text x="-44" y="2" fill="rgba(243,238,222,0.4)" font-size="8" letter-spacing="2">SCORCHED</text>
+              </g>
+              <!-- Pyro III — Bloom -->
+              <g transform="translate(530 270)">
+                <circle r="6" fill="#bd6537"/>
+                <circle r="12" fill="none" stroke="rgba(189,101,55,0.7)" stroke-width="0.8"/>
+                <text x="-46" y="-22" fill="rgba(189,101,55,0.85)" font-size="11" letter-spacing="2">PYRO III · BLOOM</text>
+              </g>
+              <!-- Pyro IV — Terminus, contested -->
+              <g transform="translate(1100 360)">
+                <circle r="9" fill="#bd6537"/>
+                <circle r="16" fill="none" stroke="rgba(189,101,55,0.85)" stroke-width="1.2"/>
+                <circle r="24" fill="none" stroke="rgba(189,101,55,0.4)" stroke-width="0.8" stroke-dasharray="3 4"/>
+                <text x="26" y="-12" fill="rgba(212,160,40,0.9)" font-size="12" letter-spacing="2">PYRO IV · TERMINUS</text>
+                <text x="26" y="6" fill="rgba(189,101,55,0.7)" font-size="9" letter-spacing="2">RUIN STATION · CONTESTED</text>
+              </g>
+              <!-- Pyro V — Vatra -->
+              <g transform="translate(1280 540)">
+                <circle r="5" fill="#bd6537"/>
+                <circle r="10" fill="none" stroke="rgba(189,101,55,0.55)" stroke-width="0.8"/>
+                <text x="14" y="4" fill="rgba(189,101,55,0.75)" font-size="10" letter-spacing="2">PYRO V · VATRA</text>
+              </g>
+              <!-- Pyro VI — outermost, frozen -->
+              <g transform="translate(360 600)">
+                <circle r="4" fill="#bd6537"/>
+                <circle r="9" fill="none" stroke="rgba(189,101,55,0.5)" stroke-width="0.8"/>
+                <text x="-32" y="22" fill="rgba(189,101,55,0.7)" font-size="10" letter-spacing="2">PYRO VI · IGNIS</text>
+                <text x="-32" y="36" fill="rgba(243,238,222,0.4)" font-size="8" letter-spacing="2">FROZEN</text>
+              </g>
+            </g>
+
+            <!-- Smuggler / outlaw waypoints -->
+            <g>
+              <!-- ghost station -->
+              <g transform="translate(220 220)">
+                <rect x="-6" y="-6" width="12" height="12" fill="none" stroke="rgba(212,160,40,0.6)" stroke-width="1" transform="rotate(45)"/>
+                <text x="14" y="4" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">ENDGAME · STN</text>
+              </g>
+              <!-- rest stop -->
+              <g transform="translate(1460 280)">
+                <rect x="-6" y="-6" width="12" height="12" fill="none" stroke="rgba(212,160,40,0.55)" stroke-width="1" transform="rotate(45)"/>
+                <text x="-78" y="-12" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">CHECKMATE · STN</text>
+              </g>
+              <!-- another outpost -->
+              <g transform="translate(620 700)">
+                <rect x="-5" y="-5" width="10" height="10" fill="none" stroke="rgba(212,160,40,0.5)" stroke-width="0.8" transform="rotate(45)"/>
+                <text x="14" y="4" fill="rgba(212,160,40,0.65)" font-size="9" letter-spacing="2">RAT'S NEST</text>
+              </g>
+            </g>
+
+            <!-- WARNING band / hostile-system marker -->
+            <g transform="translate(800 740)">
+              <text text-anchor="middle" fill="rgba(189,101,55,0.9)" font-size="12" letter-spacing="6">UEE JURISDICTION — NONE · TRAVEL AT OWN RISK</text>
+            </g>
+
+            <!-- corner stamps -->
+            <text x="24" y="56" fill="rgba(189,101,55,0.7)" font-size="10" letter-spacing="3">PYRO · WILD SYSTEM · 4.8.0</text>
+            <text x="24" y="772" fill="rgba(189,101,55,0.5)" font-size="9" letter-spacing="2">PLT-F · 2026-05-22</text>
+            <text x="1320" y="772" fill="rgba(189,101,55,0.5)" font-size="9" letter-spacing="2">NO-LAW · NO-RESCUE</text>
+
+            <!-- edge ticks -->
+            <g stroke="rgba(243,238,222,0.14)" stroke-width="0.8">
+              <line x1="0" y1="120" x2="6" y2="120"/>
+              <line x1="0" y1="240" x2="6" y2="240"/>
+              <line x1="0" y1="360" x2="6" y2="360"/>
+              <line x1="0" y1="480" x2="6" y2="480"/>
+              <line x1="0" y1="600" x2="6" y2="600"/>
+              <line x1="0" y1="720" x2="6" y2="720"/>
+              <line x1="1594" y1="120" x2="1600" y2="120"/>
+              <line x1="1594" y1="240" x2="1600" y2="240"/>
+              <line x1="1594" y1="360" x2="1600" y2="360"/>
+              <line x1="1594" y1="480" x2="1600" y2="480"/>
+              <line x1="1594" y1="600" x2="1600" y2="600"/>
+              <line x1="1594" y1="720" x2="1600" y2="720"/>
+            </g>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> Pyro system in chart form. Red-giant central star with a wider, warmer halo. Broken asteroid debris rings instead of clean orbits, peppered with debris dots. Five named Pyro planets including Terminus with its contested Ruin Station. Three outlaw stations marked with diamond rests (Endgame, Checkmate, Rat's Nest). A "no UEE jurisdiction" warning runs along the bottom. Uses the rust accent #9C4A22 to mark Pyro as visibly different from the disciplined Stanton variants.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           G · LEVSKI · DELAMAR — asteroid base close-up
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>G</b></span>
+            <h2 class="variant-name">Levski · Delamar</h2>
+          </div>
+          <span class="variant-target">Asteroid base detail · Rally Point alt</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridG" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(243,238,222,0.025)" stroke-width="1"/>
+              </pattern>
+              <pattern id="hexG" patternUnits="userSpaceOnUse" width="34" height="58.85" patternTransform="translate(0 0)">
+                <path d="M 17 0 L 34 9.8 L 34 29.4 L 17 39.2 L 0 29.4 L 0 9.8 Z" fill="none" stroke="rgba(212,160,40,0.35)" stroke-width="0.7"/>
+                <path d="M 0 29.4 L 0 49 L 17 58.85 L 34 49 L 34 29.4" fill="none" stroke="rgba(212,160,40,0.35)" stroke-width="0.7"/>
+              </pattern>
+              <!-- asteroid rocky fill pattern (subtle dots) -->
+              <pattern id="rockG" patternUnits="userSpaceOnUse" width="14" height="14">
+                <circle cx="3" cy="4" r="0.7" fill="rgba(212,160,40,0.2)"/>
+                <circle cx="10" cy="9" r="0.5" fill="rgba(212,160,40,0.15)"/>
+                <circle cx="7" cy="12" r="0.6" fill="rgba(212,160,40,0.18)"/>
+              </pattern>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridG)"/>
+
+            <!-- sparse star field around the asteroid -->
+            <g fill="#f3eede" opacity="0.45">
+              <circle cx="58" cy="92" r="0.8"/>
+              <circle cx="142" cy="148" r="0.6"/>
+              <circle cx="238" cy="62" r="1.0"/>
+              <circle cx="334" cy="132" r="0.7"/>
+              <circle cx="1378" cy="62" r="0.6"/>
+              <circle cx="1456" cy="132" r="0.9"/>
+              <circle cx="1542" cy="68" r="0.7"/>
+              <circle cx="1582" cy="172" r="1.1"/>
+              <circle cx="92" cy="262" r="0.6"/>
+              <circle cx="186" cy="338" r="0.8"/>
+              <circle cx="278" cy="282" r="0.7"/>
+              <circle cx="1428" cy="252" r="0.9"/>
+              <circle cx="1518" cy="328" r="0.6"/>
+              <circle cx="92" cy="512" r="0.8"/>
+              <circle cx="208" cy="588" r="0.7"/>
+              <circle cx="1432" cy="528" r="1.0"/>
+              <circle cx="1522" cy="612" r="0.7"/>
+              <circle cx="64" cy="682" r="0.6"/>
+              <circle cx="178" cy="752" r="0.9"/>
+              <circle cx="1438" cy="688" r="0.7"/>
+              <circle cx="1532" cy="752" r="0.8"/>
+            </g>
+
+            <!-- small drift asteroids around Delamar -->
+            <g fill="none" stroke="rgba(243,238,222,0.25)" stroke-width="0.8">
+              <polygon points="220,180 244,170 256,196 244,214 224,210 212,196"/>
+              <polygon points="1380,170 1402,162 1410,184 1396,200 1378,196 1370,182"/>
+              <polygon points="320,650 342,640 354,664 338,684 320,680 312,668"/>
+              <polygon points="1290,640 1310,632 1322,652 1308,672 1290,668 1280,652"/>
+              <polygon points="180,420 198,410 212,432 200,452 184,450 172,432"/>
+              <polygon points="1430,440 1450,432 1462,452 1448,470 1432,468 1422,452"/>
+            </g>
+            <!-- tiny moving rock specks -->
+            <g fill="rgba(243,238,222,0.25)">
+              <circle cx="100" cy="380" r="1"/>
+              <circle cx="140" cy="510" r="0.8"/>
+              <circle cx="260" cy="290" r="0.9"/>
+              <circle cx="380" cy="500" r="0.8"/>
+              <circle cx="1380" cy="380" r="0.8"/>
+              <circle cx="1460" cy="510" r="1"/>
+              <circle cx="1300" cy="270" r="0.7"/>
+              <circle cx="1180" cy="190" r="0.9"/>
+              <circle cx="420" cy="220" r="0.8"/>
+            </g>
+
+            <!-- Delamar — big irregular asteroid shape, centered -->
+            <g transform="translate(800 410)">
+              <!-- outer asteroid silhouette -->
+              <path
+                d="M -340 -40
+                   Q -360 -120 -300 -180
+                   Q -240 -240 -160 -240
+                   Q -80 -260 0 -250
+                   Q 100 -260 200 -220
+                   Q 280 -200 340 -140
+                   Q 380 -80 360 0
+                   Q 380 80 320 160
+                   Q 260 230 160 240
+                   Q 60 260 -40 240
+                   Q -160 250 -240 200
+                   Q -320 160 -350 80
+                   Q -360 20 -340 -40 Z"
+                fill="#1c1b16"
+                stroke="rgba(212,160,40,0.55)"
+                stroke-width="1.2"
+              />
+              <!-- rocky surface fill -->
+              <path
+                d="M -340 -40
+                   Q -360 -120 -300 -180
+                   Q -240 -240 -160 -240
+                   Q -80 -260 0 -250
+                   Q 100 -260 200 -220
+                   Q 280 -200 340 -140
+                   Q 380 -80 360 0
+                   Q 380 80 320 160
+                   Q 260 230 160 240
+                   Q 60 260 -40 240
+                   Q -160 250 -240 200
+                   Q -320 160 -350 80
+                   Q -360 20 -340 -40 Z"
+                fill="url(#rockG)"
+              />
+              <!-- hex grid overlay on the asteroid surface -->
+              <g clip-path="url(#asteroidClip)">
+                <!-- Note: clip-path defined inline below for portability -->
+              </g>
+              <defs>
+                <clipPath id="asteroidClip">
+                  <path d="M -340 -40 Q -360 -120 -300 -180 Q -240 -240 -160 -240 Q -80 -260 0 -250 Q 100 -260 200 -220 Q 280 -200 340 -140 Q 380 -80 360 0 Q 380 80 320 160 Q 260 230 160 240 Q 60 260 -40 240 Q -160 250 -240 200 Q -320 160 -350 80 Q -360 20 -340 -40 Z"/>
+                </clipPath>
+              </defs>
+              <g clip-path="url(#asteroidClip)" opacity="0.6">
+                <rect x="-380" y="-280" width="760" height="560" fill="url(#hexG)"/>
+              </g>
+
+              <!-- city core ring -->
+              <circle r="60" fill="rgba(212,160,40,0.06)" stroke="rgba(212,160,40,0.75)" stroke-width="1.2"/>
+              <circle r="84" fill="none" stroke="rgba(212,160,40,0.5)" stroke-width="0.8" stroke-dasharray="3 5"/>
+              <circle r="6" fill="#e3b651"/>
+              <line x1="-22" y1="0" x2="-12" y2="0" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+              <line x1="12" y1="0" x2="22" y2="0" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+              <line x1="0" y1="-22" x2="0" y2="-12" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+              <line x1="0" y1="12" x2="0" y2="22" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+              <text x="-16" y="100" fill="rgba(212,160,40,0.95)" font-size="14" letter-spacing="4">LEVSKI</text>
+              <text x="-44" y="116" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">L-1 · MAIN CONCOURSE</text>
+
+              <!-- mining shafts (vertical hatched bars going into the surface) -->
+              <g stroke="rgba(212,160,40,0.7)" stroke-width="1">
+                <!-- shaft 1 -->
+                <line x1="-180" y1="-200" x2="-180" y2="-100"/>
+                <line x1="-184" y1="-200" x2="-184" y2="-100"/>
+                <line x1="-176" y1="-200" x2="-176" y2="-100"/>
+                <!-- shaft 2 -->
+                <line x1="-80" y1="-220" x2="-80" y2="-110"/>
+                <line x1="-84" y1="-220" x2="-84" y2="-110"/>
+                <!-- shaft 3 -->
+                <line x1="140" y1="-200" x2="140" y2="-90"/>
+                <line x1="144" y1="-200" x2="144" y2="-90"/>
+                <line x1="148" y1="-200" x2="148" y2="-90"/>
+                <!-- shaft 4 -->
+                <line x1="240" y1="-160" x2="240" y2="-70"/>
+                <line x1="244" y1="-160" x2="244" y2="-70"/>
+                <!-- shaft 5 (below city) -->
+                <line x1="-100" y1="200" x2="-100" y2="100"/>
+                <line x1="-104" y1="200" x2="-104" y2="100"/>
+                <line x1="-96" y1="200" x2="-96" y2="100"/>
+                <!-- shaft 6 -->
+                <line x1="160" y1="220" x2="160" y2="100"/>
+                <line x1="164" y1="220" x2="164" y2="100"/>
+              </g>
+              <text x="-200" y="-218" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">SHAFT 3A</text>
+              <text x="120" y="-216" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">SHAFT 7B</text>
+              <text x="220" y="-176" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">SHAFT 7C</text>
+              <text x="-130" y="234" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">SHAFT 12</text>
+              <text x="138" y="252" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">SHAFT 14</text>
+
+              <!-- tunnel network indicators (dashed paths connecting shafts to core) -->
+              <g fill="none" stroke="rgba(212,160,40,0.4)" stroke-width="0.8" stroke-dasharray="2 4">
+                <path d="M -180 -100 Q -130 -60 -50 -40"/>
+                <path d="M -80 -110 Q -50 -70 -20 -50"/>
+                <path d="M 140 -90 Q 110 -50 50 -30"/>
+                <path d="M 240 -70 Q 180 -40 80 -20"/>
+                <path d="M -100 100 Q -60 60 -20 30"/>
+                <path d="M 160 100 Q 110 60 50 40"/>
+              </g>
+
+              <!-- docking ports — small rectangles on the silhouette edge -->
+              <g>
+                <g transform="translate(-310 -100)">
+                  <rect x="-12" y="-6" width="24" height="12" fill="rgba(212,160,40,0.18)" stroke="rgba(212,160,40,0.7)" stroke-width="1"/>
+                  <text x="-44" y="-12" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">DOCK A</text>
+                </g>
+                <g transform="translate(340 -60)">
+                  <rect x="-12" y="-6" width="24" height="12" fill="rgba(212,160,40,0.18)" stroke="rgba(212,160,40,0.7)" stroke-width="1"/>
+                  <text x="14" y="4" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">DOCK B</text>
+                </g>
+                <g transform="translate(80 240)">
+                  <rect x="-12" y="-6" width="24" height="12" fill="rgba(212,160,40,0.18)" stroke="rgba(212,160,40,0.7)" stroke-width="1"/>
+                  <text x="-12" y="24" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">FREIGHT C</text>
+                </g>
+              </g>
+            </g>
+
+            <!-- approach vector dashed arrow into Dock A -->
+            <path d="M 80 250 Q 280 280 460 300" fill="none" stroke="rgba(212,160,40,0.6)" stroke-width="1.2" stroke-dasharray="4 6"/>
+            <g transform="translate(470 302) rotate(8)">
+              <path d="M 0 0 L -10 -4 L -10 4 Z" fill="rgba(212,160,40,0.75)"/>
+            </g>
+            <text x="120" y="240" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">APPROACH · DOCK A</text>
+
+            <!-- bottom stat line -->
+            <g transform="translate(800 740)">
+              <text text-anchor="middle" fill="rgba(212,160,40,0.6)" font-size="10" letter-spacing="4">DELAMAR · IND. ASTEROID · POP 4,217 · SECTOR 04</text>
+            </g>
+
+            <!-- corner stamps -->
+            <text x="24" y="56" fill="rgba(243,238,222,0.42)" font-size="10" letter-spacing="3">LEVSKI · DELAMAR · OPS</text>
+            <text x="24" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">PLT-G · 2026-05-22</text>
+            <text x="1360" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">SCALE 1:1500 · ROT 0.84 RPM</text>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> close-up of Delamar with Levski cut into it. Irregular asteroid silhouette filled with a faint rocky stipple, a hex grid overlaid only on the asteroid surface, the city core circled at center with reticle, six labeled mining shafts hatched into the surface, dashed tunnel paths connecting shafts to the core, three docking ports on the rim, and a dashed approach vector to Dock A. Population stamp and rotation rate on the bottom edge. Reads as a working community inside a rock, not a planet.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           H · ASTEROID BELT OPERATIONS — Aaron Halo style
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">Variant <b>H</b></span>
+            <h2 class="variant-name">Asteroid Belt</h2>
+          </div>
+          <span class="variant-target">Multi-base ops · S.P.O.I.L.S. · alt Rally</span>
+        </header>
+        <div class="preview">
+          <svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="gridH" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(243,238,222,0.028)" stroke-width="1"/>
+              </pattern>
+              <pattern id="claimHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="rgba(212,160,40,0.35)" stroke-width="1"/>
+              </pattern>
+            </defs>
+
+            <rect width="1600" height="800" fill="#14130e"/>
+            <rect width="1600" height="800" fill="url(#gridH)"/>
+
+            <!-- background star field -->
+            <g fill="#f3eede" opacity="0.4">
+              <circle cx="62" cy="76" r="0.7"/>
+              <circle cx="158" cy="124" r="0.8"/>
+              <circle cx="252" cy="62" r="0.6"/>
+              <circle cx="346" cy="148" r="1.0"/>
+              <circle cx="436" cy="82" r="0.7"/>
+              <circle cx="524" cy="172" r="0.6"/>
+              <circle cx="612" cy="46" r="0.9"/>
+              <circle cx="704" cy="138" r="0.6"/>
+              <circle cx="794" cy="82" r="0.8"/>
+              <circle cx="884" cy="172" r="0.7"/>
+              <circle cx="976" cy="38" r="1.1"/>
+              <circle cx="1064" cy="142" r="0.6"/>
+              <circle cx="1156" cy="76" r="0.8"/>
+              <circle cx="1248" cy="172" r="0.7"/>
+              <circle cx="1342" cy="62" r="0.9"/>
+              <circle cx="1432" cy="138" r="0.6"/>
+              <circle cx="1528" cy="82" r="0.8"/>
+              <circle cx="42" cy="312" r="0.7"/>
+              <circle cx="138" cy="386" r="0.9"/>
+              <circle cx="232" cy="322" r="0.6"/>
+              <circle cx="322" cy="416" r="0.8"/>
+              <circle cx="416" cy="346" r="0.7"/>
+              <circle cx="514" cy="442" r="1.0"/>
+              <circle cx="608" cy="356" r="0.6"/>
+              <circle cx="694" cy="438" r="0.8"/>
+              <circle cx="788" cy="338" r="0.7"/>
+              <circle cx="884" cy="442" r="0.6"/>
+              <circle cx="972" cy="356" r="0.9"/>
+              <circle cx="1064" cy="442" r="0.7"/>
+              <circle cx="1156" cy="358" r="0.6"/>
+              <circle cx="1248" cy="446" r="0.8"/>
+              <circle cx="1342" cy="358" r="0.7"/>
+              <circle cx="1432" cy="442" r="0.9"/>
+              <circle cx="1528" cy="378" r="0.6"/>
+              <circle cx="82" cy="592" r="0.8"/>
+              <circle cx="178" cy="668" r="0.7"/>
+              <circle cx="268" cy="608" r="0.6"/>
+              <circle cx="358" cy="688" r="0.9"/>
+              <circle cx="448" cy="618" r="0.7"/>
+              <circle cx="542" cy="692" r="0.6"/>
+              <circle cx="632" cy="628" r="0.8"/>
+              <circle cx="724" cy="708" r="0.7"/>
+              <circle cx="814" cy="638" r="0.6"/>
+              <circle cx="908" cy="712" r="1.0"/>
+              <circle cx="996" cy="628" r="0.7"/>
+              <circle cx="1086" cy="708" r="0.6"/>
+              <circle cx="1176" cy="638" r="0.8"/>
+              <circle cx="1266" cy="712" r="0.7"/>
+              <circle cx="1356" cy="638" r="0.6"/>
+              <circle cx="1446" cy="708" r="0.9"/>
+              <circle cx="1536" cy="638" r="0.7"/>
+            </g>
+
+            <!-- THE BELT — a wide diagonal band of asteroids with two boundary curves -->
+            <g fill="none" stroke="rgba(212,160,40,0.32)" stroke-width="1">
+              <path d="M -40 460 Q 380 320 800 380 Q 1220 440 1640 320" stroke-dasharray="6 6"/>
+              <path d="M -40 580 Q 380 460 800 520 Q 1220 580 1640 460" stroke-dasharray="6 6"/>
+            </g>
+            <text x="40" y="448" fill="rgba(212,160,40,0.6)" font-size="10" letter-spacing="3">AARON HALO · OUTER BAND</text>
+            <text x="1330" y="610" fill="rgba(212,160,40,0.45)" font-size="9" letter-spacing="2">INNER BAND · DENSE</text>
+
+            <!-- LOTS of small asteroids within the belt — irregular polygons -->
+            <g fill="rgba(243,238,222,0.18)" stroke="rgba(243,238,222,0.35)" stroke-width="0.6">
+              <polygon points="40,500 56,494 64,510 56,524 42,522 32,510"/>
+              <polygon points="120,432 138,428 148,442 142,460 124,460 114,444"/>
+              <polygon points="220,540 240,532 250,548 240,564 222,562 212,550"/>
+              <polygon points="310,408 326,402 338,418 332,434 316,438 304,422"/>
+              <polygon points="412,498 432,492 444,506 438,524 418,524 406,510"/>
+              <polygon points="520,402 538,398 548,412 542,430 524,432 514,416"/>
+              <polygon points="616,468 634,462 646,476 640,492 622,494 610,478"/>
+              <polygon points="724,532 744,526 754,540 748,556 730,558 718,544"/>
+              <polygon points="826,470 846,464 858,478 852,494 834,496 822,482"/>
+              <polygon points="928,414 946,408 958,422 952,440 932,442 920,426"/>
+              <polygon points="1024,490 1042,484 1054,498 1048,516 1030,518 1018,502"/>
+              <polygon points="1124,448 1144,442 1156,456 1148,472 1130,474 1118,460"/>
+              <polygon points="1224,512 1244,506 1256,520 1248,538 1230,540 1216,526"/>
+              <polygon points="1320,444 1338,438 1350,452 1342,470 1326,472 1314,458"/>
+              <polygon points="1420,492 1438,486 1450,500 1444,516 1424,518 1414,504"/>
+              <polygon points="1516,420 1532,414 1542,428 1534,442 1518,444 1508,432"/>
+              <polygon points="170,560 184,554 192,568 184,580 168,580 162,568"/>
+              <polygon points="370,470 384,464 392,476 386,490 370,492 362,478"/>
+              <polygon points="570,548 586,544 594,556 586,572 570,572 562,558"/>
+              <polygon points="780,438 794,432 804,446 796,460 780,460 772,448"/>
+              <polygon points="980,548 996,544 1006,556 996,572 980,572 974,560"/>
+              <polygon points="1180,388 1198,384 1206,396 1200,412 1184,412 1176,400"/>
+              <polygon points="1380,548 1394,544 1404,556 1394,570 1378,570 1372,558"/>
+            </g>
+            <!-- additional small dots in the belt -->
+            <g fill="rgba(243,238,222,0.4)">
+              <circle cx="80" cy="476" r="1.2"/>
+              <circle cx="180" cy="510" r="0.8"/>
+              <circle cx="280" cy="500" r="1.1"/>
+              <circle cx="380" cy="540" r="0.9"/>
+              <circle cx="480" cy="462" r="1.0"/>
+              <circle cx="580" cy="520" r="0.8"/>
+              <circle cx="680" cy="492" r="1.0"/>
+              <circle cx="780" cy="486" r="0.9"/>
+              <circle cx="880" cy="528" r="1.1"/>
+              <circle cx="980" cy="462" r="0.9"/>
+              <circle cx="1080" cy="528" r="1.0"/>
+              <circle cx="1180" cy="486" r="0.8"/>
+              <circle cx="1280" cy="464" r="0.9"/>
+              <circle cx="1380" cy="510" r="1.0"/>
+              <circle cx="1480" cy="468" r="0.9"/>
+              <circle cx="1580" cy="500" r="1.1"/>
+            </g>
+
+            <!-- THE BASES — three labeled stations on different asteroids -->
+            <g>
+              <!-- ARC-L1 (Stanton-style station, left side) -->
+              <g transform="translate(280 472)">
+                <!-- larger asteroid host -->
+                <polygon points="-26,-12 -14,-22 4,-26 22,-20 32,-6 30,12 18,24 -2,28 -22,22 -32,8 -32,-4" fill="rgba(243,238,222,0.22)" stroke="rgba(243,238,222,0.45)" stroke-width="0.7"/>
+                <!-- station marker -->
+                <circle r="6" fill="#d4a028"/>
+                <circle r="12" fill="none" stroke="rgba(212,160,40,0.7)" stroke-width="1"/>
+                <line x1="-18" y1="0" x2="-12" y2="0" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+                <line x1="12" y1="0" x2="18" y2="0" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+                <line x1="0" y1="-18" x2="0" y2="-12" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+                <line x1="0" y1="12" x2="0" y2="18" stroke="rgba(212,160,40,0.7)" stroke-width="0.8"/>
+                <text x="-30" y="-34" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="2">ARC-L1</text>
+                <text x="-30" y="-22" fill="rgba(212,160,40,0.55)" font-size="9" letter-spacing="2">REFINERY · OPEN</text>
+              </g>
+
+              <!-- HUR-L4 (centre, large hub) -->
+              <g transform="translate(820 460)">
+                <polygon points="-44,-20 -28,-34 -6,-40 18,-36 38,-24 50,-6 48,16 38,32 14,42 -12,42 -34,32 -48,16 -52,-2" fill="rgba(243,238,222,0.24)" stroke="rgba(243,238,222,0.5)" stroke-width="0.8"/>
+                <circle r="8" fill="#d4a028"/>
+                <circle r="16" fill="none" stroke="rgba(212,160,40,0.8)" stroke-width="1.2"/>
+                <circle r="24" fill="none" stroke="rgba(212,160,40,0.35)" stroke-width="0.6" stroke-dasharray="3 3"/>
+                <text x="-40" y="-54" fill="rgba(212,160,40,0.9)" font-size="12" letter-spacing="3">HUR-L4 HUB</text>
+                <text x="-40" y="-40" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">CARGO · CREW · BANK</text>
+              </g>
+
+              <!-- CRU-L5 (right side, smaller outpost) -->
+              <g transform="translate(1290 510)">
+                <polygon points="-22,-10 -10,-18 8,-22 22,-14 28,0 24,12 12,20 -6,20 -22,14 -28,4" fill="rgba(243,238,222,0.2)" stroke="rgba(243,238,222,0.4)" stroke-width="0.7"/>
+                <circle r="5" fill="#d4a028"/>
+                <circle r="10" fill="none" stroke="rgba(212,160,40,0.65)" stroke-width="0.8"/>
+                <text x="14" y="4" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="2">CRU-L5</text>
+                <text x="14" y="20" fill="rgba(212,160,40,0.55)" font-size="9" letter-spacing="2">DOCK · 12 BAYS</text>
+              </g>
+
+              <!-- Outlaw outpost top-right corner -->
+              <g transform="translate(1480 320)">
+                <polygon points="-18,-8 -10,-16 6,-18 18,-12 22,2 16,12 4,16 -10,14 -20,4" fill="rgba(189,101,55,0.18)" stroke="rgba(189,101,55,0.5)" stroke-width="0.7"/>
+                <rect x="-5" y="-5" width="10" height="10" fill="none" stroke="rgba(189,101,55,0.7)" stroke-width="1" transform="rotate(45)"/>
+                <text x="-28" y="-26" fill="rgba(189,101,55,0.8)" font-size="10" letter-spacing="2">SHADOW · OUTLAW</text>
+              </g>
+            </g>
+
+            <!-- TRADE ROUTES — connecting bases -->
+            <g fill="none">
+              <path d="M 280 472 Q 540 432 820 460" stroke="rgba(212,160,40,0.65)" stroke-width="1.4"/>
+              <path d="M 820 460 Q 1080 470 1290 510" stroke="rgba(212,160,40,0.55)" stroke-width="1.2" stroke-dasharray="6 6"/>
+              <path d="M 1290 510 Q 1380 420 1480 320" stroke="rgba(189,101,55,0.55)" stroke-width="1" stroke-dasharray="3 5"/>
+              <path d="M 280 472 Q 800 240 1480 320" stroke="rgba(189,101,55,0.35)" stroke-width="0.8" stroke-dasharray="2 6"/>
+            </g>
+            <!-- route labels -->
+            <text x="500" y="424" fill="rgba(212,160,40,0.7)" font-size="10" letter-spacing="2">PRIMARY · 2.4 SCU/HR</text>
+            <text x="1010" y="462" fill="rgba(212,160,40,0.6)" font-size="9" letter-spacing="2">SECONDARY</text>
+            <text x="1300" y="412" fill="rgba(189,101,55,0.7)" font-size="9" letter-spacing="2">GREY-ROUTE</text>
+
+            <!-- Mining claim hex (use a hex polygon as the boundary) -->
+            <polygon
+              points="660,580 760,564 820,624 800,710 700,726 612,672"
+              fill="url(#claimHatch)"
+              fill-opacity="0.45"
+              stroke="rgba(212,160,40,0.55)"
+              stroke-width="1"
+              stroke-dasharray="6 6"
+            />
+            <text x="650" y="650" fill="rgba(212,160,40,0.85)" font-size="11" letter-spacing="3">CLAIM 04-A</text>
+            <text x="650" y="666" fill="rgba(212,160,40,0.55)" font-size="9" letter-spacing="2">QUANT · TARANITE</text>
+
+            <!-- Compass / orientation marker top-left -->
+            <g transform="translate(80 140)">
+              <circle r="30" fill="none" stroke="rgba(212,160,40,0.3)" stroke-width="0.8"/>
+              <line x1="0" y1="-30" x2="0" y2="30" stroke="rgba(212,160,40,0.35)" stroke-width="0.7"/>
+              <line x1="-30" y1="0" x2="30" y2="0" stroke="rgba(212,160,40,0.35)" stroke-width="0.7"/>
+              <text x="-4" y="-36" fill="rgba(212,160,40,0.7)" font-size="9" letter-spacing="2">N</text>
+            </g>
+
+            <!-- corner stamps -->
+            <text x="24" y="56" fill="rgba(243,238,222,0.42)" font-size="10" letter-spacing="3">AARON HALO · BELT OPS · 4.8.0</text>
+            <text x="24" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">PLT-H · 2026-05-22</text>
+            <text x="1340" y="772" fill="rgba(243,238,222,0.32)" font-size="9" letter-spacing="2">4 STATIONS · 1 CLAIM</text>
+          </svg>
+        </div>
+        <div class="variant-notes">
+          <b>What this is:</b> wide chart of an asteroid belt with multiple operating bases. A two-curve belt boundary with named bands runs diagonally across the canvas, salted with irregular asteroid polygons and a dense dot cloud. Three friendly stations (ARC-L1, HUR-L4, CRU-L5) sit on bigger host asteroids with reticles, plus one outlaw outpost in the upper right marked with the rust palette. Solid and dashed trade routes connect them, with a hatched mining claim straddling the belt. Reads as a busy regional trade and ops map, distinct from the system-scale views.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Notes
+           ============================================================ -->
+      <section class="variant">
+        <header class="variant-header">
+          <div>
+            <span class="variant-meta">06 · Notes</span>
+            <h2 class="variant-name">Working notes</h2>
+          </div>
+          <span class="variant-target">For decision</span>
+        </header>
+        <div class="variant-notes">
+          <p>
+            <b>Family.</b> All five variants stay on the same chart base (dark warm-black, hairline grid, mustard accents at low opacity, mono labels). The grammar changes; the toolkit doesn't.
+          </p>
+          <p>
+            <b>How loud is a background?</b> Each variant here is rendered at "preview brightness" so you can see what's in it. Production opacity should drop another 20-30 percent so content sits on top cleanly. The mustard waypoint accents should be the brightest thing on the canvas, and even those should sit under any active UI element.
+          </p>
+          <p>
+            <b>What I'd flag.</b>
+          </p>
+          <ul>
+            <li>Variants A and B are space-flight in vocabulary. A reads as a stable plot; B reads as an active course. Hub probably wants A (welcoming); Fleet Command wants B (operational).</li>
+            <li>Variant C is the most "tactical" of the space set. Could go on Fleet Command if you want it to feel busier, or stay reserved for specific dashboard surfaces.</li>
+            <li>Variant D works at landing and high-level surfaces where the strategic-overview feel adds to the welcome.</li>
+            <li>Variant E is the only variant using red signal color (for hostile zones and attack reticles). Worth deciding whether to keep that on the surface or pull it back to mustard-only with a different mark for hostile.</li>
+            <li>Real space backgrounds in apps need to be careful with stars over text. We can keep all of these but tile them with stronger top/bottom fades when implemented, so star density drops in the header and footer zones where text lives.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

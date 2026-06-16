@@ -1,0 +1,1817 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MusterDeck Visual Identity v1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Black+Ops+One&family=Saira+Condensed:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* Paint system */
+        --md-yellow: #d4a028;
+        --md-yellow-faded: #b68a33;
+        --md-yellow-sun: #e3b651;
+        --md-yellow-shadow: #8a6818;
+
+        /* Hazard contrast */
+        --md-hazard-black: #0f0e0c;
+
+        /* Underlayer */
+        --md-primer: #6e6a60;
+        --md-metal: #8a8682;
+
+        /* Industrial base */
+        --md-panel-deep: #14130e;
+        --md-panel: #1c1b16;
+        --md-panel-raised: #25241d;
+        --md-panel-edge: rgba(243, 238, 222, 0.08);
+        --md-panel-edge-strong: rgba(243, 238, 222, 0.18);
+
+        /* Ink */
+        --md-ink: #f3eede;
+        --md-ink-secondary: #c8c1ad;
+        --md-ink-muted: #8b8472;
+
+        /* Accents (sparing) */
+        --md-rust: #9c4a22;
+        --md-signal: #b43a2a;
+
+        --md-display: "Stardos Stencil", "Capture It", Impact, sans-serif;
+        --md-display-heavy: "Black Ops One", "Stardos Stencil", Impact, sans-serif;
+        --md-utility:
+          "Saira Condensed", "Bahnschrift", "DIN Alternate", "Arial Narrow", "Roboto Condensed",
+          sans-serif;
+        --md-mono: "JetBrains Mono", "IBM Plex Mono", "Berkeley Mono", "Courier New", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: var(--md-panel-deep);
+        color: var(--md-ink);
+        font-family: var(--md-utility);
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 1.5;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        min-width: 320px;
+      }
+
+      /* Naval-chart background: faint grid, sparse waypoints, hairline contours */
+      body {
+        background-color: var(--md-panel-deep);
+        background-image:
+          /* waypoint dot */
+          radial-gradient(circle at 12% 18%, rgba(212, 160, 40, 0.06) 0 1.5px, transparent 2px),
+          radial-gradient(circle at 78% 32%, rgba(212, 160, 40, 0.05) 0 1.5px, transparent 2px),
+          radial-gradient(circle at 32% 72%, rgba(212, 160, 40, 0.06) 0 1.5px, transparent 2px),
+          radial-gradient(circle at 88% 84%, rgba(212, 160, 40, 0.05) 0 1.5px, transparent 2px),
+          /* hairline grid */
+            linear-gradient(rgba(243, 238, 222, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(243, 238, 222, 0.018) 1px, transparent 1px),
+          radial-gradient(circle at 18% 22%, rgba(155, 145, 120, 0.08), transparent 36%),
+          radial-gradient(circle at 82% 78%, rgba(155, 145, 120, 0.06), transparent 38%);
+        background-size:
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          48px 48px,
+          48px 48px,
+          100% 100%,
+          100% 100%;
+      }
+
+      /* Page shell */
+      .shell {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 56px 32px 88px;
+      }
+
+      .page-eyebrow {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--md-yellow);
+        margin: 0 0 12px;
+      }
+
+      h1.page-title {
+        font-family: var(--md-display);
+        font-weight: 700;
+        font-size: clamp(40px, 5vw, 64px);
+        line-height: 1;
+        letter-spacing: 0.01em;
+        margin: 0 0 14px;
+        color: var(--md-ink);
+      }
+
+      .page-lede {
+        max-width: 720px;
+        color: var(--md-ink-secondary);
+        font-size: 16px;
+        margin: 0 0 40px;
+      }
+
+      /* Section primitive — Apollo "labeled section block" */
+      .section {
+        margin: 56px 0;
+        border: 1px solid var(--md-panel-edge);
+        background: linear-gradient(180deg, rgba(28, 27, 22, 0.6), rgba(20, 19, 14, 0.6));
+        position: relative;
+      }
+      .section-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--md-panel-edge);
+        background: rgba(0, 0, 0, 0.25);
+      }
+      .section-eyebrow {
+        font-family: var(--md-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--md-ink-muted);
+        margin: 0;
+      }
+      .section-title {
+        font-family: var(--md-display);
+        font-size: 22px;
+        letter-spacing: 0.02em;
+        margin: 0;
+        color: var(--md-ink);
+      }
+      .section-meta {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        color: var(--md-ink-muted);
+      }
+      .section-body {
+        padding: 24px 20px 28px;
+      }
+
+      /* Palette */
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 12px;
+      }
+      .swatch {
+        border: 1px solid var(--md-panel-edge);
+        background: var(--md-panel-raised);
+        overflow: hidden;
+      }
+      .swatch-fill {
+        height: 96px;
+        position: relative;
+      }
+      .swatch-label {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        padding: 10px 12px 12px;
+        border-top: 1px solid var(--md-panel-edge);
+      }
+      .swatch-name {
+        font-family: var(--md-utility);
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+      .swatch-code {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        color: var(--md-ink-muted);
+      }
+      .swatch-note {
+        padding: 0 12px 12px;
+        font-size: 12px;
+        color: var(--md-ink-muted);
+        line-height: 1.45;
+      }
+
+      /* Texture studies */
+      .texture-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      .texture-tile {
+        border: 1px solid var(--md-panel-edge);
+        background: var(--md-panel);
+        overflow: hidden;
+      }
+      .texture-surface {
+        height: 180px;
+        position: relative;
+        overflow: hidden;
+      }
+      .texture-caption {
+        padding: 12px 14px 14px;
+        border-top: 1px solid var(--md-panel-edge);
+      }
+      .texture-name {
+        font-family: var(--md-display);
+        font-size: 15px;
+        letter-spacing: 0.04em;
+        margin: 0 0 4px;
+        color: var(--md-ink);
+      }
+      .texture-desc {
+        font-size: 12px;
+        color: var(--md-ink-muted);
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      /* Hazard stripe — clean */
+      .hazard-clean {
+        background-color: var(--md-yellow);
+        background-image: repeating-linear-gradient(
+          135deg,
+          var(--md-hazard-black) 0 16px,
+          var(--md-yellow) 16px 36px
+        );
+      }
+      /* Hazard stripe — weathered (uses same grain stack as worn paint) */
+      .hazard-worn {
+        background-color: var(--md-yellow-faded);
+        background-image:
+          /* chip-loss substrate showing through — crosses both yellow and black stripes */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='180' viewBox='0 0 300 180'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch' seed='11'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.30  0 0 0 0 0.28  0 0 0 0 0.23  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='150' viewBox='0 0 220 150'><filter id='c2'><feTurbulence type='fractalNoise' baseFrequency='0.09' numOctaves='2' stitchTiles='stitch' seed='19'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.34  0 0 0 0 0.29  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c2)'/></svg>"),
+          radial-gradient(circle at 0% 100%, rgba(15, 14, 12, 0.35), transparent 24%),
+          radial-gradient(circle at 100% 0%, rgba(15, 14, 12, 0.28), transparent 22%),
+          radial-gradient(circle at 18% 70%, rgba(110, 106, 96, 0.45) 0 3px, transparent 5px),
+          radial-gradient(circle at 60% 22%, rgba(110, 106, 96, 0.4) 0 2px, transparent 4px),
+          radial-gradient(circle at 84% 60%, rgba(138, 134, 130, 0.32) 0 2px, transparent 3.5px),
+          radial-gradient(circle at 32% 38%, rgba(15, 14, 12, 0.22) 0 1px, transparent 1.8px),
+          radial-gradient(circle at 72% 84%, rgba(15, 14, 12, 0.22) 0 1px, transparent 1.8px),
+          repeating-linear-gradient(
+            135deg,
+            var(--md-hazard-black) 0 18px,
+            var(--md-yellow-faded) 18px 38px
+          );
+      }
+      .hazard-worn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          /* chip-loss blobs revealing concrete substrate — crosses both yellow and black stripes */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='3' stitchTiles='stitch' seed='11'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 1 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.30  0 0 0 0 0.27  0 0 0 0 0.22  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c)'/></svg>"),
+          /* smaller secondary chips */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='340' height='340' viewBox='0 0 340 340'><filter id='c2'><feTurbulence type='fractalNoise' baseFrequency='0.06' numOctaves='2' stitchTiles='stitch' seed='19'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.32  0 0 0 0 0.27  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c2)'/></svg>"),
+          /* horizontal scratches from traffic */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='220' viewBox='0 0 420 220'><filter id='s'><feTurbulence type='turbulence' baseFrequency='0.05 2.8' numOctaves='1' stitchTiles='stitch' seed='14'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0.5 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23s)'/></svg>"),
+          /* coarse flake */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch' seed='7'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0.4 0.9'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.18  0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+          /* sandpaper */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='2.6' numOctaves='1' stitchTiles='stitch' seed='3'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0.2 0.7'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
+        background-size:
+          520px 520px,
+          340px 340px,
+          420px 220px,
+          320px 320px,
+          180px 180px;
+        opacity: 1;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      .hazard-worn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(180deg, rgba(227, 182, 81, 0.18) 0, transparent 46%),
+          linear-gradient(0deg, rgba(15, 14, 12, 0.22) 0, transparent 38%);
+        mix-blend-mode: overlay;
+        pointer-events: none;
+      }
+
+      /* ============================================================
+         Distressed mustard paint system
+         Layered: base gradient → fine grain → coarse flake → directional
+         scuffs → chip clusters → underlayer rings → drips → corner dirt
+         Apply .paint-distressed to any mustard surface.
+         ============================================================ */
+      .paint-distressed,
+      .worn-paint {
+        position: relative;
+        background:
+          /* TOP: chip-loss substrate showing through — OPAQUE normal-blend layers
+             these replace the yellow with concrete-grey where the paint is gone */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='180' viewBox='0 0 280 180'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3' stitchTiles='stitch' seed='7'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.26  0 0 0 0 0.24  0 0 0 0 0.20  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='140' viewBox='0 0 200 140'><filter id='c2'><feTurbulence type='fractalNoise' baseFrequency='0.08' numOctaves='2' stitchTiles='stitch' seed='13'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.33  0 0 0 0 0.31  0 0 0 0 0.26  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c2)'/></svg>"),
+          /* deepest chips reach primer — larger and more numerous */
+          radial-gradient(ellipse 12px 7px at 8% 28%, var(--md-primer) 0 60%, transparent 80%),
+          radial-gradient(ellipse 7px 5px at 23% 14%, var(--md-primer) 0 60%, transparent 80%),
+          radial-gradient(ellipse 14px 9px at 41% 66%, var(--md-primer) 0 60%, transparent 78%),
+          radial-gradient(ellipse 5px 4px at 58% 22%, var(--md-primer) 0 60%, transparent 80%),
+          radial-gradient(ellipse 16px 10px at 74% 78%, var(--md-primer) 0 60%, transparent 78%),
+          radial-gradient(ellipse 8px 5px at 88% 38%, var(--md-primer) 0 60%, transparent 80%),
+          radial-gradient(ellipse 9px 6px at 18% 88%, var(--md-primer) 0 60%, transparent 78%),
+          radial-gradient(ellipse 11px 7px at 64% 18%, var(--md-primer) 0 60%, transparent 78%),
+          /* a couple of deepest chips reaching bare metal */
+          radial-gradient(ellipse 4px 3px at 8% 28%, var(--md-metal) 0 60%, transparent 100%),
+          radial-gradient(ellipse 5px 3px at 74% 78%, var(--md-metal) 0 60%, transparent 100%),
+          /* dense micro spot wear */
+          radial-gradient(circle at 16% 78%, rgba(15, 14, 12, 0.55) 0 1.4px, transparent 2.4px),
+          radial-gradient(circle at 34% 44%, rgba(15, 14, 12, 0.5) 0 1px, transparent 1.8px),
+          radial-gradient(circle at 52% 90%, rgba(15, 14, 12, 0.5) 0 1.2px, transparent 2px),
+          radial-gradient(circle at 66% 12%, rgba(15, 14, 12, 0.48) 0 1.1px, transparent 1.8px),
+          radial-gradient(circle at 81% 56%, rgba(15, 14, 12, 0.55) 0 1.4px, transparent 2.4px),
+          radial-gradient(circle at 28% 32%, rgba(15, 14, 12, 0.42) 0 0.9px, transparent 1.6px),
+          radial-gradient(circle at 46% 50%, rgba(15, 14, 12, 0.4) 0 0.8px, transparent 1.4px),
+          radial-gradient(circle at 70% 40%, rgba(15, 14, 12, 0.42) 0 0.9px, transparent 1.5px),
+          /* corner dirt collection — heavier */
+          radial-gradient(ellipse at 0% 100%, rgba(15, 14, 12, 0.65), transparent 38%),
+          radial-gradient(ellipse at 100% 100%, rgba(15, 14, 12, 0.55), transparent 38%),
+          radial-gradient(ellipse at 0% 0%, rgba(15, 14, 12, 0.42), transparent 30%),
+          radial-gradient(ellipse at 100% 0%, rgba(15, 14, 12, 0.38), transparent 26%),
+          /* base paint gradient */
+          linear-gradient(
+            178deg,
+            var(--md-yellow-sun) 0,
+            var(--md-yellow) 32%,
+            var(--md-yellow-shadow) 100%
+          );
+      }
+      /* Layer 2: multiply darkening only — scratches, flake, grain */
+      .paint-distressed::before,
+      .worn-paint::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          /* heavy horizontal scratches from traffic wear */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'><filter id='s'><feTurbulence type='turbulence' baseFrequency='0.07 3.5' numOctaves='1' stitchTiles='stitch' seed='11'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0.4 0.9 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0 0.04  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23s)'/></svg>"),
+          /* coarse flake/chip clusters — discrete dark spots */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch' seed='4'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0.2 0.8'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.21  0 0 0 0 0.16  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+          /* fine sandpaper grain */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='2.6' numOctaves='1' stitchTiles='stitch' seed='9'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0.2 0.8'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
+        background-size:
+          320px 180px,
+          280px 280px,
+          180px 180px;
+        opacity: 1;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      /* Layer 3: directional scuffs + chip ring underlayer + drips — pushed harder */
+      .paint-distressed::after,
+      .worn-paint::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          /* faded underlayer rings around the deeper chips — wider */
+          radial-gradient(ellipse 22px 14px at 8% 28%, transparent 50%, var(--md-yellow-faded) 55%, transparent 78%),
+          radial-gradient(ellipse 14px 10px at 23% 14%, transparent 50%, var(--md-yellow-faded) 55%, transparent 78%),
+          radial-gradient(ellipse 26px 18px at 41% 66%, transparent 48%, var(--md-yellow-faded) 54%, transparent 78%),
+          radial-gradient(ellipse 30px 18px at 74% 78%, transparent 48%, var(--md-yellow-faded) 54%, transparent 78%),
+          radial-gradient(ellipse 16px 10px at 88% 38%, transparent 48%, var(--md-yellow-faded) 54%, transparent 80%),
+          radial-gradient(ellipse 18px 12px at 18% 88%, transparent 48%, var(--md-yellow-faded) 54%, transparent 80%),
+          radial-gradient(ellipse 22px 14px at 64% 18%, transparent 48%, var(--md-yellow-faded) 54%, transparent 80%),
+          /* drip 1 — long */
+          linear-gradient(
+            180deg,
+            transparent 12%,
+            rgba(80, 60, 14, 0.55) 13%,
+            rgba(80, 60, 14, 0.5) 56%,
+            transparent 58%
+          ),
+          /* drip 2 — short */
+          linear-gradient(
+            180deg,
+            transparent 22%,
+            rgba(80, 60, 14, 0.45) 23%,
+            rgba(80, 60, 14, 0.4) 42%,
+            transparent 44%
+          ),
+          /* directional scratches — sharper */
+          linear-gradient(85deg, transparent 38%, rgba(227, 182, 81, 0.22) 39%, transparent 40.5%),
+          linear-gradient(86deg, transparent 64%, rgba(15, 14, 12, 0.18) 65%, transparent 66.5%),
+          linear-gradient(83deg, transparent 22%, rgba(15, 14, 12, 0.22) 23%, transparent 24.2%),
+          linear-gradient(82deg, transparent 78%, rgba(15, 14, 12, 0.16) 79%, transparent 80.2%),
+          linear-gradient(84deg, transparent 12%, rgba(227, 182, 81, 0.18) 13%, transparent 14.4%);
+        background-size:
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          /* drip 1 */ 3px 100%,
+          /* drip 2 */ 2px 100%,
+          /* scratches */ 240% 100%,
+          280% 100%,
+          200% 100%,
+          320% 100%,
+          260% 100%;
+        background-position:
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          /* drip 1 */ 62% 0,
+          /* drip 2 */ 22% 0,
+          /* scratches */ 12% 30%,
+          -16% 72%,
+          44% 56%,
+          70% 84%,
+          30% 22%;
+        background-repeat: no-repeat;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      /* Second wear layer for finer detail — a sibling overlay span */
+      .wear-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          /* extra splatter/spit-back micro-dots */
+          radial-gradient(circle at 12% 36%, rgba(15, 14, 12, 0.42) 0 0.8px, transparent 1.4px),
+          radial-gradient(circle at 22% 24%, rgba(15, 14, 12, 0.38) 0 0.7px, transparent 1.2px),
+          radial-gradient(circle at 36% 78%, rgba(15, 14, 12, 0.4) 0 0.8px, transparent 1.4px),
+          radial-gradient(circle at 48% 14%, rgba(15, 14, 12, 0.4) 0 0.8px, transparent 1.4px),
+          radial-gradient(circle at 58% 62%, rgba(15, 14, 12, 0.36) 0 0.7px, transparent 1.2px),
+          radial-gradient(circle at 78% 26%, rgba(15, 14, 12, 0.42) 0 0.8px, transparent 1.4px),
+          radial-gradient(circle at 92% 56%, rgba(15, 14, 12, 0.38) 0 0.7px, transparent 1.2px);
+        mix-blend-mode: multiply;
+      }
+
+      /* Stencil sample with intact bridges — sits on distressed mustard */
+      .stencil-tile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+          radial-gradient(circle at 8% 88%, rgba(110, 106, 96, 0.55) 0 5px, transparent 7px),
+          radial-gradient(circle at 92% 18%, rgba(110, 106, 96, 0.45) 0 4px, transparent 6px),
+          radial-gradient(circle at 38% 24%, rgba(15, 14, 12, 0.22) 0 1.2px, transparent 2px),
+          radial-gradient(circle at 72% 78%, rgba(15, 14, 12, 0.24) 0 1.2px, transparent 2px),
+          radial-gradient(circle at 0% 100%, rgba(15, 14, 12, 0.4), transparent 26%),
+          radial-gradient(circle at 100% 0%, rgba(15, 14, 12, 0.3), transparent 22%),
+          linear-gradient(178deg, var(--md-yellow-sun), var(--md-yellow) 38%, var(--md-yellow-shadow) 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      .stencil-tile::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch' seed='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='2.4' numOctaves='1' stitchTiles='stitch' seed='6'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.32 0'/></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
+        background-size: 320px 320px, 180px 180px;
+        background-blend-mode: multiply, multiply;
+        opacity: 0.55;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      .stencil-tile::after {
+        /* underlayer rings + scratch */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 8% 88%, transparent 5px, var(--md-yellow-faded) 5.2px, transparent 8px),
+          radial-gradient(circle at 92% 18%, transparent 4px, var(--md-yellow-faded) 4.2px, transparent 7px),
+          linear-gradient(84deg, transparent 28%, rgba(15, 14, 12, 0.06) 29%, transparent 30.5%);
+        background-size:
+          100% 100%,
+          100% 100%,
+          260% 100%;
+        background-position:
+          0 0,
+          0 0,
+          20% 50%;
+        background-repeat: no-repeat;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      .stencil-tile-mark {
+        font-family: var(--md-display);
+        font-weight: 700;
+        font-size: 64px;
+        letter-spacing: 0.08em;
+        color: var(--md-hazard-black);
+        position: relative;
+        z-index: 2;
+        line-height: 0.9;
+      }
+      .stencil-tile-mark small {
+        display: block;
+        font-family: var(--md-mono);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        margin-top: 6px;
+        color: rgba(15, 14, 12, 0.7);
+      }
+
+      /* Hangar wall — primer + scuff zone */
+      .primer-wall {
+        background:
+          radial-gradient(circle at 80% 30%, rgba(15, 14, 12, 0.4) 0 2px, transparent 4px),
+          radial-gradient(circle at 22% 70%, rgba(15, 14, 12, 0.3) 0 1.5px, transparent 3px),
+          linear-gradient(180deg, #7a766c 0, var(--md-primer) 60%, #58554c 100%);
+        position: relative;
+      }
+      .primer-wall::after {
+        content: "OP-217 / SEC-04";
+        position: absolute;
+        bottom: 12px;
+        left: 14px;
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        color: rgba(15, 14, 12, 0.55);
+      }
+
+      /* Mission patch */
+      .patch-tile {
+        background: var(--md-panel);
+        display: grid;
+        place-items: center;
+        position: relative;
+      }
+      .patch {
+        --size: 132px;
+        width: var(--size);
+        height: var(--size);
+        position: relative;
+      }
+      .patch svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      /* Type specimen */
+      .type-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+      }
+      .specimen {
+        border: 1px solid var(--md-panel-edge);
+        background: rgba(0, 0, 0, 0.18);
+        padding: 24px 24px 28px;
+      }
+      .specimen-eyebrow {
+        font-family: var(--md-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--md-ink-muted);
+        margin: 0 0 18px;
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+      }
+      .specimen-eyebrow b {
+        font-family: var(--md-mono);
+        font-weight: 500;
+        color: var(--md-yellow);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+      }
+      .specimen-display {
+        font-family: var(--md-display);
+        font-weight: 700;
+        font-size: 56px;
+        line-height: 0.95;
+        letter-spacing: 0.02em;
+        color: var(--md-ink);
+        margin: 0 0 6px;
+      }
+      .specimen-display-heavy {
+        font-family: var(--md-display-heavy);
+        font-size: 48px;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        color: var(--md-ink);
+        margin: 18px 0 0;
+      }
+      .specimen-body {
+        font-family: var(--md-utility);
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 1.55;
+        color: var(--md-ink-secondary);
+        margin: 18px 0 0;
+        max-width: 60ch;
+      }
+      .specimen-mono {
+        font-family: var(--md-mono);
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--md-yellow);
+        margin: 18px 0 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px 22px;
+      }
+      .specimen-mono span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .specimen-mono span::before {
+        content: "■";
+        color: var(--md-ink-muted);
+        font-size: 8px;
+      }
+
+      /* Header treatment lanes */
+      .lane {
+        margin-top: 28px;
+        border: 1px solid var(--md-panel-edge);
+        background: var(--md-panel-deep);
+      }
+      .lane-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--md-panel-edge);
+        background: rgba(0, 0, 0, 0.28);
+      }
+      .lane-label {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--md-yellow);
+      }
+      .lane-name {
+        font-family: var(--md-display);
+        font-size: 18px;
+        letter-spacing: 0.04em;
+        color: var(--md-ink);
+        margin: 0;
+      }
+      .lane-note {
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        color: var(--md-ink-muted);
+      }
+      .lane-body {
+        padding: 0;
+      }
+      .lane-caption {
+        padding: 14px 18px 18px;
+        font-size: 13px;
+        color: var(--md-ink-secondary);
+        border-top: 1px solid var(--md-panel-edge);
+      }
+
+      /* shared header skeleton inside each lane */
+      .demo-header {
+        display: flex;
+        align-items: stretch;
+        position: relative;
+        min-height: 76px;
+        overflow: hidden;
+      }
+      .demo-header .brand-block {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        position: relative;
+        z-index: 3;
+      }
+      .demo-header nav {
+        position: relative;
+        z-index: 3;
+      }
+      .demo-header .op-id,
+      .demo-header .meta-strip {
+        position: relative;
+        z-index: 3;
+      }
+      .demo-header .brand-name {
+        font-family: var(--md-display);
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: 0.06em;
+        line-height: 1;
+        color: var(--md-hazard-black);
+      }
+      .demo-header .brand-sub {
+        font-family: var(--md-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: rgba(15, 14, 12, 0.72);
+        margin-top: 4px;
+      }
+      .demo-header nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 16px;
+        margin-left: auto;
+      }
+      .demo-header nav button {
+        font-family: var(--md-utility);
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 10px 14px;
+        background: transparent;
+        color: var(--md-ink-secondary);
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+      .demo-header nav button.active {
+        color: var(--md-ink);
+        background: rgba(0, 0, 0, 0.55);
+        border-color: var(--md-yellow);
+      }
+
+      /* LANE A — Hangar Doors — full distressed mustard band */
+      .lane-a .demo-header {
+        background:
+          /* TOP: chip-loss substrate showing through — opaque normal-blend layers */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch' seed='5'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.26  0 0 0 0 0.24  0 0 0 0 0.20  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='150' viewBox='0 0 220 150'><filter id='c2'><feTurbulence type='fractalNoise' baseFrequency='0.09' numOctaves='2' stitchTiles='stitch' seed='15'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.33  0 0 0 0 0.31  0 0 0 0 0.26  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c2)'/></svg>"),
+          /* chip clusters across the band */
+          radial-gradient(circle at 6% 78%, rgba(110, 106, 96, 0.6) 0 5px, transparent 8px),
+          radial-gradient(circle at 11% 24%, rgba(110, 106, 96, 0.48) 0 3px, transparent 5px),
+          radial-gradient(circle at 28% 88%, rgba(110, 106, 96, 0.5) 0 4px, transparent 6px),
+          radial-gradient(circle at 44% 18%, rgba(110, 106, 96, 0.44) 0 2.5px, transparent 4.5px),
+          radial-gradient(circle at 60% 72%, rgba(110, 106, 96, 0.5) 0 4px, transparent 6px),
+          radial-gradient(circle at 74% 30%, rgba(110, 106, 96, 0.46) 0 3.5px, transparent 5.5px),
+          radial-gradient(circle at 88% 80%, rgba(110, 106, 96, 0.55) 0 5px, transparent 7px),
+          radial-gradient(circle at 94% 22%, rgba(138, 134, 130, 0.38) 0 2px, transparent 3.5px),
+          /* micro spot wear */
+          radial-gradient(circle at 18% 50%, rgba(15, 14, 12, 0.22) 0 0.9px, transparent 1.6px),
+          radial-gradient(circle at 36% 56%, rgba(15, 14, 12, 0.22) 0 1px, transparent 1.7px),
+          radial-gradient(circle at 52% 32%, rgba(15, 14, 12, 0.22) 0 0.9px, transparent 1.5px),
+          radial-gradient(circle at 68% 62%, rgba(15, 14, 12, 0.22) 0 1px, transparent 1.7px),
+          radial-gradient(circle at 82% 48%, rgba(15, 14, 12, 0.22) 0 0.9px, transparent 1.6px),
+          /* corner dirt */
+          radial-gradient(circle at 0% 100%, rgba(15, 14, 12, 0.45), transparent 22%),
+          radial-gradient(circle at 100% 100%, rgba(15, 14, 12, 0.38), transparent 22%),
+          radial-gradient(circle at 0% 0%, rgba(15, 14, 12, 0.32), transparent 18%),
+          radial-gradient(circle at 100% 0%, rgba(15, 14, 12, 0.28), transparent 16%),
+          /* base paint gradient */
+          linear-gradient(
+            178deg,
+            var(--md-yellow-sun) 0,
+            var(--md-yellow) 36%,
+            var(--md-yellow-shadow) 100%
+          );
+        border-bottom: 1px solid rgba(15, 14, 12, 0.6);
+      }
+      .lane-a .demo-header::before {
+        /* chip-loss + scratches + flake — full distress stack */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='340' height='220' viewBox='0 0 340 220'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3' stitchTiles='stitch' seed='5'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.255  0 0 0 0 0.235  0 0 0 0 0.20  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='160' viewBox='0 0 240 160'><filter id='c2'><feTurbulence type='fractalNoise' baseFrequency='0.075' numOctaves='2' stitchTiles='stitch' seed='15'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.34  0 0 0 0 0.31  0 0 0 0 0.26  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c2)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='180' viewBox='0 0 360 180'><filter id='s'><feTurbulence type='turbulence' baseFrequency='0.07 3.5' numOctaves='1' stitchTiles='stitch' seed='8'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0.4 0.9 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0 0.04  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23s)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch' seed='5'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0.2 0.8'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.21  0 0 0 0 0.16  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='2.6' numOctaves='1' stitchTiles='stitch' seed='8'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0.2 0.8'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='300' viewBox='0 0 420 300'><filter id='h'><feTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch' seed='2'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0.7'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.43  0 0 0 0 0.42  0 0 0 0 0.38  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23h)'/></svg>");
+        background-size:
+          340px 220px,
+          240px 160px,
+          360px 180px,
+          300px 300px,
+          180px 180px,
+          420px 300px;
+        opacity: 1;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      .lane-a .demo-header::after {
+        /* hazard tape — bottom 10px only — with underlayer rings + drips above */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          /* drips */
+          linear-gradient(
+              180deg,
+              transparent 14%,
+              rgba(138, 104, 24, 0.4) 15%,
+              rgba(138, 104, 24, 0.4) 36%,
+              transparent 37%
+            )
+            22% 0 / 2.5px 100% no-repeat,
+          linear-gradient(
+              180deg,
+              transparent 26%,
+              rgba(138, 104, 24, 0.32) 27%,
+              rgba(138, 104, 24, 0.32) 44%,
+              transparent 45%
+            )
+            72% 0 / 2px 100% no-repeat,
+          /* underlayer rings on the larger chips */
+            radial-gradient(circle at 6% 78%, transparent 5px, var(--md-yellow-faded) 5.2px, transparent 8.5px),
+          radial-gradient(circle at 28% 88%, transparent 4px, var(--md-yellow-faded) 4.2px, transparent 7px),
+          radial-gradient(circle at 60% 72%, transparent 4px, var(--md-yellow-faded) 4.2px, transparent 7px),
+          radial-gradient(circle at 88% 80%, transparent 5px, var(--md-yellow-faded) 5.2px, transparent 8px),
+          /* directional scuffs across the band */
+            linear-gradient(85deg, transparent 30%, rgba(15, 14, 12, 0.07) 31%, transparent 32.2%)
+            10% 30% / 240% 100% no-repeat,
+          linear-gradient(87deg, transparent 60%, rgba(15, 14, 12, 0.06) 61%, transparent 62.5%) -10% 70% /
+            280% 100% no-repeat,
+          linear-gradient(83deg, transparent 20%, rgba(15, 14, 12, 0.05) 21%, transparent 22.5%) 30% 50% / 220%
+            100% no-repeat;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      .lane-a .demo-header .hazard-edge {
+        /* bottom hazard tape band, on its own element so it renders above ::after */
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 10px;
+        background: repeating-linear-gradient(
+          135deg,
+          var(--md-hazard-black) 0 12px,
+          var(--md-yellow) 12px 26px
+        );
+        box-shadow: inset 0 1px 0 rgba(15, 14, 12, 0.5);
+        z-index: 2;
+      }
+      .lane-a .demo-header .brand-block {
+        background: rgba(15, 14, 12, 0.85);
+        color: var(--md-yellow);
+        padding: 14px 18px;
+        margin: 8px 0 18px 16px;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      }
+      .lane-a .demo-header .brand-block .brand-name {
+        color: var(--md-yellow);
+      }
+      .lane-a .demo-header .brand-block .brand-sub {
+        color: var(--md-ink-muted);
+      }
+      .lane-a .demo-header nav button {
+        color: rgba(15, 14, 12, 0.78);
+      }
+      .lane-a .demo-header nav button.active {
+        background: var(--md-hazard-black);
+        color: var(--md-yellow);
+        border-color: rgba(15, 14, 12, 0.6);
+      }
+
+      /* LANE B — Operations Placard */
+      .lane-b .demo-header {
+        background: var(--md-panel);
+        border-bottom: 1px solid var(--md-panel-edge-strong);
+      }
+      .lane-b .demo-header .brand-block {
+        position: relative;
+        background-color: var(--md-yellow);
+        background-image:
+          /* SVG paint-flake noise */
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)' style='mix-blend-mode:multiply'/></svg>"),
+          /* chip clusters */
+            radial-gradient(circle at 8% 18%, rgba(110, 106, 96, 0.6) 0 3.5px, transparent 5.5px),
+          radial-gradient(circle at 14% 82%, rgba(110, 106, 96, 0.55) 0 3px, transparent 5px),
+          radial-gradient(circle at 28% 46%, rgba(110, 106, 96, 0.4) 0 1.8px, transparent 3px),
+          radial-gradient(circle at 52% 22%, rgba(110, 106, 96, 0.42) 0 2.2px, transparent 3.5px),
+          radial-gradient(circle at 64% 86%, rgba(110, 106, 96, 0.5) 0 2.8px, transparent 4.5px),
+          radial-gradient(circle at 82% 36%, rgba(110, 106, 96, 0.55) 0 3.5px, transparent 5px),
+          /* underlayer rings */
+            radial-gradient(circle at 8% 18%, transparent 3.5px, var(--md-yellow-faded) 3.7px, transparent 5.5px),
+          radial-gradient(circle at 14% 82%, transparent 3px, var(--md-yellow-faded) 3.2px, transparent 5px),
+          radial-gradient(circle at 64% 86%, transparent 2.8px, var(--md-yellow-faded) 3px, transparent 4.5px),
+          radial-gradient(circle at 82% 36%, transparent 3.5px, var(--md-yellow-faded) 3.7px, transparent 5.5px),
+          /* micro spot wear */
+            radial-gradient(circle at 38% 64%, rgba(15, 14, 12, 0.3) 0 0.8px, transparent 1.4px),
+          radial-gradient(circle at 72% 56%, rgba(15, 14, 12, 0.3) 0 0.9px, transparent 1.4px),
+          radial-gradient(circle at 92% 76%, rgba(15, 14, 12, 0.28) 0 0.7px, transparent 1.2px),
+          /* drip */
+            linear-gradient(
+              180deg,
+              transparent 30%,
+              rgba(138, 104, 24, 0.4) 31%,
+              rgba(138, 104, 24, 0.4) 70%,
+              transparent 71%
+            ),
+          /* corner dirt */
+            radial-gradient(circle at 0% 100%, rgba(15, 14, 12, 0.45), transparent 32%),
+          radial-gradient(circle at 100% 0%, rgba(15, 14, 12, 0.3), transparent 28%),
+          /* base gradient */
+            linear-gradient(178deg, var(--md-yellow-sun), var(--md-yellow) 46%, var(--md-yellow-shadow) 100%);
+        background-size:
+          220px 220px,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          2px 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%;
+        background-position:
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          0 0,
+          42% 0,
+          0 0,
+          0 0,
+          0 0;
+        background-repeat:
+          repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat,
+          no-repeat;
+        color: var(--md-hazard-black);
+        padding: 12px 24px 12px 16px;
+        margin: 10px 0 10px 14px;
+        border: 1px solid rgba(15, 14, 12, 0.7);
+        clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+      }
+      .lane-b .demo-header .brand-block::before {
+        /* chip-loss + scratch + flake — scaled for the small placard */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch' seed='3'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.22  0 0 0 0 0.18  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23c)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='120' viewBox='0 0 200 120'><filter id='s'><feTurbulence type='turbulence' baseFrequency='0.06 3.2' numOctaves='1' stitchTiles='stitch' seed='6'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0.5 1'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23s)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch' seed='3'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0.2 0.8'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.21  0 0 0 0 0.16  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>"),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='2.8' numOctaves='1' stitchTiles='stitch' seed='6'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0.2 0.8'/></feComponentTransfer><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.65 0'/></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
+        background-size:
+          260px 260px,
+          200px 120px,
+          240px 240px,
+          160px 160px;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .lane-b .demo-header .brand-block > div {
+        position: relative;
+        z-index: 2;
+      }
+      .lane-b .demo-header .brand-block::after {
+        /* hazard tape — right edge only */
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 8px;
+        background: repeating-linear-gradient(
+          135deg,
+          var(--md-hazard-black) 0 8px,
+          var(--md-yellow) 8px 18px
+        );
+        z-index: 2;
+      }
+      .lane-b .demo-header nav button.active {
+        border-color: transparent;
+        background: transparent;
+        color: var(--md-ink);
+        box-shadow: inset 0 -3px 0 var(--md-yellow);
+      }
+      .lane-b .demo-header .op-id {
+        margin-left: 18px;
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        color: var(--md-ink-muted);
+        align-self: center;
+      }
+
+      /* LANE C — Mission Patch */
+      .lane-c .demo-header {
+        background:
+          radial-gradient(circle at 18% 50%, rgba(212, 160, 40, 0.06), transparent 32%),
+          var(--md-panel);
+        border-bottom: 1px solid var(--md-panel-edge-strong);
+      }
+      .lane-c .demo-header .brand-block {
+        padding: 10px 18px;
+        gap: 14px;
+      }
+      .lane-c .patch-mark {
+        width: 56px;
+        height: 56px;
+        flex-shrink: 0;
+      }
+      .lane-c .demo-header .brand-name {
+        color: var(--md-ink);
+      }
+      .lane-c .demo-header .brand-sub {
+        color: var(--md-ink-muted);
+      }
+      .lane-c .meta-strip {
+        margin-left: 18px;
+        font-family: var(--md-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: var(--md-ink-muted);
+        align-self: center;
+      }
+      .lane-c .meta-strip span {
+        color: var(--md-yellow);
+      }
+      .lane-c .demo-header nav button.active {
+        background: var(--md-yellow);
+        color: var(--md-hazard-black);
+        border-color: var(--md-yellow);
+        position: relative;
+      }
+      .lane-c .demo-header nav button.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 4px;
+        background: repeating-linear-gradient(
+          135deg,
+          var(--md-hazard-black) 0 5px,
+          var(--md-yellow) 5px 11px
+        );
+      }
+
+      /* LANE D — Caution Tape */
+      .lane-d .demo-header {
+        background: var(--md-panel);
+        border-bottom: 1px solid var(--md-panel-edge);
+      }
+      .lane-d .demo-header::before {
+        /* 6px hazard tape across the top */
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 6px;
+        background: repeating-linear-gradient(
+          135deg,
+          var(--md-hazard-black) 0 8px,
+          var(--md-yellow) 8px 18px
+        );
+        box-shadow: inset 0 -1px 0 rgba(15, 14, 12, 0.4);
+      }
+      .lane-d .demo-header .brand-block {
+        padding: 18px 18px 12px;
+      }
+      .lane-d .demo-header .brand-name {
+        color: var(--md-yellow);
+        position: relative;
+      }
+      .lane-d .demo-header .brand-sub {
+        color: var(--md-ink-muted);
+      }
+      .lane-d .demo-header nav button {
+        color: var(--md-ink-secondary);
+      }
+      .lane-d .demo-header nav button.active {
+        background: rgba(212, 160, 40, 0.1);
+        border-color: rgba(212, 160, 40, 0.45);
+        color: var(--md-yellow);
+      }
+
+      /* Background preview tile */
+      .background-preview {
+        height: 320px;
+        position: relative;
+        overflow: hidden;
+        background-color: var(--md-panel-deep);
+      }
+      .background-preview svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .background-preview-label {
+        position: absolute;
+        left: 18px;
+        bottom: 16px;
+        font-family: var(--md-mono);
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        color: var(--md-ink-muted);
+      }
+
+      .grid-two {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+      }
+      @media (min-width: 900px) {
+        .grid-two {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+      }
+
+      .notes {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--md-ink-secondary);
+      }
+      .notes b {
+        color: var(--md-ink);
+        font-weight: 600;
+      }
+      .notes ul {
+        margin: 8px 0 0;
+        padding: 0 0 0 18px;
+      }
+      .notes li {
+        margin: 6px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <p class="page-eyebrow">VID-V1 · 2026-05-21 · Visual identity study</p>
+      <h1 class="page-title">MusterDeck visual identity</h1>
+      <p class="page-lede">
+        A working language for the operations deck. Mustard caution paint on industrial dark base,
+        stencil display type with mono utility, hazard contrast used as edge accent only. Four
+        header treatment lanes at the bottom of this page. Pick one to push into production.
+      </p>
+
+      <!-- 1 — Paint system -->
+      <section class="section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">01 · Paint system</p>
+            <h2 class="section-title">Color, committed</h2>
+          </div>
+          <div class="section-meta">One mustard. Three layers under it.</div>
+        </header>
+        <div class="section-body">
+          <div class="palette">
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-yellow)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Mustard</span>
+                <span class="swatch-code">#D4A028</span>
+              </div>
+              <p class="swatch-note">The committed primary. Between Cat-yellow and Komatsu.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-yellow-sun)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Sun-bleached</span>
+                <span class="swatch-code">#E3B651</span>
+              </div>
+              <p class="swatch-note">Top-of-panel highlight. Reads as faded sun exposure.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-yellow-faded)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Underlayer</span>
+                <span class="swatch-code">#B68A33</span>
+              </div>
+              <p class="swatch-note">Visible at chip edges. Older paint underneath the topcoat.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-yellow-shadow)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Shadow</span>
+                <span class="swatch-code">#8A6818</span>
+              </div>
+              <p class="swatch-note">Underside of panels. Deep recesses, grime collection.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-hazard-black)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Hazard black</span>
+                <span class="swatch-code">#0F0E0C</span>
+              </div>
+              <p class="swatch-note">Stripes, stencil ink, contrast labels. Always on yellow.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-primer)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Primer grey</span>
+                <span class="swatch-code">#6E6A60</span>
+              </div>
+              <p class="swatch-note">First layer down from chipped paint. Never pure grey.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-metal)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Bare metal</span>
+                <span class="swatch-code">#8A8682</span>
+              </div>
+              <p class="swatch-note">Deepest chips only. Used sparingly, never as fill.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-panel-deep)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Panel deep</span>
+                <span class="swatch-code">#14130E</span>
+              </div>
+              <p class="swatch-note">The page base. Warm-black, not blue-black.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-panel)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Panel</span>
+                <span class="swatch-code">#1C1B16</span>
+              </div>
+              <p class="swatch-note">Cards, sections, surfaces.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-panel-raised)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Panel raised</span>
+                <span class="swatch-code">#25241D</span>
+              </div>
+              <p class="swatch-note">Inputs, raised tiles, secondary surfaces.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-rust)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Rust accent</span>
+                <span class="swatch-code">#9C4A22</span>
+              </div>
+              <p class="swatch-note">Warm accent. Sparing. Patches, edge wear, rare highlight.</p>
+            </div>
+            <div class="swatch">
+              <div class="swatch-fill" style="background: var(--md-signal)"></div>
+              <div class="swatch-label">
+                <span class="swatch-name">Signal</span>
+                <span class="swatch-code">#B43A2A</span>
+              </div>
+              <p class="swatch-note">Errors, alerts. Truly rare. Not a brand color.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 — Textures -->
+      <section class="section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">02 · Textures</p>
+            <h2 class="section-title">Material samples</h2>
+          </div>
+          <div class="section-meta">Wear as seasoning, not the dish.</div>
+        </header>
+        <div class="section-body">
+          <div class="texture-grid">
+            <div class="texture-tile">
+              <div class="texture-surface worn-paint"></div>
+              <div class="texture-caption">
+                <h3 class="texture-name">Worn paint</h3>
+                <p class="texture-desc">
+                  Mustard topcoat with three chip points showing faded underlayer rings. Directional
+                  scuffs run at the slight angle of motion across the surface.
+                </p>
+              </div>
+            </div>
+            <div class="texture-tile">
+              <div class="texture-surface hazard-clean"></div>
+              <div class="texture-caption">
+                <h3 class="texture-name">Hazard tape · clean</h3>
+                <p class="texture-desc">
+                  Reference state. 135-degree black-on-yellow. Used at the edge of a band or panel,
+                  never as a full background fill.
+                </p>
+              </div>
+            </div>
+            <div class="texture-tile">
+              <div class="texture-surface hazard-worn"></div>
+              <div class="texture-caption">
+                <h3 class="texture-name">Hazard tape · weathered</h3>
+                <p class="texture-desc">
+                  Same grammar with chip spots and sun fade. This is the production target for
+                  header-edge tape and active-tab accents.
+                </p>
+              </div>
+            </div>
+            <div class="texture-tile">
+              <div class="texture-surface stencil-tile">
+                <div class="stencil-tile-mark">
+                  MD<small>OPS · STENCIL · 04</small>
+                </div>
+              </div>
+              <div class="texture-caption">
+                <h3 class="texture-name">Stencil bridges</h3>
+                <p class="texture-desc">
+                  Real stencil cuts leave bridges in M, D, A, O, R, P. The display face must keep
+                  them visible. Faked stencil through a sliced sans face never reads right.
+                </p>
+              </div>
+            </div>
+            <div class="texture-tile">
+              <div class="texture-surface primer-wall"></div>
+              <div class="texture-caption">
+                <h3 class="texture-name">Primer wall</h3>
+                <p class="texture-desc">
+                  What sits under chipped paint. Warm grey with darker grime in low corners. Used
+                  for empty states and "no data" surfaces.
+                </p>
+              </div>
+            </div>
+            <div class="texture-tile">
+              <div class="texture-surface patch-tile">
+                <div class="patch">
+                  <svg viewBox="0 0 132 132" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <radialGradient id="patchYellow" cx="50%" cy="40%" r="60%">
+                        <stop offset="0%" stop-color="#E3B651" />
+                        <stop offset="62%" stop-color="#D4A028" />
+                        <stop offset="100%" stop-color="#8A6818" />
+                      </radialGradient>
+                    </defs>
+                    <circle cx="66" cy="66" r="62" fill="#0F0E0C" stroke="#D4A028" stroke-width="2" />
+                    <circle cx="66" cy="66" r="46" fill="url(#patchYellow)" />
+                    <circle
+                      cx="66"
+                      cy="66"
+                      r="46"
+                      fill="none"
+                      stroke="#0F0E0C"
+                      stroke-width="1.5"
+                    />
+                    <!-- chevron / muster mark -->
+                    <path
+                      d="M40 80 L66 50 L92 80"
+                      fill="none"
+                      stroke="#0F0E0C"
+                      stroke-width="4"
+                      stroke-linecap="square"
+                      stroke-linejoin="miter"
+                    />
+                    <path
+                      d="M50 84 L66 66 L82 84"
+                      fill="none"
+                      stroke="#0F0E0C"
+                      stroke-width="3"
+                      stroke-linecap="square"
+                      stroke-linejoin="miter"
+                    />
+                    <!-- chip marks -->
+                    <circle cx="34" cy="44" r="3" fill="#6E6A60" />
+                    <circle cx="98" cy="50" r="2.5" fill="#6E6A60" />
+                    <circle cx="86" cy="98" r="2" fill="#6E6A60" />
+                    <!-- text ring -->
+                    <path id="ringText" d="M66 18 a48 48 0 1 1 -0.1 0" fill="none" />
+                    <text
+                      font-family="JetBrains Mono, monospace"
+                      font-size="8.5"
+                      letter-spacing="2"
+                      fill="#D4A028"
+                    >
+                      <textPath href="#ringText" startOffset="2%">
+                        MUSTERDECK · OPERATIONS · EST 2552 · FAN MADE
+                      </textPath>
+                    </text>
+                  </svg>
+                </div>
+              </div>
+              <div class="texture-caption">
+                <h3 class="texture-name">Patch grammar</h3>
+                <p class="texture-desc">
+                  Thick outer ring, sparse inner symbol, ring text in mono. Mission-patch logic for
+                  org badges, event marks, and the brand patch.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 — Type -->
+      <section class="section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">03 · Typography</p>
+            <h2 class="section-title">Display, utility, mono</h2>
+          </div>
+          <div class="section-meta">Stencil for headers and labels only.</div>
+        </header>
+        <div class="section-body">
+          <div class="type-grid">
+            <div class="specimen">
+              <p class="specimen-eyebrow">
+                <span>Display</span> <b>Stardos Stencil · 700</b>
+                <span style="color: var(--md-ink-muted)">free, open license</span>
+              </p>
+              <h3 class="specimen-display">Rally, Command, Settle.</h3>
+              <h4 class="specimen-display-heavy">Operations Hub</h4>
+              <p class="specimen-mono">
+                <span>SC OPERATIONS</span><span>FLEET COMMAND</span><span>S.P.O.I.L.S.</span
+                ><span>PROVING GROUND</span>
+              </p>
+            </div>
+            <div class="specimen">
+              <p class="specimen-eyebrow">
+                <span>Utility body</span> <b>Saira Condensed · 400/500/600</b>
+                <span style="color: var(--md-ink-muted)">free, open license</span>
+              </p>
+              <p class="specimen-body">
+                MusterDeck helps citizens rally crews, command operations, and settle rewards across
+                the 'verse. Browse open runs, offer your ship, and join a station that needs your
+                hands on the job.
+              </p>
+              <p class="specimen-body" style="color: var(--md-ink); font-weight: 600">
+                Build the roster. Lock the launch. Settle the shares.
+              </p>
+            </div>
+            <div class="specimen">
+              <p class="specimen-eyebrow">
+                <span>Mono utility</span> <b>JetBrains Mono · 400/500</b>
+                <span style="color: var(--md-ink-muted)">free, open license</span>
+              </p>
+              <p
+                style="
+                  font-family: var(--md-mono);
+                  font-size: 14px;
+                  color: var(--md-ink-secondary);
+                  margin: 0;
+                  letter-spacing: 0.04em;
+                "
+              >
+                OP-ID 217-A · SECTOR 04 · 2026-05-21 · 4.8.0-LIVE.11825000<br />
+                RALLY v0.1 · FLEET v0.1 · S.P.O.I.L.S. v0.1 · GROUND v0.1
+              </p>
+              <p
+                style="
+                  font-family: var(--md-mono);
+                  font-size: 11px;
+                  color: var(--md-yellow);
+                  margin: 14px 0 0;
+                  letter-spacing: 0.22em;
+                "
+              >
+                OP-ID · SECTOR · CALLSIGN · MANIFEST · YIELD · SHARES
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 — Header treatment lanes -->
+      <section class="section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">04 · Header treatment lanes</p>
+            <h2 class="section-title">Pick one to push into production</h2>
+          </div>
+          <div class="section-meta">All four use the same paint system.</div>
+        </header>
+        <div class="section-body">
+          <!-- LANE A -->
+          <div class="lane lane-a">
+            <div class="lane-header">
+              <div>
+                <span class="lane-label">Lane A</span>
+                <h3 class="lane-name">Hangar Doors</h3>
+              </div>
+              <span class="lane-note">Maximum yellow commitment</span>
+            </div>
+            <div class="lane-body">
+              <div class="demo-header">
+                <div class="brand-block">
+                  <div>
+                    <div class="brand-name">MUSTERDECK</div>
+                    <div class="brand-sub">OPERATIONS BOARD</div>
+                  </div>
+                </div>
+                <nav>
+                  <button class="active">Operations Hub</button>
+                  <button>Rally Point</button>
+                  <button>Fleet Command</button>
+                  <button>S.P.O.I.L.S.</button>
+                  <button>Proving Ground</button>
+                </nav>
+                <span class="hazard-edge" aria-hidden="true"></span>
+              </div>
+              <div class="lane-caption">
+                A weathered mustard band fills the entire header. The brand block sits in a dark
+                inset panel. Hazard tape lives on the bottom edge only. Active nav goes to black on
+                yellow, inactive nav inks dark on yellow. Loudest, most committed.
+              </div>
+            </div>
+          </div>
+
+          <!-- LANE B -->
+          <div class="lane lane-b">
+            <div class="lane-header">
+              <div>
+                <span class="lane-label">Lane B</span>
+                <h3 class="lane-name">Operations Placard</h3>
+              </div>
+              <span class="lane-note">Apollo-panel discipline</span>
+            </div>
+            <div class="lane-body">
+              <div class="demo-header">
+                <div class="brand-block">
+                  <div>
+                    <div class="brand-name">MUSTERDECK</div>
+                    <div class="brand-sub">OPS · LIVE</div>
+                  </div>
+                </div>
+                <div class="op-id">OP-ID 217-A · SECTOR 04</div>
+                <nav>
+                  <button class="active">Operations Hub</button>
+                  <button>Rally Point</button>
+                  <button>Fleet Command</button>
+                  <button>S.P.O.I.L.S.</button>
+                  <button>Proving Ground</button>
+                </nav>
+              </div>
+              <div class="lane-caption">
+                The header is dark; the brand sits in a weathered mustard placard with hazard tape
+                on the right edge only. Active nav uses a yellow underline rather than a full fill.
+                Quieter, more "control room," scales better in long sessions.
+              </div>
+            </div>
+          </div>
+
+          <!-- LANE C -->
+          <div class="lane lane-c">
+            <div class="lane-header">
+              <div>
+                <span class="lane-label">Lane C</span>
+                <h3 class="lane-name">Mission Patch</h3>
+              </div>
+              <span class="lane-note">Brand mark first, paint second</span>
+            </div>
+            <div class="lane-body">
+              <div class="demo-header">
+                <div class="brand-block">
+                  <svg class="patch-mark" viewBox="0 0 132 132" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <radialGradient id="patchYellowB" cx="50%" cy="40%" r="60%">
+                        <stop offset="0%" stop-color="#E3B651" />
+                        <stop offset="62%" stop-color="#D4A028" />
+                        <stop offset="100%" stop-color="#8A6818" />
+                      </radialGradient>
+                    </defs>
+                    <circle cx="66" cy="66" r="62" fill="#0F0E0C" stroke="#D4A028" stroke-width="2" />
+                    <circle cx="66" cy="66" r="46" fill="url(#patchYellowB)" />
+                    <path
+                      d="M40 80 L66 50 L92 80"
+                      fill="none"
+                      stroke="#0F0E0C"
+                      stroke-width="6"
+                      stroke-linecap="square"
+                      stroke-linejoin="miter"
+                    />
+                  </svg>
+                  <div>
+                    <div class="brand-name" style="color: var(--md-ink)">MUSTERDECK</div>
+                    <div class="brand-sub">OPERATIONS BOARD</div>
+                  </div>
+                </div>
+                <div class="meta-strip">
+                  <span>SC DATA</span> 4.8.0-LIVE.11825000
+                </div>
+                <nav>
+                  <button class="active">Operations Hub</button>
+                  <button>Rally Point</button>
+                  <button>Fleet Command</button>
+                  <button>S.P.O.I.L.S.</button>
+                  <button>Proving Ground</button>
+                </nav>
+              </div>
+              <div class="lane-caption">
+                The brand mark carries the visual identity, not the surrounding paint. Header is
+                dark and operational. Active tab gets a hazard-tape underline. Most "in the 'verse"
+                without looking like an RSI knockoff.
+              </div>
+            </div>
+          </div>
+
+          <!-- LANE D -->
+          <div class="lane lane-d">
+            <div class="lane-header">
+              <div>
+                <span class="lane-label">Lane D</span>
+                <h3 class="lane-name">Caution Tape</h3>
+              </div>
+              <span class="lane-note">Minimum yellow, maximum restraint</span>
+            </div>
+            <div class="lane-body">
+              <div class="demo-header">
+                <div class="brand-block">
+                  <div>
+                    <div class="brand-name" style="color: var(--md-yellow)">MUSTERDECK</div>
+                    <div class="brand-sub">OPERATIONS BOARD</div>
+                  </div>
+                </div>
+                <nav>
+                  <button class="active">Operations Hub</button>
+                  <button>Rally Point</button>
+                  <button>Fleet Command</button>
+                  <button>S.P.O.I.L.S.</button>
+                  <button>Proving Ground</button>
+                </nav>
+              </div>
+              <div class="lane-caption">
+                A 6px hazard tape strip runs across the very top of the shell. Everything below is
+                dark and disciplined. Mustard reserved for the brand mark and active state tints.
+                Closest to the current build, just sharper.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5 — Background preview -->
+      <section class="section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">05 · Background</p>
+            <h2 class="section-title">Naval chart, not topo blob</h2>
+          </div>
+          <div class="section-meta">Sparse, gridded, labeled.</div>
+        </header>
+        <div class="section-body">
+          <div class="grid-two">
+            <div>
+              <div class="background-preview">
+                <svg viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+                      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(243,238,222,0.05)" stroke-width="1" />
+                    </pattern>
+                    <pattern id="gridMinor" width="12" height="12" patternUnits="userSpaceOnUse">
+                      <path d="M 12 0 L 0 0 0 12" fill="none" stroke="rgba(243,238,222,0.02)" stroke-width="0.5" />
+                    </pattern>
+                  </defs>
+                  <rect width="800" height="480" fill="#14130E" />
+                  <rect width="800" height="480" fill="url(#gridMinor)" />
+                  <rect width="800" height="480" fill="url(#grid)" />
+                  <!-- contour arcs -->
+                  <g stroke="rgba(212,160,40,0.16)" fill="none" stroke-width="1">
+                    <path d="M -80 320 Q 200 220 480 340 T 880 280" />
+                    <path d="M -80 360 Q 220 260 500 380 T 880 320" />
+                    <path d="M -80 400 Q 240 300 520 420 T 880 360" />
+                  </g>
+                  <!-- contour labels -->
+                  <g fill="rgba(212,160,40,0.5)" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="2">
+                    <text x="180" y="246">SEC-04 · 380</text>
+                    <text x="540" y="332">BRG 224</text>
+                    <text x="640" y="408">3.4 SCU</text>
+                  </g>
+                  <!-- waypoints -->
+                  <g>
+                    <circle cx="120" cy="120" r="3" fill="#D4A028" />
+                    <circle cx="120" cy="120" r="10" fill="none" stroke="rgba(212,160,40,0.5)" stroke-width="0.8" />
+                    <text x="138" y="124" fill="#D4A028" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="2">WP-217</text>
+                  </g>
+                  <g>
+                    <circle cx="460" cy="180" r="3" fill="#D4A028" />
+                    <circle cx="460" cy="180" r="10" fill="none" stroke="rgba(212,160,40,0.5)" stroke-width="0.8" />
+                    <text x="478" y="184" fill="#D4A028" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="2">WP-104</text>
+                  </g>
+                  <g>
+                    <circle cx="660" cy="92" r="2" fill="#C8C1AD" />
+                    <text x="676" y="96" fill="rgba(200,193,173,0.5)" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="2">FIX-09</text>
+                  </g>
+                  <!-- thin plotted route -->
+                  <path
+                    d="M 120 120 L 460 180 L 660 92"
+                    fill="none"
+                    stroke="rgba(212,160,40,0.35)"
+                    stroke-width="1"
+                    stroke-dasharray="2 6"
+                  />
+                  <!-- tick marks at edges -->
+                  <g stroke="rgba(243,238,222,0.18)" stroke-width="0.8">
+                    <line x1="0" y1="48" x2="6" y2="48" />
+                    <line x1="0" y1="96" x2="6" y2="96" />
+                    <line x1="0" y1="144" x2="6" y2="144" />
+                    <line x1="0" y1="192" x2="6" y2="192" />
+                    <line x1="0" y1="240" x2="6" y2="240" />
+                    <line x1="0" y1="288" x2="6" y2="288" />
+                    <line x1="0" y1="336" x2="6" y2="336" />
+                    <line x1="0" y1="384" x2="6" y2="384" />
+                    <line x1="0" y1="432" x2="6" y2="432" />
+                  </g>
+                </svg>
+                <div class="background-preview-label">SECTOR-04 · LIVE PLOT</div>
+              </div>
+            </div>
+            <div class="notes">
+              <b>What this background is doing</b>
+              <ul>
+                <li>Hairline grid at 48px on a 12px sub-grid. Reads as charted surface, never as wallpaper.</li>
+                <li>Two or three irregular contour arcs in faint mustard. No closed blobs.</li>
+                <li>Sparse waypoint markers with mono labels. Each pillar can map a waypoint to itself.</li>
+                <li>A dashed plotted route between two waypoints. Quiet sci-fi navigation cue.</li>
+                <li>Small contour labels in mono use mustard at low opacity so the background never competes for attention.</li>
+              </ul>
+              <p style="margin-top: 14px">
+                <b>What it is not.</b> Not the Vecteezy curvy-topo pattern, not generic dot-grid,
+                not radial neon glow. Operational chart vocabulary, used quietly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 — Notes for the next decision -->
+      <section class="section">
+        <header class="section-header">
+          <div>
+            <p class="section-eyebrow">06 · Open decisions</p>
+            <h2 class="section-title">What to lock next</h2>
+          </div>
+          <div class="section-meta">After this page is reviewed</div>
+        </header>
+        <div class="section-body">
+          <div class="notes">
+            <p>
+              <b>Lane choice.</b> Pick one of the four header treatments. Each is a different
+              commitment level to the mustard caution paint. The chosen lane sets the production
+              direction for the header, then propagates to footer, hub cards, and pillar tiles.
+            </p>
+            <p>
+              <b>Font asset.</b> Stardos Stencil and Saira Condensed are free Google Fonts with open
+              licenses, which removes the gitignore problem the current Capture It build has.
+              Capture It can stay as a fallback if you prefer its texture, but recommendation is to
+              ship the open-licensed pair to keep the repo clean.
+            </p>
+            <p>
+              <b>Texture cost.</b> The chip-through and worn-paint effects in this study are pure
+              CSS and SVG, no raster textures. That keeps the bundle small and lets the same
+              treatments work at any resolution. If we want stronger weathering, we can introduce a
+              single optimized PNG noise overlay later.
+            </p>
+            <p>
+              <b>Out of scope here.</b> Pillar card visuals, footer treatment, empty states, button
+              system, form fields. Those follow the chosen header lane.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

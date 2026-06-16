@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MusterDeck — 3D Holographic Hub (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Saira+Condensed:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root{--ink:#F3ECDB;--ink2:#B9B09C;--mustard:#D4A028;--ac:#D4A028;--font:"Archivo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{color:var(--ink);font-family:"Saira Condensed",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;
+    background:#040303}
+  /* fallback only — shown if WebGL fails; the real starfield+planet render in-scene on the canvas */
+  #neb{position:fixed;inset:0;z-index:-2;background:#0a0805 center/cover no-repeat;
+    background-image:url("../public/brand/hub/nebula.jpg")}
+  header{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:12px;padding:13px 28px;
+    border-bottom:2px solid color-mix(in srgb,var(--mustard) 40%,transparent);background:linear-gradient(180deg,#1c1b16,#14130ecc);backdrop-filter:blur(6px)}
+  header img{width:34px;height:30px;object-fit:contain}
+  header .wm{font-family:"Archivo";font-weight:900;letter-spacing:.1em;text-transform:uppercase;font-size:15px}
+  /* account control (right side of header) */
+  .acct{margin-left:auto;position:relative;font-family:var(--font)}
+  .acct-btn{display:flex;align-items:center;gap:9px;cursor:pointer;color:var(--ink);
+    background:rgba(255,255,255,.04);border:1px solid color-mix(in srgb,var(--mustard) 28%,transparent);border-radius:22px;padding:4px 12px 4px 4px}
+  .acct-btn:hover{background:rgba(255,255,255,.09);border-color:color-mix(in srgb,var(--mustard) 45%,transparent)}
+  .acct-av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;
+    font-family:"Archivo";font-weight:900;font-size:12px;letter-spacing:.02em;color:#1a1305;background:linear-gradient(180deg,#e6bb50,#a87d18)}
+  .acct-av.lg{width:38px;height:38px;font-size:14px}
+  .acct-name{font-size:13px;font-weight:700;letter-spacing:.02em}
+  .acct-caret{font-size:10px;color:var(--ink2);transition:transform .2s}
+  .acct.open .acct-caret{transform:rotate(180deg)}
+  .acct-menu{position:absolute;top:calc(100% + 11px);right:0;min-width:236px;z-index:50;display:none;padding:8px;
+    background:#14130e;border:1px solid #2a2418;border-top:3px solid var(--mustard);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+  .acct.open .acct-menu{display:block}
+  .acct-head{display:flex;align-items:center;gap:11px;padding:6px 8px 12px;border-bottom:1px solid #221c11;margin-bottom:6px}
+  .acct-cs{font-family:"Archivo";font-weight:800;font-size:14px;color:var(--ink)}
+  .acct-role{font-size:10.5px;color:var(--mustard);letter-spacing:.08em;text-transform:uppercase;font-weight:800;margin-top:3px}
+  .acct-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;border:none;background:none;
+    font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink);padding:10px;border-radius:8px}
+  .acct-item:hover{background:rgba(255,255,255,.07)}
+  .acct-item .ai{width:18px;text-align:center;opacity:.85}
+  .acct-logout{color:#e0907f}
+  .acct[data-admin="false"] .acct-admin{display:none}
+  @media (max-width:560px){ .acct-name{display:none} }
+  .ttl{position:fixed;top:74px;left:0;right:0;text-align:center;z-index:4;pointer-events:none}
+  .ttl .pre{font-family:"JetBrains Mono";font-size:25px;letter-spacing:.3em;text-transform:uppercase;color:var(--mustard);margin:0 0 5px}
+  .ttl h1{font-family:"Archivo";font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:11px;margin:0}
+  #cv{position:fixed;inset:0;z-index:1;display:block}
+  .hint{position:fixed;bottom:16px;left:0;right:0;text-align:center;z-index:4;color:#8b8472;font-family:"JetBrains Mono";font-size:12px;letter-spacing:.05em}
+  /* 3D glass description panels — billboarded (face viewer) but move with the wheel; backdrop-blur glass */
+  .dpanel{pointer-events:none}
+  /* scales with the wheel (--ds) so the whole composition shrinks together on smaller screens */
+  .dcard{pointer-events:auto;width:268px;padding:17px 19px;border-radius:14px;transform:scale(var(--ds,1));transform-origin:center center;
+    background:linear-gradient(180deg, color-mix(in srgb,var(--c) 14%, rgba(10,8,6,0.26)), color-mix(in srgb,var(--c) 6%, rgba(10,8,6,0.3)));
+    border:1px solid color-mix(in srgb, var(--c) 38%, rgba(255,255,255,0.12));
+    -webkit-backdrop-filter:blur(13px) saturate(1.15); backdrop-filter:blur(13px) saturate(1.15);
+    box-shadow:0 14px 44px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1)}
+  .dpanel .dh{font-family:"Archivo";font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:18px;color:#fff;text-shadow:0 0 9px var(--c)}
+  .dpanel .dt{font-family:"Saira Condensed";font-size:14.5px;line-height:1.46;color:#ded7c8;margin-top:7px}
+  /* extra detail — collapsed until the panel or its wheel segment is hovered */
+  .dpanel .dmore{font-family:"Saira Condensed";font-size:13.5px;line-height:1.46;color:#cfc7b6;
+    max-height:0;opacity:0;overflow:hidden;margin-top:0;border-top:1px solid transparent;
+    transition:max-height .32s ease, opacity .26s ease, margin-top .32s ease, padding-top .32s ease, border-top-color .32s ease}
+  .dpanel.more .dmore{max-height:240px;opacity:1;margin-top:11px;padding-top:11px;
+    border-top-color:color-mix(in srgb, var(--c) 34%, rgba(255,255,255,0.1))}
+  .dpanel .opts{display:flex;flex-direction:column;gap:11px;margin-top:15px;perspective:640px}
+  /* "Bendy button" — soft clay/plastic pill that bends in 3D toward the pointer, with a specular highlight that tracks it */
+  .opt{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;position:relative;isolation:isolate;cursor:pointer;border:none;
+    font-family:"Archivo";font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:12.5px;color:#16130b;
+    padding:13px 16px;border-radius:13px;text-align:center;  /* flatter ends — soft rounded rect, not a full oval pill */
+    background:linear-gradient(180deg, color-mix(in srgb,var(--c) 82%,#fff 26%), var(--c) 56%, color-mix(in srgb,var(--c) 70%,#000 24%));
+    box-shadow:
+      inset 0 2px 1px rgba(255,255,255,.6),
+      inset 0 -8px 16px color-mix(in srgb,var(--c) 55%,#000),
+      0 12px 22px -7px rgba(0,0,0,.62),
+      0 4px 8px rgba(0,0,0,.4);
+    transform:rotateX(var(--rx)) rotateY(var(--ry));transform-style:preserve-3d;will-change:transform;
+    transition:transform .14s cubic-bezier(.22,.61,.36,1), box-shadow .16s ease, filter .16s ease}
+  /* moving highlight = the "soft skin" catching light where you point */
+  .opt::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:1;pointer-events:none;
+    background:radial-gradient(130px circle at var(--mx) var(--my), rgba(255,255,255,.6), rgba(255,255,255,0) 60%);
+    opacity:0;mix-blend-mode:soft-light;transition:opacity .16s ease}
+  .opt:hover::before{opacity:1}
+  .opt:hover{filter:brightness(1.05)}
+  .opt:active{transform:rotateX(var(--rx)) rotateY(var(--ry)) scale(.96);
+    box-shadow:inset 0 2px 1px rgba(255,255,255,.4), inset 0 10px 20px color-mix(in srgb,var(--c) 55%,#000), 0 5px 10px -5px rgba(0,0,0,.6)}
+  .opt.glow{filter:brightness(1.08);
+    box-shadow:inset 0 2px 1px rgba(255,255,255,.6), inset 0 -8px 16px color-mix(in srgb,var(--c) 55%,#000), 0 0 22px color-mix(in srgb,var(--c) 78%,transparent), 0 12px 22px -7px rgba(0,0,0,.62)}
+  #fallback{position:fixed;inset:0;display:none;place-items:center;color:#c8c1ad;font-family:"JetBrains Mono";text-align:center;padding:40px;z-index:6}
+  /* "Coming soon" rubber stamp over a not-yet-built module (wheel panel + stack card) */
+  .stamp{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%) rotate(-9deg);z-index:2;pointer-events:none;white-space:nowrap;
+    font-family:"Archivo";font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:15px;color:#ffd27a;
+    border:2.5px solid #ffd27a;border-radius:7px;padding:5px 13px;opacity:.9;background:rgba(16,12,7,.32);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  .comingsoon .opts, .comingsoon .mopts{opacity:.45;filter:saturate(.55)}
+  .comingsoon .opt{cursor:not-allowed}
+  /* mining-ship on/off switch — sits just below the header, top-right */
+  .shiptoggle{position:fixed;top:76px;left:24px;z-index:4;display:flex;align-items:center;gap:8px;
+    padding:6px 12px 6px 7px;border-radius:20px;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:800;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);
+    background:linear-gradient(180deg,#1c1b16,#14130e);border:1px solid color-mix(in srgb,var(--mustard) 32%,transparent);
+    box-shadow:0 6px 16px rgba(0,0,0,.45)}
+  .shiptoggle .st-track{width:28px;height:15px;border-radius:9px;background:#3a3424;position:relative;transition:background .2s}
+  .shiptoggle .st-knob{position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#8a8068;transition:left .2s, background .2s, box-shadow .2s}
+  .shiptoggle.on{color:var(--ink)}
+  .shiptoggle.on .st-track{background:color-mix(in srgb,var(--mustard) 55%,#2a2310)}
+  .shiptoggle.on .st-knob{left:15px;background:var(--mustard);box-shadow:0 0 8px var(--mustard)}
+
+  /* ── right edge: Friends/Comms tabs that hang off the side; tap to slide out a drawer (works on mobile too) ── */
+  .rdock{position:fixed;inset:0;z-index:40;pointer-events:none;font-family:var(--font)} /* full-screen layer; only the tabs + open drawer are interactive */
+  .rtabs{position:fixed;right:0;top:88px;display:flex;flex-direction:column;gap:8px;pointer-events:auto}
+  .rtab{position:relative;overflow:hidden;writing-mode:vertical-rl;cursor:pointer;color:#1a1305;text-align:center;
+    background:linear-gradient(90deg,#e6bb50,#D4A028 60%,#c8920f);border:1.5px solid #1a1305;border-right:none;border-radius:11px 0 0 11px;
+    padding:15px 8px;font-weight:900;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    box-shadow:-6px 8px 22px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.4)}
+  .rtab:hover{background:linear-gradient(90deg,#f0c860,#e0ad2e 60%,#cf9a14)}
+  .rtab.active{box-shadow:-6px 8px 22px rgba(0,0,0,.45), 0 0 20px color-mix(in srgb,var(--mustard) 60%,transparent), inset 0 1px 0 rgba(255,255,255,.4)}
+  .rtab .rt-badge{writing-mode:horizontal-tb;display:inline-block;margin-top:7px;background:#1a1305;color:#f3d089;border-radius:9px;padding:0 6px;font-size:10px;font-weight:800}
+  .rtab .rt-badge.alert{background:#7a2417;color:#ffd9c9}
+  /* shimmer sweep so the bright tabs always catch the eye */
+  .rtab::after{content:"";position:absolute;top:-20%;left:-65%;width:48%;height:150%;pointer-events:none;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-18deg);animation:rtabShine 3.4s ease-in-out infinite}
+  .rtab:nth-child(2)::after{animation-delay:.6s}
+  @keyframes rtabShine{0%{left:-65%}55%{left:150%}100%{left:150%}}
+  @media (prefers-reduced-motion:reduce){ .rtab::after{animation:none} }
+  /* the open panels stack on the right: Friends on top (grows + scrolls), Comms always keeps its room below */
+  .rstack{position:fixed;right:36px;top:78px;bottom:20px;width:280px;max-width:78vw;z-index:41;pointer-events:none;
+    display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .rpanel{pointer-events:auto;display:flex;flex-direction:column;min-height:0;overflow:hidden;
+    border:1px solid #2a2418;border-top:3px solid var(--mustard);border-radius:12px;
+    background:linear-gradient(180deg,rgba(20,19,16,.96),rgba(13,12,9,.97));box-shadow:0 22px 60px rgba(0,0,0,.6);
+    -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px)}
+  .rpanel[hidden]{display:none}
+  .rpanel:not([hidden]){animation:rpIn .26s ease}
+  @keyframes rpIn{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+  .rpanel[data-panel="friends"]{flex:1 1 auto;min-height:96px}   /* fills the space above Comms; scrolls when there are many */
+  .rpanel[data-panel="comms"]{flex:0 1 auto;max-height:46%}       /* bounded → always leaves room; Friends takes the rest */
+  .rpanel-head{flex:none;display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid #221c11}
+  .rp-title{font-weight:800;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink)}
+  .rp-count{flex:1;font-size:11px;color:var(--ink2);font-weight:700}
+  .rp-count.alert{color:#e9a88f}
+  .rp-close{background:none;border:1px solid #3a3424;color:var(--ink2);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:16px;line-height:1;flex:none}
+  .rp-close:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+  .rpanel-body{flex:1;min-height:0;overflow-y:auto;padding:6px}
+  .fr,.msg{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer}
+  .fr:hover,.msg:hover{background:rgba(255,255,255,.06)}
+  .fr-av{position:relative;width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;
+    font-family:"Archivo";font-weight:900;font-size:11px;color:#0e1116;background:linear-gradient(180deg,#9fb0c2,#5e6b7d)}
+  .fr-av .dot{position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-radius:50%;border:2px solid #14130e;background:#6b6555}
+  .fr-av .dot.online{background:#6fbf73}
+  .fr-av .dot.away{background:var(--mustard)}
+  .fr-info,.msg-info{display:flex;flex-direction:column;min-width:0;flex:1}
+  .fr-name{font-size:13px;font-weight:700;color:var(--ink)}
+  .fr-sub{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msg.unread .fr-av{box-shadow:0 0 0 2px var(--mustard)}
+  .msg-top{display:flex;justify-content:space-between;gap:8px;font-size:12.5px}
+  .msg-top b{color:var(--ink);font-weight:800}
+  .msg-time{color:var(--ink2);font-size:10.5px;flex:none}
+  .msg-snip{font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msg.unread .msg-snip{color:#cdc4b0}
+
+  /* ── fan-made badge floats on its own ABOVE a smaller disclaimer box (bottom-left) ── */
+  /* community box envelops the "Made by the Community" badge + the disclaimer in one panel */
+  .md-community{order:2;display:flex;flex-direction:column;gap:11px;align-items:flex-start;width:100%;
+    padding:15px 16px;border-radius:13px;
+    background:linear-gradient(180deg,rgba(20,16,9,.82),rgba(12,9,5,.86));
+    border:1px solid color-mix(in srgb,var(--mustard) 40%,transparent);
+    box-shadow:0 14px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+  .combadge-img{width:clamp(58px,4.6vw,74px);height:auto;opacity:.95;display:block}
+  .disclaimer{color:#9a9178;font-size:clamp(9px,.72vw,11px);line-height:1.5;font-family:var(--font)}
+  .disclaimer b{color:#c7bda1}
+
+  /* ── "Become a supporter" (bottom-right, mustard box) — bendy wobble + sheen on hover ── */
+  .md-support{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;position:relative;z-index:2;isolation:isolate;order:1;
+    display:flex;flex-direction:column;align-items:flex-start;gap:11px;text-align:left;
+    width:100%;padding:15px 17px;border-radius:13px;
+    background:linear-gradient(180deg,rgba(58,43,13,.86),rgba(36,27,9,.9));
+    border:1px solid color-mix(in srgb,var(--mustard) 70%,transparent);
+    box-shadow:0 14px 40px rgba(0,0,0,.55), 0 0 26px color-mix(in srgb,var(--mustard) 22%,transparent), inset 0 1px 0 rgba(255,255,255,.08);
+    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+    transform:perspective(760px) rotateX(var(--rx)) rotateY(var(--ry));transform-style:preserve-3d;will-change:transform;
+    transition:transform .16s cubic-bezier(.22,.61,.36,1), box-shadow .2s ease}
+  .md-support::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+    background:radial-gradient(220px circle at var(--mx) var(--my), rgba(255,238,196,.20), rgba(255,238,196,0) 60%);
+    opacity:0;mix-blend-mode:screen;transition:opacity .2s ease}
+  .md-support:hover::before{opacity:1}
+  .md-support-blurb,.md-support .b-patreon,.md-support .md-referral{position:relative;z-index:2} /* sit above the sheen */
+  /* Star Citizen referral chip + copy + info */
+  .md-referral{display:flex;flex-direction:column;gap:7px;align-items:flex-start;text-align:left;width:100%;margin-top:3px;
+    padding-top:11px;border-top:1px solid color-mix(in srgb,var(--mustard) 22%,transparent)}
+  .ref-row{display:flex;align-items:center;gap:7px}
+  .ref-code{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:13px;letter-spacing:.06em;color:var(--mustard);text-decoration:none;
+    background:rgba(212,160,40,.12);border:1px dashed color-mix(in srgb,var(--mustard) 55%,transparent);border-radius:6px;padding:5px 9px}
+  .ref-code:hover{background:rgba(212,160,40,.22);text-decoration:underline}
+  .ref-copy{cursor:pointer;width:28px;height:28px;flex:none;display:grid;place-items:center;font-size:13px;font-family:var(--font);
+    color:var(--ink2);background:rgba(255,255,255,.04);border:1px solid #3a3424;border-radius:6px}
+  .ref-copy:hover{background:rgba(255,255,255,.1);color:var(--ink)}
+  .ref-copy.copied{color:var(--mustard);border-color:var(--mustard)}
+  .ref-note{font-size:11.5px;line-height:1.45;color:var(--ink2);font-family:var(--font)}
+  .b-link{background:none;border:none;padding:0;cursor:pointer;color:var(--mustard);font-weight:800;font-family:inherit;font-size:inherit;text-decoration:underline}
+  /* referral modal */
+  #refOverlay .tmodal{width:min(540px,calc(100vw - 32px))}
+  .ref-list{list-style:none;margin:4px 0 22px;padding:0}
+  .ref-list li{position:relative;padding:9px 0 9px 26px;font-size:14px;line-height:1.5;color:var(--ink);border-top:1px solid #221c11}
+  .ref-list li:first-child{border-top:none}
+  .ref-list li:before{content:"\2605";position:absolute;left:0;top:9px;color:var(--ac)}
+  .ref-list b{color:#fff}
+  .ref-modal-code{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px;border-radius:10px;background:#150f08;border:1px solid #2a2418}
+  .ref-modal-code .rmc-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);font-weight:800}
+  .ref-readmore{color:var(--ac);text-decoration:none;font-weight:700}
+  .ref-readmore:hover{text-decoration:underline}
+  .md-support-blurb{color:#e7dcc2;font-size:clamp(11px,.9vw,13px);line-height:1.45;font-family:var(--font)}
+  .b-patreon{position:relative;overflow:hidden;display:inline-block;background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;
+    padding:10px 18px;border-radius:7px;font-weight:800;font-size:13px;border:none;cursor:pointer;font-family:var(--font);
+    box-shadow:0 3px 0 #7a5a12, inset 0 1px 0 rgba(255,255,255,.4)}
+  /* random glimmer sweep across the supporter button (triggered from JS at random intervals) */
+  .b-patreon::after{content:"";position:absolute;top:0;left:-60%;width:55%;height:100%;pointer-events:none;
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.6), transparent);transform:skewX(-18deg);opacity:0}
+  .b-patreon.glint::after{animation:bglint .85s ease}
+  @keyframes bglint{0%{left:-60%;opacity:0}12%{opacity:.85}100%{left:130%;opacity:0}}
+
+  /* ── supporter modal: shell + holographic reveal ── */
+  .overlay{position:fixed;inset:0;z-index:300;background:rgba(4,3,2,0);backdrop-filter:blur(0px);
+    display:none;align-items:center;justify-content:center;padding:4vh 16px;font-family:var(--font);color:var(--ink);
+    transition:background .35s ease, backdrop-filter .35s ease}
+  .overlay.visible{display:flex}
+  .overlay.open{background:rgba(4,3,2,.76);backdrop-filter:blur(5px)}
+  .tmodal{position:relative;width:min(960px,calc(100vw - 32px));min-width:0;max-height:92vh;overflow:auto;background:#0f0b06;
+    border:1px solid #2a2418;border-top:4px solid var(--ac);border-radius:16px;padding:clamp(18px,3vw,36px);
+    clip-path:inset(0 calc(50% - 1px) 0 calc(50% - 1px) round 2px);transform:translate(var(--dx,0),var(--dy,0)) scale(.98);opacity:0;
+    box-shadow:0 0 0 1px rgba(45,226,230,.9), 0 0 30px 4px rgba(45,226,230,.7);
+    transition:clip-path .45s cubic-bezier(.2,.9,.2,1), transform .45s cubic-bezier(.2,.9,.2,1), opacity .16s ease, box-shadow .6s ease}
+  .overlay.open .tmodal{clip-path:inset(0 0 0 0 round 16px);transform:translate(0,0) scale(1);opacity:1;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(212,160,40,.22);
+    transition:opacity .5s ease .5s, clip-path .55s cubic-bezier(.2,.9,.2,1) .5s, transform .55s cubic-bezier(.2,.9,.2,1) .5s, box-shadow .6s ease .5s}
+  .tmodal::after{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;mix-blend-mode:screen;opacity:0;
+    background:repeating-linear-gradient(0deg, rgba(45,226,230,.05) 0 2px, transparent 2px 5px);transition:opacity .8s ease}
+  .overlay.open .tmodal::after{opacity:.35;animation:holoflick 3s steps(60) infinite}
+  @keyframes holoflick{0%,97%,100%{opacity:.32}98%{opacity:.12}99%{opacity:.4}}
+  @media (prefers-reduced-motion:reduce){ .tmodal{clip-path:none;transform:none;transition:opacity .2s ease} .overlay.open .tmodal::after{animation:none} }
+  .tmhead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .tmhead .k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ac);font-weight:800}
+  .tmhead h3{font-size:clamp(22px,2.6vw,32px);font-weight:800;margin-top:5px}
+  .tclose{background:none;border:1px solid #3a3424;color:var(--ink2);width:40px;height:40px;border-radius:10px;font-size:19px;cursor:pointer;flex:none;line-height:1}
+  .tintro{color:var(--ink2);font-size:14px;line-height:1.6;max-width:66ch;margin:10px 0 26px}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+  .tier{position:relative;border:1px solid #2a2418;border-radius:13px;padding:24px 20px;background:#150f08;display:flex;flex-direction:column}
+  .tier.feat{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac), 0 0 38px rgba(212,160,40,.18)}
+  .ribbon{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--ac);color:#1a1305;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;white-space:nowrap}
+  .tier .tn{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);font-weight:800}
+  .tier .price{font-size:36px;font-weight:800;margin:8px 0 0;line-height:1}
+  .tier .price span{font-size:13px;color:var(--ink2);font-weight:600}
+  .tier .tdesc{font-size:13px;color:var(--ink2);font-style:italic;margin:6px 0 4px}
+  .tier ul{list-style:none;margin:16px 0 20px;flex:1;padding:0}
+  .tier li{font-size:13px;color:var(--ink);opacity:.86;line-height:1.45;padding:8px 0 8px 24px;position:relative;border-top:1px solid #221c11}
+  .tier li:first-child{border-top:none}
+  .tier li:before{content:"\2713";position:absolute;left:0;color:var(--ac);font-weight:800}
+  .soon{display:inline-block;vertical-align:middle;margin-left:4px;font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+    color:#cdbf9a;background:rgba(212,160,40,.14);border:1px solid color-mix(in srgb,var(--ac) 45%,transparent);border-radius:5px;padding:1px 6px;white-space:nowrap}
+  .tier .pick{padding:12px;border-radius:8px;font-weight:800;cursor:pointer;border:1.5px solid var(--ac);background:transparent;color:var(--ac);font-family:inherit;font-size:14px}
+  .tier.feat .pick{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;border:none;box-shadow:0 3px 0 #7a5a12}
+  .tnote{text-align:center;color:#8a8068;font-size:12px;margin-top:20px}
+  @media(max-width:760px){.tiers{grid-template-columns:1fr}}
+
+  /* ════════ SMALL-SCREEN STACKED MENU ════════
+     The wheel auto-shrinks to fit (see applyZoom), so it stays usable on laptops/1080p/1440p.
+     Only genuinely small screens (width<1000 OR height<640) — phones, small tablets, very short
+     windows — hide the wheel and show this responsive grid of module cards instead. */
+  #planet-css{display:none}                /* CSS planet backdrop, only used in stack mode (canvas is hidden there) */
+  .stack{display:none}                     /* hidden in wheel mode */
+  .stack{grid-template-columns:repeat(3,1fr);gap:16px;width:100%;max-width:1180px;margin:0 auto;padding:10px 18px 28px}
+  .mcard{position:relative;border-radius:15px;padding:18px 18px 20px;
+    background:linear-gradient(180deg, color-mix(in srgb,var(--c) 17%, rgba(12,10,7,.86)), rgba(10,8,5,.92));
+    border:1px solid color-mix(in srgb,var(--c) 48%, rgba(255,255,255,.08));
+    box-shadow:0 12px 32px rgba(0,0,0,.5), 0 0 22px color-mix(in srgb,var(--c) 16%,transparent), inset 0 1px 0 rgba(255,255,255,.07);
+    transition:transform .16s ease, box-shadow .2s ease, border-color .2s ease}
+  @media (hover:hover){
+    .mcard:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 78%, rgba(255,255,255,.14));
+      box-shadow:0 18px 42px rgba(0,0,0,.55), 0 0 34px color-mix(in srgb,var(--c) 34%,transparent), inset 0 1px 0 rgba(255,255,255,.1)}
+  }
+  /* footer dock: bottom-LEFT column (supporter on top, community/disclaimer below) — right side is the friends/comms dock */
+  .md-footer{position:fixed;left:24px;bottom:20px;z-index:2;display:flex;flex-direction:column;gap:13px;align-items:flex-start;width:336px;max-width:42vw}
+  .mcard h2{font-family:"Archivo";font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:19px;margin:0;color:#fff;
+    text-shadow:0 0 11px color-mix(in srgb,var(--c) 75%,transparent)}
+  .mcard h2{padding-right:26px} /* keep the name clear of the chevron */
+  .mcard .md{font-family:"Saira Condensed";font-size:14.5px;line-height:1.5;color:#ded7c8;margin:8px 0 11px}
+  /* chevron affordance — rotates when the card's detail is open */
+  .mcard .mchev{position:absolute;top:16px;right:16px;font-family:"Archivo";font-size:22px;line-height:1;opacity:.8;
+    color:color-mix(in srgb,var(--c) 80%,#fff);transition:transform .3s ease}
+  /* extra detail — collapsed until hover (desktop) or tap (touch toggles .more) */
+  .mcard .mmore{font-family:"Saira Condensed";font-size:13px;line-height:1.46;color:#b8b09c;
+    max-height:0;opacity:0;overflow:hidden;margin:0;padding-top:0;border-top:1px solid transparent;
+    transition:max-height .32s ease,opacity .26s ease,margin .32s ease,padding-top .32s ease,border-top-color .32s ease}
+  .mcard.more .mmore{max-height:340px;opacity:1;margin:0 0 14px;padding-top:11px;
+    border-top-color:color-mix(in srgb,var(--c) 30%,rgba(255,255,255,0.08))}
+  .mcard.more .mchev{transform:rotate(90deg)}
+  @media (hover:hover){
+    .mcard:hover .mmore{max-height:340px;opacity:1;margin:0 0 14px;padding-top:11px;
+      border-top-color:color-mix(in srgb,var(--c) 30%,rgba(255,255,255,0.08))}
+    .mcard:hover .mchev{transform:rotate(90deg)}
+  }
+  .mcard .mopts{display:flex;flex-direction:column;gap:10px}
+  .mcard .opt{width:100%}
+
+  @media (max-width:999px), (max-height:639px){
+    html{height:auto}
+    body{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;display:flex;flex-direction:column;padding-top:56px}
+    #cv,#labels,#fallback,.shiptoggle{display:none!important}   /* keep .rdock tabs + .hint version line on mobile */
+    #planet-css{display:block;position:fixed;inset:0;z-index:-1;pointer-events:none;
+      background:url("../public/brand/hub/planet-feathered.png") center bottom / 100% auto no-repeat}
+    .stack{display:grid;order:2}
+    .ttl{position:static;top:auto;order:1;padding:6px 16px 2px}
+    /* footer: supporter + disclaimer side by side (wraps to stacked on phones), like the rectangle sections */
+    .md-footer{position:static;left:auto;bottom:auto;display:flex;flex-direction:row;flex-wrap:wrap;gap:16px;align-items:flex-start;order:3;width:100%;max-width:1180px;margin:14px auto 18px;align-self:center;padding:0 2px}
+    .md-community,.md-support{position:relative;left:auto;right:auto;bottom:auto;max-width:none;width:auto;margin:0;flex:1 1 320px}
+    .md-support{order:1;align-items:flex-start;text-align:left;padding:13px 14px;gap:9px}
+    .md-support .md-support-blurb{font-size:12px}
+    .md-referral{margin-top:1px;padding-top:9px}
+    .md-community{order:2}
+    /* version line stays visible at the very bottom on mobile */
+    .hint{position:static;order:9;width:100%;padding:10px 16px 22px;font-size:11px;color:#8b8472}
+  }
+  @media (max-width:1040px){ .stack{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:680px){
+    .stack{grid-template-columns:1fr;padding:8px 14px 24px}
+    header{padding:10px 16px}
+    .ttl h1{font-size:11px}
+  }
+</style>
+</head>
+<body>
+  <div id="neb"></div>
+  <div id="planet-css"></div>
+  <header><img src="../public/brand/musterdeck-badge.png?v=3" alt=""><span class="wm">MusterDeck</span>
+    <!-- account control: shows who's logged in; click for Settings / Admin Console (admins) / Log out -->
+    <div class="acct" id="acct" data-admin="true">
+      <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="acct-av">NW</span><span class="acct-name">NovaWolf</span><span class="acct-caret">▾</span>
+      </button>
+      <div class="acct-menu" role="menu">
+        <div class="acct-head"><span class="acct-av lg">NW</span><div><div class="acct-cs">NovaWolf</div><div class="acct-role">Admiral · Admin</div></div></div>
+        <button class="acct-item" role="menuitem"><span class="ai">⚙</span>Settings</button>
+        <button class="acct-item acct-admin" role="menuitem"><span class="ai">🛡</span>Admin Console</button>
+        <button class="acct-item acct-logout" role="menuitem"><span class="ai">⏻</span>Log out</button>
+      </div>
+    </div>
+  </header>
+  <!-- mining-ship on/off (large screens only; hidden + auto-off on small screens) -->
+  <button id="shipToggle" class="shiptoggle on" aria-label="Toggle mining ship" aria-pressed="true"><span class="st-track"><span class="st-knob"></span></span><span>Miner</span></button>
+  <div class="ttl"><p class="pre">Operations Hub</p><h1>Select an Operation</h1></div>
+  <canvas id="cv"></canvas>
+  <!-- stacked card menu (small screens); cards are injected from the same module data -->
+  <section id="stack" class="stack" aria-label="Select an operation"></section>
+  <!-- VERSION LINE — fill in the placeholders below:
+         .ver-app = the MusterDeck app version.
+         .ver-sc  = the Star Citizen patch our pulled game data matches.
+       RULE: only bump .ver-sc AFTER a full data pull (ships, items, consumables, missions, etc.) is
+       complete and verified — it advertises that our data is current to that SC version. -->
+  <div class="hint"><span class="ver-app">MusterDeck v0.0.0</span> · <span class="ver-sc">Star Citizen data v0.0.0</span> · prototype</div>
+
+  <!-- footer blocks: fixed corners in wheel mode; side-by-side row then stacked in stack mode -->
+  <div class="md-footer">
+  <!-- fan-made community badge + disclaimer (bottom-left) -->
+  <div class="md-community">
+    <img class="combadge-img" src="../public/brand/made-by-community.webp" alt="Made by the Community">
+    <div class="disclaimer"><b>Unofficial Star Citizen fan site.</b> Not endorsed by or affiliated with the Cloud Imperium or Roberts Space Industries group of companies. Star Citizen&reg;, Squadron 42&reg;, Roberts Space Industries&reg;, and Cloud Imperium&reg; are registered trademarks of Cloud Imperium Rights LLC. All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.</div>
+  </div>
+
+  <!-- become a supporter (bottom-right) -->
+  <div class="md-support">
+    <div class="md-support-blurb">MusterDeck is free, built by Star Citizen players in their own time. Supporters keep it running.</div>
+    <button class="b-patreon">Become a supporter</button>
+    <!-- Star Citizen referral: code chip links to enlist; copy button copies the code; "Get more info" opens the referral modal -->
+    <div class="md-referral">
+      <div class="ref-row">
+        <a class="ref-code" href="https://www.robertsspaceindustries.com/enlist?referral=STAR-QHCT-M72L" target="_blank" rel="noopener">STAR-QHCT-M72L</a>
+        <button class="ref-copy" type="button" aria-label="Copy referral code" title="Copy code">⧉</button>
+      </div>
+      <div class="ref-note">Support us by using our referral code for your new account, or to refer a friend: our code grants a bonus 50,000 UEC. <button class="ref-info b-link" type="button">Get more info</button></div>
+    </div>
+  </div>
+  </div>
+
+  <!-- right edge: Friends/Comms tabs hang off the side; tap to slide out the drawer (also on mobile) -->
+  <aside class="rdock">
+    <div class="rtabs">
+      <button class="rtab" type="button" data-panel="friends">Friends<span class="rt-badge">2</span></button>
+      <button class="rtab" type="button" data-panel="comms">Comms<span class="rt-badge alert">2</span></button>
+    </div>
+    <div class="rstack">
+      <section class="rpanel" data-panel="friends" hidden>
+        <div class="rpanel-head"><span class="rp-title">Friends</span><span class="rp-count">8 / 128 online</span><button class="rp-close" type="button" data-close="friends" aria-label="Close friends">×</button></div>
+        <div class="rpanel-body">
+          <div class="fr"><span class="fr-av">RX<span class="dot online"></span></span><span class="fr-info"><span class="fr-name">Ridgeback</span><span class="fr-sub">In Fleet Command</span></span></div>
+          <div class="fr"><span class="fr-av">VS<span class="dot online"></span></span><span class="fr-info"><span class="fr-name">Vesper</span><span class="fr-sub">Browsing Rally Point</span></span></div>
+          <div class="fr"><span class="fr-av">KP<span class="dot online"></span></span><span class="fr-info"><span class="fr-name">Kestrel</span><span class="fr-sub">In S.P.O.I.L.S.</span></span></div>
+          <div class="fr"><span class="fr-av">BN<span class="dot online"></span></span><span class="fr-info"><span class="fr-name">Banshee</span><span class="fr-sub">In Fleet Command</span></span></div>
+          <div class="fr"><span class="fr-av">OX<span class="dot online"></span></span><span class="fr-info"><span class="fr-name">Oxide</span><span class="fr-sub">Online</span></span></div>
+          <div class="fr"><span class="fr-av">DA<span class="dot away"></span></span><span class="fr-info"><span class="fr-name">Dasht</span><span class="fr-sub">Away · 12m</span></span></div>
+          <div class="fr"><span class="fr-av">MV<span class="dot away"></span></span><span class="fr-info"><span class="fr-name">Maverick</span><span class="fr-sub">Away · 34m</span></span></div>
+          <div class="fr"><span class="fr-av">TG<span class="dot away"></span></span><span class="fr-info"><span class="fr-name">Tugboat</span><span class="fr-sub">Away · 1h</span></span></div>
+          <div class="fr"><span class="fr-av">CL<span class="dot"></span></span><span class="fr-info"><span class="fr-name">Coil</span><span class="fr-sub">Offline</span></span></div>
+          <div class="fr"><span class="fr-av">HZ<span class="dot"></span></span><span class="fr-info"><span class="fr-name">Hazard</span><span class="fr-sub">Offline · 2h</span></span></div>
+          <div class="fr"><span class="fr-av">PX<span class="dot"></span></span><span class="fr-info"><span class="fr-name">Phalanx</span><span class="fr-sub">Offline · 5h</span></span></div>
+          <div class="fr"><span class="fr-av">RN<span class="dot"></span></span><span class="fr-info"><span class="fr-name">Ronin</span><span class="fr-sub">Offline · 1d</span></span></div>
+          <div class="fr"><span class="fr-av">SY<span class="dot"></span></span><span class="fr-info"><span class="fr-name">Sortie</span><span class="fr-sub">Offline · 2d</span></span></div>
+          <div class="fr"><span class="fr-av">VL<span class="dot"></span></span><span class="fr-info"><span class="fr-name">Valkyrie</span><span class="fr-sub">Offline · 3d</span></span></div>
+        </div>
+      </section>
+      <section class="rpanel" data-panel="comms" hidden>
+        <div class="rpanel-head"><span class="rp-title">Comms</span><span class="rp-count alert">2 new</span><button class="rp-close" type="button" data-close="comms" aria-label="Close comms">×</button></div>
+        <div class="rpanel-body">
+          <div class="msg unread"><span class="fr-av">QM</span><span class="msg-info"><span class="msg-top"><b>Quartermaster</b><span class="msg-time">2m</span></span><span class="msg-snip">Payout split is ready for review.</span></span></div>
+          <div class="msg unread"><span class="fr-av">WC</span><span class="msg-info"><span class="msg-top"><b>Wing Cmdr</b><span class="msg-time">1h</span></span><span class="msg-snip">Muster at 2100 — don't be late.</span></span></div>
+          <div class="msg"><span class="fr-av">TD</span><span class="msg-info"><span class="msg-top"><b>Tildy</b><span class="msg-time">3h</span></span><span class="msg-snip">gg on that haul.</span></span></div>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- supporter modal -->
+  <div class="overlay" id="tierOverlay">
+    <div class="tmodal" role="dialog" aria-modal="true" aria-label="Become a supporter">
+      <div class="tmhead"><div><div class="k">Support MusterDeck</div><h3>Become a supporter</h3></div><button class="tclose" aria-label="Close">&times;</button></div>
+      <p class="tintro">MusterDeck is free to use and always will be. Supporters keep the servers running and unlock extra tools to run a sharper operation. Pick a level that fits. Change or cancel any time on Patreon.</p>
+      <div class="tiers">
+        <div class="tier"><div class="tn">Captain</div><div class="price">$1<span>/month</span></div><div class="tdesc">Back the project and wear it.</div><ul><li>Supporter badge on your callsign</li><li>Your name in the in-app credits</li><li>Supporter channel on the MusterDeck Discord</li></ul><button class="pick">Choose Captain</button></div>
+        <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs <span class="soon">Coming soon</span></li><li>Manage the org bank, even across multiple accounts <span class="soon">Coming soon</span></li><li>Save and reuse Fleet Command staffing templates <span class="soon">Coming soon</span></li></ul><button class="pick">Choose Admiral</button></div>
+        <div class="tier"><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground <span class="soon">Coming soon</span></li><li>Build brackets, manage signups, and run events <span class="soon">Coming soon</span></li><li>Publish standings and leaderboards to the public board <span class="soon">Coming soon</span></li></ul><button class="pick">Choose Praetorian</button></div>
+      </div>
+      <div class="tnote">Tiers, prices, and perks confirmed. Exact wording still open to polish. Payments handled by Patreon.</div>
+    </div>
+  </div>
+
+  <!-- Star Citizen referral info modal -->
+  <div class="overlay" id="refOverlay">
+    <div class="tmodal ref-modal" role="dialog" aria-modal="true" aria-label="Star Citizen referral bonus">
+      <div class="tmhead"><div><div class="k">Star Citizen</div><h3>Referral bonus</h3></div><button class="tclose" aria-label="Close">&times;</button></div>
+      <p class="tintro">New to Star Citizen? Enlist with our referral code and you get a head start, at no cost to you.</p>
+      <ul class="ref-list">
+        <li>You get an extra <b>50,000 UEC</b> of in-game currency to start with.</li>
+        <li>It helps keep us, the players building MusterDeck, motivated to keep improving the tool.</li>
+      </ul>
+      <div class="ref-modal-code">
+        <span class="rmc-label">Referral code</span>
+        <a class="ref-code" href="https://www.robertsspaceindustries.com/enlist?referral=STAR-QHCT-M72L" target="_blank" rel="noopener">STAR-QHCT-M72L</a>
+        <button class="ref-copy" type="button" aria-label="Copy referral code" title="Copy code">⧉</button>
+      </div>
+      <div class="tnote"><a class="ref-readmore" href="https://robertsspaceindustries.com/en/referral#df799b68" target="_blank" rel="noopener">Read more about referrals on RSI →</a></div>
+    </div>
+  </div>
+
+  <div id="fallback">WebGL not available here — open in a normal browser tab to see the rotating 3D hub.</div>
+  <div id="err" style="display:none;position:fixed;top:120px;left:0;right:0;z-index:99;margin:0 auto;max-width:760px;padding:16px 20px;background:#2a0f0c;border:1px solid #b43a2a;border-radius:8px;color:#ffd9d2;font-family:monospace;font-size:13px;white-space:pre-wrap;text-align:left"></div>
+
+<script id="supporter-js">
+  // Opens the supporter modal from any .b-patreon button, with a holographic
+  // cast-open reveal originating near the click point. Close via X, backdrop, or Esc.
+  (function(){
+    const ov=document.getElementById('tierOverlay'); if(!ov) return;
+    const m=ov.querySelector('.tmodal');
+    function open(e){
+      const cx=e&&e.clientX?e.clientX:innerWidth/2, cy=e&&e.clientY?e.clientY:innerHeight/2;
+      m.style.setProperty('--dx',((cx-innerWidth/2)*0.22).toFixed(0)+'px');
+      m.style.setProperty('--dy',((cy-innerHeight/2)*0.22).toFixed(0)+'px');
+      ov.classList.add('visible'); void ov.offsetWidth; ov.classList.add('open');
+    }
+    function close(){ ov.classList.remove('open'); setTimeout(()=>{ if(!ov.classList.contains('open')) ov.classList.remove('visible'); },560); }
+    document.querySelectorAll('.b-patreon').forEach(b=>b.addEventListener('click',open));
+    ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
+    ov.querySelectorAll('.tclose').forEach(b=>b.addEventListener('click',close));
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape' && ov.classList.contains('open')) close(); });
+
+    // bendy wobble + tracking sheen on the supporter island (same feel as the selector buttons)
+    document.querySelectorAll('.md-support').forEach(isl => {
+      isl.addEventListener('pointermove', ev => {
+        const r = isl.getBoundingClientRect(), px=(ev.clientX-r.left)/r.width, py=(ev.clientY-r.top)/r.height;
+        isl.style.setProperty('--ry', ((px-0.5)*12).toFixed(1)+'deg');
+        isl.style.setProperty('--rx', ((0.5-py)*9).toFixed(1)+'deg');
+        isl.style.setProperty('--mx', (px*100).toFixed(1)+'%');
+        isl.style.setProperty('--my', (py*100).toFixed(1)+'%');
+      });
+      isl.addEventListener('pointerleave', () => {
+        isl.style.setProperty('--rx','0deg'); isl.style.setProperty('--ry','0deg');
+        isl.style.setProperty('--mx','50%'); isl.style.setProperty('--my','50%');
+      });
+    });
+
+    // random glimmer sweep across the supporter button(s)
+    document.querySelectorAll('.b-patreon').forEach(btn => {
+      (function glint(){
+        const wait = 2400 + Math.random()*4600;
+        setTimeout(() => { btn.classList.add('glint'); setTimeout(() => btn.classList.remove('glint'), 880); glint(); }, wait);
+      })();
+    });
+  })();
+</script>
+<script id="account-js">
+  // Account menu: open/close the Settings / Admin Console / Log out dropdown.
+  // Set IS_ADMIN per the logged-in user — it shows/hides the Admin Console item.
+  (function(){
+    const acct=document.getElementById('acct'); if(!acct) return;
+    const btn=document.getElementById('acctBtn');
+    const IS_ADMIN=true;                               // ← wire to the real user's admin flag
+    acct.setAttribute('data-admin', String(IS_ADMIN));
+    function setOpen(o){ acct.classList.toggle('open', o); btn.setAttribute('aria-expanded', String(o)); }
+    btn.addEventListener('click', e=>{ e.stopPropagation(); setOpen(!acct.classList.contains('open')); });
+    document.addEventListener('click', e=>{ if(!acct.contains(e.target)) setOpen(false); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') setOpen(false); });
+  })();
+</script>
+<script id="referral-js">
+  // Star Citizen referral: copy-to-clipboard buttons + the "Get more info" modal.
+  (function(){
+    const CODE='STAR-QHCT-M72L';
+    document.querySelectorAll('.ref-copy').forEach(b=>{
+      b.addEventListener('click', async e=>{
+        e.preventDefault(); e.stopPropagation();
+        try{ await navigator.clipboard.writeText(CODE); }catch(_){ }
+        const prev=b.textContent; b.textContent='✓'; b.classList.add('copied');
+        setTimeout(()=>{ b.textContent=prev; b.classList.remove('copied'); }, 1200);
+      });
+    });
+    const ov=document.getElementById('refOverlay'); if(!ov) return;
+    const m=ov.querySelector('.tmodal');
+    function open(e){
+      const cx=e&&e.clientX?e.clientX:innerWidth/2, cy=e&&e.clientY?e.clientY:innerHeight/2;
+      m.style.setProperty('--dx',((cx-innerWidth/2)*0.22).toFixed(0)+'px');
+      m.style.setProperty('--dy',((cy-innerHeight/2)*0.22).toFixed(0)+'px');
+      ov.classList.add('visible'); void ov.offsetWidth; ov.classList.add('open');
+    }
+    function close(){ ov.classList.remove('open'); setTimeout(()=>{ if(!ov.classList.contains('open')) ov.classList.remove('visible'); },560); }
+    document.querySelectorAll('.ref-info').forEach(b=>b.addEventListener('click',open));
+    ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
+    ov.querySelectorAll('.tclose').forEach(b=>b.addEventListener('click',close));
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape' && ov.classList.contains('open')) close(); });
+  })();
+</script>
+<script id="dock-js">
+  // Right-edge tabs: each toggles its own panel independently. Both can be open at once; they stack
+  // (Friends on top, Comms below) — Friends fills the space and scrolls, Comms keeps its room below.
+  (function(){
+    const tabs=document.querySelectorAll('.rtab'), panels={};
+    document.querySelectorAll('.rpanel').forEach(p=>panels[p.dataset.panel]=p);
+    function set(name, open){
+      const p=panels[name]; if(!p) return;
+      p.hidden = !open;
+      tabs.forEach(t=>{ if(t.dataset.panel===name) t.classList.toggle('active', open); });
+    }
+    tabs.forEach(t=>t.addEventListener('click',()=> set(t.dataset.panel, panels[t.dataset.panel].hidden) ));
+    document.querySelectorAll('.rp-close').forEach(b=>b.addEventListener('click',()=> set(b.dataset.close, false) ));
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') Object.keys(panels).forEach(n=>set(n,false)); });
+  })();
+</script>
+<script>
+  function showErr(m){var d=document.getElementById('err');if(!d)return;d.style.display='block';d.textContent='ERROR: '+m;}
+  window.addEventListener('error', e => showErr((e.message||'script error')+'  ['+(e.filename||'')+':'+(e.lineno||'')+']'));
+  window.addEventListener('unhandledrejection', e => showErr('module/promise failed to load: '+(e.reason && (e.reason.message||e.reason)||'unknown')+' — check the browser console Network tab'));
+  setTimeout(function(){ if(!window.__three_loaded) showErr('Three.js did not load within 6s — esm.sh may be blocked on this network. Open the browser DevTools > Network and reload, or tell me the failing URL.'); }, 6000);
+</script>
+<script type="module">
+  import * as THREE from 'https://esm.sh/three@0.160.0';
+  import { EffectComposer } from 'https://esm.sh/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'https://esm.sh/three@0.160.0/examples/jsm/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'https://esm.sh/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+  import { CSS2DRenderer, CSS2DObject } from 'https://esm.sh/three@0.160.0/examples/jsm/renderers/CSS2DRenderer.js';
+  import { RoomEnvironment } from 'https://esm.sh/three@0.160.0/examples/jsm/environments/RoomEnvironment.js';
+  import { FontLoader } from 'https://esm.sh/three@0.160.0/examples/jsm/loaders/FontLoader.js';
+  import { TextGeometry } from 'https://esm.sh/three@0.160.0/examples/jsm/geometries/TextGeometry.js';
+  import { mergeGeometries } from 'https://esm.sh/three@0.160.0/examples/jsm/utils/BufferGeometryUtils.js';
+  import { SVGLoader } from 'https://esm.sh/three@0.160.0/examples/jsm/loaders/SVGLoader.js';
+  import { GLTFLoader } from 'https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+  import { MeshoptDecoder } from 'https://esm.sh/three@0.160.0/examples/jsm/libs/meshopt_decoder.module.js';
+  const FONT = await new FontLoader().loadAsync('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json');
+
+  // ── preload hub icons from Iconify (your locked source) for BOTH 3D styles ──
+  const svgLoader = new SVGLoader();
+  async function loadIconSVG(name){ try { return await svgLoader.loadAsync('https://api.iconify.design/'+name.replace(':','/')+'.svg'); } catch(e){ return null; } }
+  const ICON_SPECS = { // chosen from the 2D proof sheet: filled everywhere, Crafting keeps the Lucide hammer shape rendered solid
+    'Fleet Command':  [{n:'mdi:account-plus',mode:'fill'},           {n:'mdi:clipboard-list',mode:'fill'}],
+    'Proving Ground': [{n:'mdi:trophy',mode:'fill'},                 {n:'mdi:magnify',mode:'fill'}],
+    'S.P.O.I.L.S.':   [{n:'mdi:book-open-page-variant',mode:'fill'}, {n:'mdi:hand-coin',mode:'fill'}],
+    'Terminal':       [{n:'lucide:hammer',mode:'outline'},           {n:'mdi:fingerprint',mode:'fill'}],
+    'Rally Point':    [{n:'mdi:compass',mode:'fill'},                {n:'mdi:bullhorn',mode:'fill'}],
+  };
+  const SVGDATA = {};
+  await Promise.all([...new Set(Object.values(ICON_SPECS).flat().map(s=>s.n))].map(async n => { SVGDATA[n] = await loadIconSVG(n); }));
+  function iconMat(col, neon){ return new THREE.MeshPhysicalMaterial({ color:col.clone().multiplyScalar(neon?0.6:0.4),
+    metalness:0.15, roughness:0.28, clearcoat:1, clearcoatRoughness:0.18, emissive:col.clone().multiplyScalar(neon?0.45:0.13), envMapIntensity:0.55 }); }
+  // FILLED icon → solid extrude
+  function svgFilledIcon(data, col){ const g=new THREE.Group(); if(!data) return g; const mat=iconMat(col,false), geos=[];
+    data.paths.forEach(p => SVGLoader.createShapes(p).forEach(sh =>
+      geos.push(new THREE.ExtrudeGeometry(sh,{depth:4,bevelEnabled:true,bevelThickness:0.7,bevelSize:0.7,bevelSegments:2,curveSegments:14}))));
+    if(!geos.length) return g; const m=mergeGeometries(geos,false); m.computeBoundingBox(); const bb=m.boundingBox;
+    m.translate(-(bb.max.x+bb.min.x)/2,-(bb.max.y+bb.min.y)/2,0); m.scale(1,-1,1); /* SVG y-down */ g.add(new THREE.Mesh(m,mat)); return g; }
+  // OUTLINE icon → round 3D tubes following each stroke (neon-tube look)
+  function svgOutlineIcon(data, col){ const g=new THREE.Group(); if(!data) return g; const mat=iconMat(col,true);
+    data.paths.forEach(p => p.subPaths.forEach(sp => {
+      const pts=sp.getPoints(); if(pts.length<2) return;
+      const v=[new THREE.Vector3(pts[0].x,pts[0].y,0)];
+      for(let i=1;i<pts.length;i++){ const np=new THREE.Vector3(pts[i].x,pts[i].y,0); if(np.distanceTo(v[v.length-1])>1e-3) v.push(np); }
+      if(v.length<2) return; const closed=v[0].distanceTo(v[v.length-1])<0.6;
+      const curve=new THREE.CatmullRomCurve3(v, closed, 'centripetal', 0.5);
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(24,v.length*3), 1.05, 10, closed), mat)); }));
+    if(!g.children.length) return g;
+    const b=new THREE.Box3().setFromObject(g), c=b.getCenter(new THREE.Vector3());
+    g.children.forEach(ch => { ch.geometry.translate(-c.x,-c.y,-c.z); ch.geometry.scale(1,-1,1); }); /* bake center+flip into geometry */
+    return g; }
+  // build extruded text with extra letter-spacing (TextGeometry has none), centered
+  function spacedText(str, size, spacing){
+    const geos=[]; let x=0;
+    for(const ch of str){
+      if(ch===' '){ x += size*0.55; continue; }
+      const g=new TextGeometry(ch,{font:FONT,size,height:size*0.32,curveSegments:5,bevelEnabled:true,bevelThickness:size*0.07,bevelSize:size*0.05,bevelSegments:2});
+      g.computeBoundingBox(); const w=g.boundingBox.max.x-g.boundingBox.min.x;
+      g.translate(x-g.boundingBox.min.x,0,0); geos.push(g); x += w + spacing;
+    }
+    const m=mergeGeometries(geos); m.computeBoundingBox();
+    const bb=m.boundingBox; m.translate(-(bb.max.x+bb.min.x)/2,-(bb.max.y+bb.min.y)/2,0); return m;
+  }
+  window.__three_loaded = true;
+
+  const PILL = [ // clockwise from top
+    { name:'Fleet Command',  ds:'Command an Operation',         desc:'Plan and run operations end to end — build your roster, assign crews and ships to stations, track who is confirmed, and command from staging through launch.', col:0x7FA356,
+      more:'Fleet Command is the shared operations console for orgs that run real operations — one source of truth for ships, crews, and roles, instead of a spreadsheet only one person keeps current.' },
+    { name:'S.P.O.I.L.S.',   ds:'Settle Up After Action',       desc:'Settle up after the action — log hauls and earnings, review crew claims, approve payout splits, and distribute shares fairly.', col:0xC2473A,
+      more:'S.P.O.I.L.S. stands for Settlement, Payouts, Operations, Inventory, Loot, and Shares. It is the ledger that ends payout arguments: a clear record of what was earned, who gets which share, and what the org bank holds.' },
+    { name:'Terminal',       ds:'Tools and Other Applications', desc:'Your org toolbox — utilities, calculators, reference data, and small applications in one place to support every operation.', col:0xA66BFF,
+      more:'Terminal is your org’s toolbox — the utilities, calculators, and reference data that support every operation, from crafting helpers to your signature ident, all in one place.' },
+    { name:'Proving Ground', ds:'Run a Tournament',             desc:'Host competitive events — open signups, seed and manage brackets, report match scores, and publish live standings and leaderboards.', col:0x3DA3E0, soon:true,
+      more:'Proving Ground runs competitive Star Citizen events end to end. Organizers get real tournament tooling; teams and racers get a clean place to sign up, compete, and track standings.' },
+    { name:'Rally Point',    ds:'Find or Post an Activity',      desc:'Find your next operation or crew — browse open listings by activity and role, post your own call to muster, and offer your ship or seat.', col:0xC1632E,
+      more:'Rally Point is where Star Citizen crews find each other — it replaces the lost-in-the-scroll Discord callout with a real board: structured posts, filters that matter, and a clean way to apply.' },
+  ];
+
+  // option labels (short on the glass / full in the panel + the stacked cards) — single source of truth
+  const OPTIONS = {
+    'Fleet Command':  [{s:'Join',   f:'Join a Fleet Operation'}, {s:'Build', f:'Build a Fleet Operation'}],
+    'Proving Ground': [{s:'Set Up', f:'Set Up a Tournament'}, {s:'Browse', f:'Browse Tournaments'}],
+    'S.P.O.I.L.S.':   [{s:'Ledger', f:'Build a Settlement Ledger'}, {s:'Claim', f:'Claim with a Code'}],
+    'Terminal':       [{s:'Crafting', f:'Crafting'}, {s:'Ident', f:'Signature Ident'}],
+    'Rally Point':    [{s:'Find',   f:'Find an Activity'}, {s:'Post', f:'Post an Activity'}],
+  };
+
+  // ── small-screen stacked card menu (built from the same PILL + OPTIONS data; shown via CSS below the wheel breakpoint) ──
+  const stackEl = document.getElementById('stack');
+  if (stackEl) {
+    PILL.forEach(p => {
+      const opts = OPTIONS[p.name] || [{f:p.ds}];
+      const hex = '#'+p.col.toString(16).padStart(6,'0');
+      const card = document.createElement('article');
+      card.className = 'mcard' + (p.soon ? ' comingsoon' : ''); card.style.setProperty('--c', hex);
+      card.innerHTML = '<h2>'+p.name+'</h2>'+(p.more?'<span class="mchev" aria-hidden="true">›</span>':'')+
+        '<p class="md">'+p.desc+'</p>'+
+        (p.more ? '<p class="mmore">'+p.more+'</p>' : '')+
+        '<div class="mopts">'+opts.map(o => '<button class="opt">'+o.f+'</button>').join('')+'</div>'+
+        (p.soon ? '<span class="stamp">Coming soon</span>' : '');
+      if (p.more) card.addEventListener('click', e => { if (e.target.closest('.opt')) return; card.classList.toggle('more'); }); // tap to expand on touch
+      stackEl.appendChild(card);
+    });
+  }
+
+  // The wheel renders whenever it can usefully fit (it auto-shrinks below). Only genuinely small
+  // screens (phones / small tablets / very short windows) snap to the stacked cards.
+  const WHEEL_MQ = matchMedia('(min-width:1000px) and (min-height:640px)');
+  const WHEEL_MODE = WHEEL_MQ.matches;
+  WHEEL_MQ.addEventListener('change', () => location.reload()); // swap layouts cleanly when crossing the breakpoint
+
+  const cv = document.getElementById('cv');
+  let renderer;
+  if (WHEEL_MODE) {
+    try { renderer = new THREE.WebGLRenderer({ canvas: cv, antialias:true, alpha:true }); }
+    catch(e){ document.getElementById('fallback').style.display='grid'; }
+  }
+  if (renderer) {
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setClearColor(0x000000, 0); // transparent → the CSS nebula shows through
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.95;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(34, innerWidth/innerHeight, 0.1, 100);
+    camera.position.set(0, 0.4, 12.0); camera.lookAt(0,-0.35,0); // further back = smaller ring on screen
+
+    // environment so the glass has something to reflect/refract (reads as glass, not flat)
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+    const key = new THREE.PointLight(0xfff2d8, 0.14); key.position.set(0,6,6); scene.add(key); // low spec = less wash-out
+
+    // static wheel that tilts toward the mouse (no auto-spin)
+    const BASE_RX = -0.12; let tgtRX = BASE_RX, tgtRY = 0;
+    const tilt = new THREE.Group(); tilt.rotation.x = BASE_RX; tilt.position.y = -0.5; scene.add(tilt); // lowered so it clears the title
+    const spinner = new THREE.Group(); tilt.add(spinner);
+
+    // Background lives IN the scene so the glass disc refracts it. Both planes are sized in layoutBg()
+    // to FULLY COVER the viewport (no edge seams / "stepping"), and the planet is pushed down — more on
+    // wider screens — so its squared image edge and where the limb meets the frame are never on-screen.
+    let nebMesh=null, planetMesh=null;
+    const NEB_ASPECT = 3000/2417, PLANET_ASPECT = 2560/1440;
+    new THREE.TextureLoader().load('../public/brand/hub/nebula.jpg', tex => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      nebMesh = new THREE.Mesh(new THREE.PlaneGeometry(1,1), new THREE.MeshBasicMaterial({ map:tex, depthWrite:false }));
+      nebMesh.renderOrder = -30; nebMesh.position.z = -10; scene.add(nebMesh); layoutBg();
+    });
+    new THREE.TextureLoader().load('../public/brand/hub/planet-feathered.png', tex => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      planetMesh = new THREE.Mesh(new THREE.PlaneGeometry(1,1), new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false }));
+      planetMesh.renderOrder = -29; planetMesh.position.z = -9; scene.add(planetMesh); layoutBg();
+    });
+    // cover-fit the bg planes to the viewport (kills seams) + drop the planet lower as the view widens
+    function layoutBg(){
+      const aspect = innerWidth/innerHeight, tan = Math.tan(34*Math.PI/360), MARGIN = 1.05;
+      const cover = (mesh, zp, imgAspect) => {
+        const d = camera.position.z - zp, vh = 2*d*tan, vw = vh*aspect;
+        const w = Math.max(vw, vh*imgAspect)*MARGIN, h = (w/MARGIN)/imgAspect*MARGIN;
+        mesh.scale.set(w, h, 1);
+        const viewCY = camera.position.y + (-0.35 - camera.position.y)*(camera.position.z - zp)/camera.position.z;
+        return { vh, w, h, viewCY };
+      };
+      if (nebMesh){ const m = cover(nebMesh, -10, NEB_ASPECT); nebMesh.position.y = m.viewCY; }
+      if (planetMesh){
+        const m = cover(planetMesh, -9, PLANET_ASPECT);
+        const L = Math.min(0.92, 0.72 + 0.14*Math.max(0, aspect - 1.78)); // limb screen-fraction: 72% at 16:9, lower as it widens
+        planetMesh.position.y = m.viewCY + (0.5 - L)*m.vh + 0.12*m.h;      // 0.12*h ≈ limb offset (~62% down the texture)
+      }
+    }
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(innerWidth, innerHeight);
+    labelRenderer.domElement.style.cssText = 'position:fixed;inset:0;z-index:3;pointer-events:none';
+    labelRenderer.domElement.id = 'labels';
+    document.body.appendChild(labelRenderer.domElement);
+
+    const R1 = 0.66, R2 = 1.5, GAP = 7, SPAN = 72 - GAP, DEPTH = 0.28, DEG = Math.PI/180; // button ring
+    const segs = [];
+    const panels = [], hoveredPanels = new Set(); // description panels + which are mouse-hovered (for the detail reveal)
+    // frosted-white text texture for the NAME etched into the glass
+    function textTexture(text, alpha=0.82){
+      const f='800 56px Archivo, Arial, sans-serif';
+      const meas=document.createElement('canvas').getContext('2d'); meas.font=f;
+      const w=Math.ceil(meas.measureText(text).width)+44, h=82;
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      const x=c.getContext('2d'); x.font=f; x.textAlign='center'; x.textBaseline='middle';
+      x.fillStyle='rgba(255,255,255,'+alpha+')'; x.fillText(text, w/2, h/2);
+      const t=new THREE.CanvasTexture(c); t.anisotropy=8; return {tex:t,w,h};
+    }
+    // even, constant-width gaps: offset each side edge inward by a fixed perpendicular distance
+    // clean 4-sided wedge: two radial sides + outer/inner arcs (all points meet exactly → no spurs/T-shapes)
+    function wedgeArc(rIn, rOut, cDeg, halfDeg){
+      const a0=(cDeg-halfDeg)*DEG, a1=(cDeg+halfDeg)*DEG, s=new THREE.Shape();
+      s.moveTo(rIn*Math.cos(a0), rIn*Math.sin(a0));
+      s.lineTo(rOut*Math.cos(a0), rOut*Math.sin(a0));
+      s.absarc(0,0,rOut,a0,a1,false);
+      s.lineTo(rIn*Math.cos(a1), rIn*Math.sin(a1));
+      s.absarc(0,0,rIn,a1,a0,true);
+      s.closePath(); return s;
+    }
+    const wedgeEven = (rIn,rOut,c) => wedgeArc(rIn,rOut,c,36);
+    const INS_D=0.12, INS_Z=0.05, USABLE_HALF=29;
+    let wheelHover=null, panelHover=null, pressedObj=null; // shared hover state (wheel <-> panel buttons)
+    // soft radial glow texture (white centre → transparent edge) used behind every pane
+    const GLOWTEX = (function(){ const cv=document.createElement('canvas'); cv.width=cv.height=256; const x=cv.getContext('2d');
+      const g=x.createRadialGradient(128,128,0,128,128,128); g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(0.45,'rgba(255,255,255,0.5)'); g.addColorStop(1,'rgba(255,255,255,0)');
+      x.fillStyle=g; x.fillRect(0,0,256,256); const t=new THREE.CanvasTexture(cv); return t; })();
+
+    PILL.forEach((p, i) => {
+      const c = 54 - i*72, lc=c*DEG, col=new THREE.Color(p.col); // rotated: Rally|Fleet gap at top, Terminal at bottom
+      const grp = new THREE.Group(); spinner.add(grp);
+
+      // (white shell removed — it read as frosting, hid the labels, and made the edge slivers)
+
+      // OPTION buttons — 10 evenly-spaced colour-glass segments, EQUAL gaps everywhere
+      const opts = OPTIONS[p.name] || [{s:p.ds, f:p.desc}];
+      const N = opts.length, rIn = R1+0.14, rOut = R2-0.14, rm = (rIn+rOut)/2;
+      const GAP = 8, slot = 72 / N;                 // pillar spans 72°, split into N; uniform GAP between every segment
+      const pillarMeshes = [];
+      opts.forEach((opt, k) => {
+        const oc = c - 36 + slot*(k+0.5), oHalf = slot/2 - GAP/2, lcc = oc*DEG;
+
+        // soft, prevalent glow BEHIND the pane — radial-gradient sprite (no hard edges/corners)
+        const gw = rm*(oHalf*2)*DEG*1.8, gh = (rOut-rIn)*1.6;
+        const glowMat = new THREE.MeshBasicMaterial({ color:col.clone(), map:GLOWTEX, transparent:true, opacity:0.7, blending:THREE.AdditiveBlending, depthWrite:false, depthTest:false });
+        const glowMesh = new THREE.Mesh(new THREE.PlaneGeometry(gw, gh), glowMat);
+        glowMesh.position.set(rm*Math.cos(lcc), rm*Math.sin(lcc), INS_Z - 0.06); glowMesh.renderOrder = -2; grp.add(glowMesh);
+
+        // colour glass insert — 50% TRANSLUCENT tinted glass (like the clear cover, but tinted)
+        const insGeo = new THREE.ExtrudeGeometry(wedgeArc(rIn, rOut, oc, oHalf),
+          { depth:INS_D, bevelEnabled:false, curveSegments:90 }); // no bevel — bevel miter spiked at the line↔arc corners (the purple IDENT spur)
+        const insMat = new THREE.MeshPhysicalMaterial({ color:col.clone(), metalness:0, roughness:0.1, ior:1.45,
+          transparent:true, opacity:0.5, clearcoat:1, clearcoatRoughness:0.08, emissive:col.clone(), emissiveIntensity:0.22, envMapIntensity:0.4, depthWrite:false });
+        const insMesh = new THREE.Mesh(insGeo, insMat); insMesh.position.z = INS_Z; insMesh.renderOrder = 0; grp.add(insMesh);
+
+        // ICON — extruded SVG icon (from your Iconify library) sitting on the tile, replacing the text label
+        const spec = (ICON_SPECS[p.name] || [])[k] || {n:'mdi:circle',mode:'fill'};
+        const ic = spec.mode==='outline' ? svgOutlineIcon(SVGDATA[spec.n], col) : svgFilledIcon(SVGDATA[spec.n], col);
+        if(!ic.children.length) ic.add(new THREE.Mesh(new THREE.BoxGeometry(8,8,4), iconMat(col,false))); // fallback if an icon failed to load
+        const ibox = new THREE.Box3().setFromObject(ic), isz = ibox.getSize(new THREE.Vector3()), ictr = ibox.getCenter(new THREE.Vector3());
+        ic.children.forEach(ch => ch.position.sub(ictr));        // centre the icon on the origin
+        const iScale = 0.40 / Math.max(isz.x, isz.y, 0.001);     // normalise every icon to the same on-glass size
+        const iZ = INS_Z + INS_D + 0.02;
+        ic.position.set(rm*Math.cos(lcc), rm*Math.sin(lcc), iZ); ic.scale.setScalar(iScale); ic.renderOrder = 1; grp.add(ic);
+
+        insMesh.userData = { insMat, glowMat, glowMesh, label:ic, labelScale:iScale, labelBaseZ:iZ, lx:rm*Math.cos(lcc), ly:rm*Math.sin(lcc),
+          glowCur:0, hovCur:0, btn:null, baseEmis:0.45, hiEmis:1.0, pressEmis:1.3, baseZ:INS_Z, pressCur:0, pressTarget:0 };
+        segs.push(insMesh); pillarMeshes.push(insMesh);
+      });
+
+      // 3D GLASS description panel — billboarded (faces viewer) but lives in the wheel group → moves/tilts with it
+      const a = c*DEG, rp = R2 + 0.95;
+      const d = document.createElement('div'); d.className='dpanel'; d.style.setProperty('--c', '#'+p.col.toString(16).padStart(6,'0'));
+      const obtns = opts.map((o,k) => `<button class="opt" data-k="${k}">${o.f}</button>`).join('');
+      const moreHtml = p.more ? `<div class="dmore">${p.more}</div>` : '';
+      const stamp = p.soon ? '<span class="stamp">Coming soon</span>' : '';
+      d.innerHTML = `<div class="dcard${p.soon?' comingsoon':''}"><div class="dh">${p.name}</div><div class="dt">${p.desc}</div>${moreHtml}<div class="opts">${obtns}</div>${stamp}</div>`;
+      const o = new CSS2DObject(d); o.position.set(rp*Math.cos(a), rp*Math.sin(a), 0.4); grp.add(o);
+      panels.push(d);                                            // reveal the .dmore detail on hover (panel or its wheel segment)
+      const cardEl = d.querySelector('.dcard');
+      cardEl.addEventListener('mouseenter', () => hoveredPanels.add(d));
+      cardEl.addEventListener('mouseleave', () => hoveredPanels.delete(d));
+      // link each panel button to its wheel section (hover either → both glow)
+      d.querySelectorAll('.opt').forEach((btn) => {
+        const ins = pillarMeshes[+btn.dataset.k]; if(!ins) return;
+        ins.userData.btn = btn; ins.userData.panel = d;
+        btn.addEventListener('mouseenter', () => { panelHover = ins; });
+        btn.addEventListener('mouseleave', () => { if(panelHover===ins) panelHover = null;
+          btn.style.setProperty('--rx','0deg'); btn.style.setProperty('--ry','0deg'); btn.style.setProperty('--mx','50%'); btn.style.setProperty('--my','50%'); });
+        btn.addEventListener('pointermove', ev => {                  // bend toward the pointer + move the highlight
+          const r = btn.getBoundingClientRect(), px=(ev.clientX-r.left)/r.width, py=(ev.clientY-r.top)/r.height;
+          btn.style.setProperty('--ry', ((px-0.5)* 18).toFixed(1)+'deg');
+          btn.style.setProperty('--rx', ((0.5-py)* 13).toFixed(1)+'deg');
+          btn.style.setProperty('--mx', (px*100).toFixed(1)+'%');
+          btn.style.setProperty('--my', (py*100).toFixed(1)+'%');
+        });
+      });
+    });
+
+    // ROCK DISC BEHIND the buttons — the asteroid the colour-glass tiles sit on (replaces the glass disc).
+    // Flat, unlit (texture is pre-shaded); transparent outside the rock so the starfield shows around it.
+    let rockMesh = null;
+    {
+      const rockTex = new THREE.TextureLoader().load('../public/brand/hub/rock-disc.png', t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; });
+      rockMesh = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 4.6),
+        new THREE.MeshBasicMaterial({ map:rockTex, transparent:true, alphaTest:0.5, depthWrite:true })); // writes depth (alpha-clipped) so the golem is occluded when it flies behind
+      rockMesh.position.z = -0.1; rockMesh.renderOrder = -5; spinner.add(rockMesh); // behind the pane glow (-2) and buttons, in front of the background
+    }
+
+    // CENTER CORE — holographic mustard core with the MusterDeck mark (fills the empty middle; tilts with the wheel)
+    let coreRim=null, coreGlow=null, coreBadge=null;
+    {
+      const MUST = new THREE.Color(0xD4A028);
+      // dark glass core disc
+      const core = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,0.12,72),
+        new THREE.MeshPhysicalMaterial({ color:0x140f08, metalness:0.25, roughness:0.22, clearcoat:1, clearcoatRoughness:0.15,
+          transparent:true, opacity:0.94, emissive:MUST.clone().multiplyScalar(0.22), envMapIntensity:0.4 }));
+      core.rotation.x = Math.PI/2; core.position.z = 0.07; core.renderOrder = -1; spinner.add(core);
+      // glowing mustard rim
+      coreRim = new THREE.Mesh(new THREE.TorusGeometry(0.515,0.02,20,90),
+        new THREE.MeshBasicMaterial({ color:MUST, transparent:true, opacity:0.9 }));
+      coreRim.position.z = 0.135; spinner.add(coreRim);
+      // soft mustard glow pooling under the core
+      coreGlow = new THREE.Mesh(new THREE.PlaneGeometry(1.7,1.7),
+        new THREE.MeshBasicMaterial({ color:MUST, map:GLOWTEX, transparent:true, opacity:0.32, blending:THREE.AdditiveBlending, depthWrite:false, depthTest:false }));
+      coreGlow.position.z = 0.02; coreGlow.renderOrder = -3; spinner.add(coreGlow);
+      // MusterDeck mark, etched on the core face (sits on the tilted plane → reads as a holo projection)
+      new THREE.TextureLoader().load('../public/brand/musterdeck-badge.png?v=3', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+        coreBadge = new THREE.Mesh(new THREE.PlaneGeometry(0.64,0.64),
+          new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false }));
+        coreBadge.position.z = 0.15; coreBadge.renderOrder = 2; spinner.add(coreBadge);
+      });
+    }
+    let tms = 0; // clock for the gentle holo pulse
+
+    // direct transparent render (no bloom compositor — it forced an opaque black frame that hid the nebula)
+
+    const ray = new THREE.Raycaster(); const ptr = new THREE.Vector2();
+    function pick(e){ ptr.x=(e.clientX/innerWidth)*2-1; ptr.y=-(e.clientY/innerHeight)*2+1; ray.setFromCamera(ptr,camera); return ray.intersectObjects(segs)[0]; }
+    addEventListener('pointermove', e => {
+      const mx=(e.clientX/innerWidth)*2-1, my=(e.clientY/innerHeight)*2-1;
+      tgtRY = -mx * 0.38; tgtRX = BASE_RX - my * 0.30;   // whole wheel leans TOWARD the cursor (both axes)
+      const hit = pick(e);
+      wheelHover = hit ? hit.object : null;
+      document.body.style.cursor = (hit || wheelHover) ? 'pointer' : 'default';
+    });
+    addEventListener('pointerdown', e => { const hit=pick(e); if(hit){ pressedObj=hit.object; pressedObj.userData.pressTarget=1; } });
+    addEventListener('pointerup', () => { if(pressedObj){ pressedObj.userData.pressTarget=0; pressedObj=null; } });
+
+    // shrink the whole composition (3D wheel via tilt.scale + the CSS panel cards via --ds) to fit
+    // smaller viewports, so the wheel scales down gracefully before we ever fall back to the stack
+    function applyZoom(){
+      const k = Math.max(0.55, Math.min(1, Math.min(innerWidth/1680, innerHeight/1150)));
+      tilt.scale.setScalar(k); document.documentElement.style.setProperty('--ds', k);
+    }
+    function resize(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth,innerHeight); labelRenderer.setSize(innerWidth,innerHeight); layoutBg(); applyZoom(); }
+    addEventListener('resize', resize); resize();
+
+    // ══ GOLEM MINING SHIP (large screens only) ══
+    // Eased slow cruise along a sphere AROUND the rock → park on the front face → laser the rim → repeat.
+    // The sphere path keeps it either in front of everything or behind the rock — never wedged between the
+    // buttons and the rock. ~1 in 4 trips loops behind (occluded). Always noses at the rock. Grab & drag it;
+    // on release it flies back and resumes mining.
+    // The rock lives in the (scaled + tilted + y-offset) spinner, so the ship tracks its LIVE world centre,
+    // scale, and tilt — orbit radius, ship size, and the laser endpoint all follow it.
+    const ROCK_LOCAL = new THREE.Vector3(0, 0, -0.1), ROCK_VR = 1.6, SPH = 1.85; // rock centre (spinner-local) · visible rock radius · orbit radius (× wheel scale)
+    let golem = null, gstate = 'travel', mineT = 0, behind = false, dragging = false;
+    let tweenT = 0, tweenDur = 240, startRad = SPH, kScale = 1;
+    const golemPivot = new THREE.Group(); scene.add(golemPivot);
+    const gpos = new THREE.Vector3(0, 0.5, SPH), startDir = new THREE.Vector3(0,0,1), targetDir = new THREE.Vector3(0,0,1), rockW = new THREE.Vector3();
+    const noseLocal = new THREE.Vector3(0, 0.18, 0.28);            // top-front laser origin (refined from the model bbox on load)
+    const NOSE_FIX = new THREE.Euler(0, Math.PI/2, 0);             // model nose is its -X end → rotate so the nose points +Z; laser then leaves from the nose
+    const ease = t => 0.5 - 0.5*Math.cos(Math.PI*t);              // ease-in-out sine — gentle accel, low peak speed
+    const laser = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.004, 1, 8),
+      new THREE.MeshBasicMaterial({ color:0xff6a3a, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, depthTest:false }));
+    laser.visible = false; laser.renderOrder = 3; scene.add(laser);
+    const spark = new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.5),
+      new THREE.MeshBasicMaterial({ color:0xffd27a, map:GLOWTEX, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, depthTest:false }));
+    spark.renderOrder = 3; scene.add(spark);
+    const _NZ = new THREE.Vector3(0,0,1), _UP = new THREE.Vector3(0,1,0), _t = new THREE.Vector3(), _d = new THREE.Vector3(),
+          _nose = new THREE.Vector3(), _dvec = new THREE.Vector2(), _dplane = new THREE.Plane(), _dhit = new THREE.Vector3(),
+          _lookM = new THREE.Matrix4(), _q = new THREE.Quaternion(), _fwd = new THREE.Vector3();
+    const GSPEED = 0.0072;                                         // constant slow cruise speed (world units / frame)
+    function rockCenter(){ rockW.copy(ROCK_LOCAL); spinner.localToWorld(rockW); return rockW; } // live world centre (incl. y-offset, tilt, scale)
+    function faceToward(point, amt){                               // smoothly slerp so the ship's +Z (nose) faces point — no snapping
+      _lookM.lookAt(point, gpos, _UP); _q.setFromRotationMatrix(_lookM); golemPivot.quaternion.slerp(_q, amt);
+    }
+    function travelTo(){                                           // tween from the current position to targetDir on the sphere
+      rockCenter(); const k = tilt.scale.x || 1;
+      startDir.copy(gpos).sub(rockW); startRad = Math.max(0.01, startDir.length()); startDir.normalize();
+      const ang = Math.acos(THREE.MathUtils.clamp(startDir.dot(targetDir), -1, 1));
+      tweenDur = Math.max(150, (SPH*k*ang)/GSPEED); tweenT = 0; gstate = 'travel'; // duration ∝ arc length → same slow speed at any distance
+    }
+    function pickTarget(){
+      behind = Math.random() < 0.25;
+      const az = Math.random()*Math.PI*2, zc = behind ? -(0.55 + Math.random()*0.3) : (0.35 + Math.random()*0.32);
+      const s = Math.sqrt(1 - zc*zc); targetDir.set(Math.cos(az)*s, Math.sin(az)*s, zc); travelTo();
+    }
+    function aimLaser(){
+      golemPivot.localToWorld(_nose.copy(noseLocal));              // start at the ship's nose
+      // aim a rim point on the rock (ship's radial direction), then raycast so it lands exactly on the scaled/tilted rock
+      _d.set(gpos.x - rockW.x, gpos.y - rockW.y, 0); if (_d.lengthSq() < 1e-6) _d.set(1,0,0); _d.normalize();
+      _t.copy(rockW).addScaledVector(_d, 0.6*ROCK_VR*kScale);
+      _d.copy(_t).sub(_nose).normalize(); ray.set(_nose, _d);
+      const hit = rockMesh ? ray.intersectObject(rockMesh, true)[0] : null; if (hit) _t.copy(hit.point);
+      _d.copy(_t).sub(_nose); const len = _d.length();
+      laser.position.copy(_nose).addScaledVector(_d, 0.5); laser.scale.set(1, len, 1);
+      laser.quaternion.setFromUnitVectors(_UP, _d.normalize());
+      laser.visible = true; laser.material.opacity = 0.72 + 0.22*Math.sin(tms*16); // gentle steady pulse
+      spark.position.copy(_t); spark.quaternion.copy(camera.quaternion);
+      spark.material.opacity = 0.55 + 0.4*Math.abs(Math.sin(tms*26)); spark.scale.setScalar((0.42 + 0.22*Math.random())*kScale);
+    }
+    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('../public/brand/hub/golem.glb', gltf => {
+      golem = gltf.scene;
+      const box = new THREE.Box3().setFromObject(golem), sz = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
+      const s = 0.5 / Math.max(sz.x, sz.y, sz.z, 0.001);          // small ship ~0.5 units (then × wheel scale at runtime)
+      golem.scale.setScalar(s); golem.position.sub(ctr.multiplyScalar(s)); golem.rotation.copy(NOSE_FIX);
+      golemPivot.add(golem); golemPivot.updateMatrixWorld(true);
+      const lb = new THREE.Box3().setFromObject(golem); noseLocal.set(0, lb.max.y, lb.max.z*0.92); // top-front, centred
+      pickTarget();
+    }, undefined, () => {});                                      // decorative — ignore load errors
+    // grab & drag the ship; on release it flies back to the rock and resumes mining
+    addEventListener('pointerdown', e => {
+      if (!golem || !golemOn) return;
+      _dvec.set((e.clientX/innerWidth)*2-1, -(e.clientY/innerHeight)*2+1); ray.setFromCamera(_dvec, camera);
+      if (ray.intersectObject(golemPivot, true).length){ dragging = true; gstate = 'drag'; document.body.style.cursor = 'grabbing'; }
+    });
+    addEventListener('pointermove', e => {
+      if (!dragging) return;
+      _dvec.set((e.clientX/innerWidth)*2-1, -(e.clientY/innerHeight)*2+1); ray.setFromCamera(_dvec, camera);
+      _dplane.set(_NZ, -gpos.z); if (ray.ray.intersectPlane(_dplane, _dhit)) gpos.lerp(_dhit, 0.45);
+    });
+    addEventListener('pointerup', () => { if (dragging){ dragging = false; document.body.style.cursor = 'default'; pickTarget(); } });
+    // on/off switch (top-right, below the header)
+    let golemOn = true;
+    const shipBtn = document.getElementById('shipToggle');
+    if (shipBtn) shipBtn.addEventListener('click', () => {
+      golemOn = !golemOn;
+      shipBtn.classList.toggle('on', golemOn); shipBtn.setAttribute('aria-pressed', String(golemOn));
+      golemPivot.visible = golemOn; laser.visible = laser.visible && golemOn; spark.visible = golemOn;
+      if (dragging){ dragging = false; document.body.style.cursor = 'default'; }
+    });
+    function updateGolem(){
+      if (!golem || !golemOn) return;
+      kScale = tilt.scale.x || 1; rockCenter();                   // track the rock's live world centre + scale
+      golemPivot.scale.setScalar(kScale);                          // ship shrinks/grows with the wheel
+      if (gstate === 'drag'){ golemPivot.position.copy(gpos); faceToward(rockW, 0.08); laser.visible = false; spark.material.opacity *= 0.85; return; }
+      if (gstate === 'travel'){
+        tweenT += 1/tweenDur; const e = ease(Math.min(tweenT, 1));
+        _d.copy(startDir).lerp(targetDir, e).normalize();
+        gpos.copy(rockW).addScaledVector(_d, startRad + (SPH*kScale - startRad)*e);
+        golemPivot.position.copy(gpos); faceToward(rockW, 0.06); laser.visible = false; // noses at the rock, smoothly
+        if (tweenT >= 1){ if (behind) pickTarget(); else { gstate = 'mine'; mineT = 200 + (Math.random()*200|0); } }
+      } else {                                                    // mine: hold still, roll onto aim, then laser the rock
+        golemPivot.position.copy(gpos); faceToward(rockW, 0.07);
+        _fwd.set(0,0,1).applyQuaternion(golemPivot.quaternion);    // fire ONLY once the nose has rolled onto the rock
+        if (_fwd.dot(_d.copy(rockW).sub(gpos).normalize()) > 0.985) aimLaser();
+        else { laser.visible = false; spark.material.opacity *= 0.85; }
+        if (--mineT <= 0){ laser.visible = false; spark.material.opacity *= 0.85; pickTarget(); }
+      }
+    }
+
+    function loop(){ requestAnimationFrame(loop);
+      tilt.rotation.x += (tgtRX - tilt.rotation.x) * 0.07;  // ease toward the cursor
+      tilt.rotation.y += (tgtRY - tilt.rotation.y) * 0.07;
+      tms += 0.016; const pulse = 0.78 + 0.22*Math.sin(tms*1.7);   // gentle holo breathing on the centre core
+      if (coreRim)  coreRim.material.opacity = pulse;
+      if (coreGlow) coreGlow.material.opacity = 0.22 + 0.16*pulse;
+      const eff = panelHover || wheelHover;                     // wheel option <-> panel button, either direction
+      segs.forEach(m => { const u = m.userData;
+        const on = (eff === m);
+        u.pressCur += (u.pressTarget - u.pressCur) * 0.16; const t = u.pressCur;
+        u.hovCur += ((on ? 1 : 0) - u.hovCur) * 0.16; const h = u.hovCur;
+        const s = 1 + 0.08 * h;                                 // grow in place (fills its space), no forward push
+        m.position.z = u.baseZ - 0.07 * t;                      // only press moves z (back toward the glass)
+        m.scale.setScalar(s);                                   // tile grows to fill the available space
+        u.label.position.set(u.lx*s, u.ly*s, u.labelBaseZ);     // icon follows the growing tile, stays centred
+        u.label.scale.setScalar(u.labelScale * s);              // icon grows with it
+        u.glowMesh.scale.setScalar((s + 0.7 * h) * 0.7);        // glow blooms on hover, 30% smaller than before
+        const hov = on ? u.hiEmis : u.baseEmis;
+        u.insMat.emissiveIntensity = hov + (u.pressEmis - hov) * t;
+        u.glowCur += ((on ? 1.0 : 0) - u.glowCur) * 0.16;       // glow ONLY on hover; fully off at idle
+        u.glowMat.opacity = u.glowCur;
+        if (u.btn) u.btn.classList.toggle('glow', on);          // matching panel button glows too
+      });
+      // reveal the extra detail on whichever panel is engaged: hovered panel, hovered segment, or hovered button
+      const activePanel = (wheelHover && wheelHover.userData.panel) || (panelHover && panelHover.userData.panel) || null;
+      panels.forEach(pd => pd.classList.toggle('more', hoveredPanels.has(pd) || pd === activePanel));
+      updateGolem();
+      renderer.render(scene, camera); labelRenderer.render(scene, camera);
+    }
+    loop();
+  }
+</script>
+</body>
+</html>

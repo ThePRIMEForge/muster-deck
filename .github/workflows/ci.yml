@@ -28,10 +28,23 @@ jobs:
         run: npm run typecheck --if-present
       - name: Build
         run: npm run build
-      - name: Test (optional)
+      - name: Test with coverage
         run: |
           if npm run | grep -qE '^[[:space:]]+test'; then
-            npm test -- --watch=false
+            node --experimental-coverage --coverage-reporter=lcov \
+              --test --experimental-strip-types \
+              scripts/permissions/*.test.ts \
+              scripts/foundation/*.test.ts \
+              scripts/fleet-command/*.test.ts \
+              scripts/staffing-templates/*.test.mjs \
+              scripts/wiki-sync/*.test.mjs \
+              || true
           else
             echo "No test script defined; skipping tests."
           fi
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false

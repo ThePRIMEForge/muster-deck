@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# Guardrail (AGENTS.md): no em dashes or en dashes anywhere, including commit
+# messages. Patterns are built with printf so this stays portable to macOS BSD
+# grep (no grep -P needed).
+msg_file="$1"
+emdash="$(printf '\342\200\224')"
+endash="$(printf '\342\200\223')"
+if LC_ALL=C grep -n -e "$emdash" -e "$endash" "$msg_file" >/dev/null 2>&1; then
+  echo "Commit blocked: commit message contains an em or en dash." >&2
+  echo "AGENTS.md forbids them. Use a regular hyphen or rephrase." >&2
+  exit 1
+fi

@@ -1,2 +1,18 @@
 #!/usr/bin/env sh
+
+# Guardrail (AGENTS.md): block commits made with a placeholder or empty git
+# identity. Such commits pollute the log and make authorship untraceable.
+name="$(git config user.name)"
+email="$(git config user.email)"
+if [ -z "$name" ] || [ "$name" = "Your Name" ]; then
+  echo "Commit blocked: git user.name is empty or placeholder ('$name')." >&2
+  echo "Set a real name first. See AGENTS.md, Git identity." >&2
+  exit 1
+fi
+if [ -z "$email" ] || [ "$email" = "you@example.com" ]; then
+  echo "Commit blocked: git user.email is empty or placeholder ('$email')." >&2
+  echo "Set a real email first. See AGENTS.md, Git identity." >&2
+  exit 1
+fi
+
 npx lint-staged

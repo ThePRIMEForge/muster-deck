@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Component — Space + planet background (persistent)</title>
+<!--
+  ============================================================================
+  MusterDeck reusable component: SPACE + PLANET BACKGROUND
+  ============================================================================
+  The persistent deep-space backdrop from the landing page: a JS starfield
+  (tiny twinkling stars), a planet limb along the bottom, and an edge vignette.
+  It sits behind everything (position:fixed; z-index:0) and never scrolls away.
+
+  Lifted from the landing hero so the same look can back the Operations Hub.
+
+  HOW TO REUSE
+  ------------
+  1. Copy the <style id="space-bg-css">, the .md-space-bg markup block, and the
+     <script id="space-bg-js"> block into the target page/screen.
+  2. Make sure page content sits ABOVE it: give your content wrapper
+     position:relative; z-index:1 (the background is fixed at z-index:0).
+  3. Planet asset:
+       * Standalone preview (this file): ../../public/brand/space-planet.webp
+       * In the Vite app (public/ = web root):  /brand/space-planet.webp
+     Update the <img src> for where you mount it.
+  4. Performance: the starfield is a lightweight 2D canvas (~1 dot per 2400px²),
+     repainted on rAF. It respects window resize. No external libraries.
+
+  Open this file directly in a browser to preview.
+  ============================================================================
+-->
+<style id="space-bg-css">
+  /* deep-space gradient base + layers (all inside one fixed wrapper) */
+  .md-space-bg{position:fixed;inset:0;z-index:0;overflow:hidden;
+    background:radial-gradient(55% 45% at 18% 24%, rgba(42,60,96,.30), transparent 62%),
+      radial-gradient(45% 38% at 84% 74%, rgba(64,42,74,.18), transparent 60%),
+      linear-gradient(180deg,#04050a 0%,#070810 45%,#05060a 100%)}
+  .md-space-stars{position:absolute;inset:0;width:100%;height:100%}
+  .md-space-planet{position:absolute;left:0;right:0;bottom:-2%;width:100%;height:62%;object-fit:cover;object-position:center bottom;
+    filter:brightness(.72) saturate(.92);
+    -webkit-mask-image:linear-gradient(to top,#000 52%,transparent 100%);mask-image:linear-gradient(to top,#000 52%,transparent 100%)}
+  .md-space-vignette{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.6))}
+
+  /* preview-only foreground content (delete when copying into a host page) */
+  .demo-content{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#F3ECDB;font-family:"Archivo",system-ui,sans-serif;text-align:center;gap:10px}
+  .demo-content h1{font-size:clamp(28px,5vw,56px);font-weight:800}
+  .demo-content p{color:#C7BFAA}
+</style>
+</head>
+<body>
+
+<!-- ===================== MARKUP: persistent background ===================== -->
+<div class="md-space-bg">
+  <canvas class="md-space-stars" id="mdStars"></canvas>
+  <img class="md-space-planet" src="../../public/brand/space-planet.webp" alt="">
+  <div class="md-space-vignette"></div>
+</div>
+
+<!-- demo foreground (replace with your hub content) -->
+<div class="demo-content">
+  <h1>Operations Hub</h1>
+  <p>Persistent starfield + planet background behind your content.</p>
+</div>
+
+<!-- ===================== BEHAVIOUR: starfield ===================== -->
+<script id="space-bg-js">
+  (function(){
+    const cv=document.getElementById('mdStars'); if(!cv) return;
+    const ctx=cv.getContext('2d'); const dpr=Math.min(window.devicePixelRatio||1,2);
+    let stars=[], W=0, H=0;
+    function build(){
+      W=cv.offsetWidth; H=cv.offsetHeight; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      const n=Math.round(W*H/2400); stars=[];
+      for(let i=0;i<n;i++){
+        const big=Math.random()<0.06;
+        stars.push({x:Math.random()*W,y:Math.random()*H,r:big?Math.random()*0.7+0.8:Math.random()*0.55+0.25,
+          a:Math.random()*0.5+(big?0.4:0.22),tw:Math.random()*6.28,sp:Math.random()*0.015+0.005,
+          c:Math.random()<0.12?'#cfe0ff':(Math.random()<0.12?'#ffe7cf':'#f2f4ff')});
+      }
+    }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      for(const s of stars){ const t=0.75+0.25*Math.sin(s.tw+=s.sp);
+        ctx.globalAlpha=Math.min(1,s.a*t); ctx.fillStyle=s.c;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.283); ctx.fill(); }
+      ctx.globalAlpha=1; requestAnimationFrame(draw);
+    }
+    build(); draw(); addEventListener('resize',build);
+  })();
+</script>
+</body>
+</html>

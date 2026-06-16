@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MusterDeck — Full landing (persistent bg · scroll explosion · wheel)</title>
+<style>
+  :root{ --ac:#D4A028; --ink:#F3ECDB; --ink2:#C7BFAA;
+    --font:"Archivo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05060a;color:var(--ink);font-family:var(--font);min-height:100vh}
+  .hintbar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(8,7,5,.85);border-bottom:1px solid #2a2418;
+    padding:7px 14px;font-size:12px;color:var(--ink2);text-align:center;backdrop-filter:blur(3px)}
+  .hintbar b{color:var(--ac)}
+  .login{position:fixed;top:42px;right:clamp(16px,2vw,34px);z-index:120;border:1.5px solid var(--ac);color:var(--ac);
+    background:rgba(10,9,7,.55);backdrop-filter:blur(3px);padding:9px 20px;border-radius:7px;font-weight:700;
+    font-size:clamp(13px,1vw,15px);cursor:pointer}
+
+  /* ---------- persistent space + planet background (never scrolls away) ---------- */
+  .bg-fixed{position:fixed;inset:0;z-index:0;overflow:hidden;
+    background:radial-gradient(55% 45% at 18% 24%, rgba(42,60,96,.30), transparent 62%),
+      radial-gradient(45% 38% at 84% 74%, rgba(64,42,74,.18), transparent 60%),
+      linear-gradient(180deg,#04050a 0%,#070810 45%,#05060a 100%)}
+  .bg-sky{position:absolute;inset:0;width:100%;height:100%}
+  .bg-planet{position:absolute;left:0;right:0;bottom:-2%;width:100%;height:62%;object-fit:cover;object-position:center bottom;
+    filter:brightness(.72) saturate(.92);
+    -webkit-mask-image:linear-gradient(to top,#000 52%,transparent 100%);mask-image:linear-gradient(to top,#000 52%,transparent 100%)}
+  .vignette{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.6))}
+
+  .page{position:relative;z-index:1}
+
+  /* ---------- intro cinematic (desktop only, via body.intro) ---------- */
+  .scene-fx,.fx,.hero,.cue{display:none}
+  .scrub{position:relative}
+  body.intro .scrub{height:320vh}
+  body.intro .pin{position:sticky;top:0;height:100vh;overflow:hidden}
+  body.intro .scene-fx,body.intro .fx,body.intro .cue{display:block}
+  body.intro .hero{display:flex}
+  body.intro .stage{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
+    width:min(100%,1700px);display:flex;align-items:center;justify-content:space-between;
+    gap:clamp(24px,4vw,72px);padding:clamp(70px,9vh,120px) clamp(24px,5vw,90px) clamp(40px,6vh,80px)}
+  /* settled: brand pinned to the top of the column, supporter/disclaimer to the bottom (can't overflow) */
+  body.intro .leftcol{align-self:stretch;justify-content:space-between}
+
+  .scene-fx{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .shatter{position:absolute;inset:0;pointer-events:none}
+  .shatter .tile{position:absolute;object-fit:fill;will-change:transform,opacity;filter:brightness(.85) saturate(.7)}
+
+  /* ---------- explosion: layered video clips (screen) + procedural core/pulse/flash, scrubbed ---------- */
+  /* three explosion clips layered for one big blast; white/yellow core w/ soft gradient edges; blue equatorial pulse; full-page white flash */
+  .fx{position:absolute;inset:0;z-index:4;pointer-events:none}
+  /* big soft glow that lights the surrounding space during the blast so it doesn't sit on stark black */
+  .ex-glow{position:absolute;inset:-25%;opacity:0;mix-blend-mode:screen;will-change:opacity;
+    background:radial-gradient(circle at 50% 46%, rgba(255,212,150,.55) 0%, rgba(255,165,95,.3) 24%, rgba(150,175,215,.14) 50%, rgba(90,120,170,.05) 68%, transparent 80%)}
+  /* square element so the mask is a TRUE circle (no 16:9 truncation); circle fades well before the edge so it never crosses the bounds; scaled big to fill the screen */
+  .ex-vid{position:absolute;top:46%;left:50%;width:135vmin;height:135vmin;object-fit:cover;transform-origin:center;
+    transform:translate(-50%,-50%) scale(.6);opacity:0;mix-blend-mode:screen;will-change:transform,opacity;pointer-events:none;
+    -webkit-mask-image:radial-gradient(circle closest-side at 50% 50%, #000 36%, rgba(0,0,0,.4) 60%, transparent 80%);
+            mask-image:radial-gradient(circle closest-side at 50% 50%, #000 36%, rgba(0,0,0,.4) 60%, transparent 80%)}
+  .ex-flash{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;will-change:opacity;
+    background:radial-gradient(circle at 50% 46%, rgba(255,255,255,.95) 0%, rgba(255,248,232,.7) 16%, rgba(255,236,205,.32) 36%, rgba(255,224,180,.1) 58%, transparent 80%)}
+  .ex-core{position:absolute;top:46%;left:50%;width:62vmin;height:62vmin;border-radius:50%;
+    transform:translate(-50%,-50%) scale(0);opacity:0;mix-blend-mode:screen;will-change:transform,opacity;filter:blur(8px);
+    background:radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(255,250,225,.8) 18%, rgba(255,240,180,.5) 38%, rgba(255,200,110,.28) 56%, rgba(255,140,80,.12) 70%, transparent 84%)}
+  .ex-pulse{position:absolute;top:46%;left:50%;width:64vmin;height:20vmin;border-radius:50%;
+    transform:translate(-50%,-50%) scaleX(0);opacity:0;mix-blend-mode:screen;will-change:transform,opacity;filter:blur(1px);
+    background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(120,210,255,0) 36%, rgba(70,150,255,.5) 56%, rgba(130,225,255,.95) 70%, rgba(170,240,255,.28) 80%, transparent 90%)}
+  .spark{position:absolute;top:22%;left:72%;width:10px;height:10px;border-radius:50%;transform:translate(-50%,-50%) scale(0);
+    background:radial-gradient(circle,#fff,#ffd27a 50%,rgba(255,150,40,0));box-shadow:0 0 30px 10px rgba(255,190,90,.8);opacity:0}
+
+  /* ---------- hero (intro) ---------- */
+  .hero{position:absolute;inset:0;z-index:30;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 6vw}
+  .hpiece{will-change:transform,opacity}
+  .hloop{width:clamp(96px,9vw,150px);height:auto;display:block;margin-bottom:6px;filter:drop-shadow(0 6px 20px rgba(0,0,0,.5))}
+  .hpre{font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--ac);font-weight:700;margin-bottom:14px}
+  .md{font-size:1.3em;font-weight:800}
+  .hh1{font-size:clamp(40px,6vw,78px);font-weight:800;line-height:1.02;text-shadow:0 2px 30px rgba(0,0,0,.8)}
+  .hh1 .ac{color:var(--ac)}
+  .hsub{margin-top:18px;font-size:clamp(15px,1.5vw,19px);color:var(--ink2);max-width:560px;line-height:1.5}
+  .hctas{margin-top:30px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+  .hbtn{padding:14px 26px;border-radius:7px;font-weight:800;font-size:15px;cursor:pointer;border:none;font-family:inherit}
+  .hbtn-primary{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;box-shadow:0 4px 0 #7a5a12, inset 0 1px 0 rgba(255,255,255,.4)}
+  .hbtn-ghost{background:rgba(10,9,7,.35);border:1.5px solid var(--ac);color:var(--ac)}
+  .hmicro{margin-top:16px;font-size:12.5px;color:var(--ink2)}
+  .cue{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:35;color:var(--ink2);font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+  .cue span{display:block;text-align:center;font-size:20px;color:var(--ac);animation:bob 1.6s infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+  /* ---------- left column (logo + name + tagline + supporter + community) ---------- */
+  .stage{padding:clamp(86px,10vh,120px) clamp(22px,5vw,90px) 50px}
+  .leftcol{display:flex;flex-direction:column;gap:clamp(16px,2.2vh,28px);max-width:460px;will-change:transform,opacity}
+  .lc-bottom{display:flex;flex-direction:column;gap:clamp(14px,2vh,24px);will-change:transform}
+  .brand{display:flex;flex-direction:column;gap:clamp(8px,1.2vh,14px);will-change:transform}
+  .brandlogo{width:clamp(150px,14vw,230px);height:auto;display:block}
+  .wordmark{font-size:clamp(24px,2.7vw,44px);letter-spacing:.16em;text-transform:uppercase;color:var(--ac);font-weight:800;line-height:1}
+  .headline{font-size:clamp(15px,1.7vw,26px);font-weight:700;line-height:1.2;color:var(--ink2)}
+  .joinbtn{display:none}
+  .support{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+  .ptxt{color:var(--ink);font-size:clamp(13px,1vw,15px);line-height:1.5;max-width:42ch}
+  .b-patreon{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;
+    padding:clamp(9px,.9vw,12px) clamp(16px,1.3vw,22px);border-radius:8px;font-weight:800;font-size:clamp(12px,.95vw,14px);
+    border:none;cursor:pointer;font-family:inherit;box-shadow:0 3px 0 #7a5a12, inset 0 1px 0 rgba(255,255,255,.4)}
+  .community{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+  .combadge-img{width:clamp(58px,5vw,80px);height:auto;opacity:.9}
+  .disclaimer{color:#9a9079;font-size:clamp(9px,.7vw,11px);line-height:1.5;max-width:48ch;
+    background:rgba(5,7,11,.6);padding:11px 14px;border-radius:9px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+  .disclaimer b{color:#cfc6ad}
+
+  /* ---------- the wheel (right) ---------- */
+  .wheelcol{align-self:center;justify-self:center}
+  .scene3d{perspective:1300px;width:min(46vw,80vh,760px);aspect-ratio:1;container-type:inline-size;container-name:wheel}
+  .wheel{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1);will-change:transform}
+  .disc{position:absolute;inset:-2%;border-radius:50%;transform:translateZ(-26px);
+    background:radial-gradient(circle at 50% 38%, rgba(40,34,22,.5), rgba(8,7,6,.7) 70%);
+    box-shadow:0 40px 90px rgba(0,0,0,.6), inset 0 0 70px rgba(0,0,0,.7), 0 0 0 1px rgba(212,160,40,.25)}
+  .ring{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.6%;transform-style:preserve-3d}
+  .quad{position:relative;display:flex;flex-direction:column;text-align:center;
+    background:radial-gradient(130% 130% at var(--gx) var(--gy), color-mix(in srgb,var(--qc) 30%, transparent), transparent 70%),rgba(16,13,9,.40);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid color-mix(in srgb,var(--qc) 40%, transparent);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 0 30px rgba(0,0,0,.35);
+    transition:transform .25s ease, box-shadow .25s ease, background .25s ease;will-change:transform}
+  .tl{--gx:36%;--gy:36%;border-top-left-radius:100%;padding:10% 18% 9% 15%;align-items:flex-end;text-align:right;justify-content:flex-end;transform-origin:100% 100%}
+  .tr{--gx:64%;--gy:36%;border-top-right-radius:100%;padding:10% 15% 9% 18%;align-items:flex-start;text-align:left;justify-content:flex-end;transform-origin:0% 100%}
+  .bl{--gx:36%;--gy:64%;border-bottom-left-radius:100%;padding:9% 18% 10% 15%;align-items:flex-end;text-align:right;justify-content:flex-start;transform-origin:100% 0%}
+  .br{--gx:64%;--gy:64%;border-bottom-right-radius:100%;padding:9% 15% 10% 18%;align-items:flex-start;text-align:left;justify-content:flex-start;transform-origin:0% 0%}
+  .qtext{display:flex;flex-direction:column}
+  .tl .qtext,.bl .qtext{align-items:flex-end}.tr .qtext,.br .qtext{align-items:flex-start}
+  .ring:hover .quad:not(:hover){opacity:.4;filter:saturate(.65)}
+  .quad:hover{transform:translateZ(20px) scale(1.09);z-index:6;
+    background:radial-gradient(130% 130% at var(--gx) var(--gy), color-mix(in srgb,var(--qc) 46%, transparent), transparent 72%),rgba(20,16,11,.92);
+    box-shadow:0 0 60px color-mix(in srgb,var(--qc) 55%, transparent), 0 0 0 1px color-mix(in srgb,var(--qc) 80%, transparent), inset 0 1px 0 rgba(255,255,255,.2)}
+  .quad .k{font-size:clamp(9px,1.7cqw,15px);letter-spacing:.15em;text-transform:uppercase;color:var(--qc);font-weight:800;margin-bottom:3px}
+  .quad h3{font-size:clamp(13px,3cqw,27px);margin:0 0 6px;line-height:1.14}
+  .short{font-size:clamp(11px,2.15cqw,18px);color:var(--ink2);line-height:1.42;max-width:26ch;transition:opacity .15s, max-height .25s;max-height:9em;overflow:hidden}
+  .quad:hover .short{opacity:0;max-height:0}
+  .full{opacity:0;max-height:0;overflow:hidden;transition:opacity .25s ease .05s, max-height .35s ease}
+  .full p{font-size:clamp(10px,1.95cqw,16px);color:var(--ink2);line-height:1.42;max-width:28ch}
+  .quad:hover .full{opacity:1;max-height:340px}
+  .qrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+  .tl .qrow,.bl .qrow{justify-content:flex-end}.tr .qrow,.br .qrow{justify-content:flex-start}
+  .qb{font-size:clamp(10px,1.7cqw,14px);font-weight:800;padding:7px 12px;border-radius:6px;cursor:pointer;border:none;font-family:inherit}
+  .qb-guest{background:var(--qc);color:#120c06}
+  .qb-info{background:transparent;border:1px solid color-mix(in srgb,var(--qc) 70%, transparent);color:var(--qc)}
+  .hub{position:absolute;top:50%;left:50%;width:19%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) translateZ(60px);z-index:8;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;
+    background:radial-gradient(circle at 50% 34%, #f3d574, #D4A028 56%, #a3781a);color:#1a1305;border:3px solid #0b0a08;
+    box-shadow:0 18px 30px rgba(0,0,0,.55), 0 0 0 2px rgba(212,160,40,.5), 0 0 46px rgba(212,160,40,.45), inset 0 2px 0 rgba(255,255,255,.5)}
+  .hub .jn{font-size:clamp(14px,3.3cqw,28px);font-weight:900;line-height:1;white-space:nowrap}
+  .hub .sub2{font-size:clamp(8px,1.5cqw,13px);font-weight:700;margin-top:4px;opacity:.82;white-space:nowrap}
+
+  /* ---------- mobile tool islands ---------- */
+  .islands{display:none;flex-direction:column;gap:14px}
+  .island{background:rgba(20,15,9,.92);border:1px solid #2a2418;border-radius:14px;padding:20px;border-top:3px solid var(--qc)}
+  .island .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--qc);font-weight:800}
+  .island h3{font-size:20px;margin:6px 0 8px}
+  .island p{color:var(--ink2);font-size:14px;line-height:1.5;margin-bottom:14px}
+  .island .qrow{justify-content:flex-start;margin:0}
+  .island .qb{font-size:12px;padding:9px 16px}
+
+  /* ---------- breakpoints ---------- */
+  @media (max-width:980px){
+    /* no cinematic on mobile; everything stacks and scrolls over the persistent planet */
+    body.intro .scrub{height:auto}
+    body.intro .pin{position:static;height:auto;overflow:visible}
+    body.intro .scene-fx,body.intro .fx,body.intro .hero,body.intro .cue{display:none}
+    body.intro .stage{position:static;transform:none;width:auto;display:block}
+    body.intro .leftcol{opacity:1!important;transform:none!important}
+    .stage{padding:96px 22px 60px}
+    .leftcol{max-width:none;align-items:center;text-align:center;gap:22px}
+    .brand{align-items:center}
+    .wordmark{font-size:clamp(26px,7vw,40px)}
+    .headline{font-size:clamp(16px,4.4vw,24px)}
+    .wheelcol{display:none}
+    .joinbtn{display:inline-block;align-self:center;margin-top:6px;background:linear-gradient(180deg,#f0cf6b,#D4A028 55%,#a3781a);
+      color:#1a1305;font-weight:900;font-size:17px;padding:15px 34px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;
+      box-shadow:0 5px 0 #7a5a12, inset 0 1px 0 rgba(255,255,255,.45)}
+    .joinbtn small{display:block;font-size:11px;font-weight:700;opacity:.8;margin-top:3px}
+    .islands{display:flex;text-align:left;width:100%}
+    .support,.community{align-items:center;text-align:center}
+    .ptxt,.disclaimer{max-width:60ch}
+  }
+</style>
+<style>
+  /* ---- modal shell + holographic reveal ---- */
+  .overlay{position:fixed;inset:0;z-index:300;background:rgba(4,3,2,0);backdrop-filter:blur(0px);
+    display:none;align-items:center;justify-content:center;padding:4vh 16px;transition:background .35s ease, backdrop-filter .35s ease}
+  .overlay.visible{display:flex}
+  .overlay.open{background:rgba(4,3,2,.76);backdrop-filter:blur(5px)}
+  .tmodal{position:relative;width:min(960px,calc(100vw - 32px));min-width:0;max-height:92vh;overflow:auto;background:#0f0b06;
+    border:1px solid #2a2418;border-top:4px solid var(--ac);border-radius:16px;padding:clamp(18px,3vw,36px);
+    clip-path:inset(0 calc(50% - 1px) 0 calc(50% - 1px) round 2px);transform:translate(var(--dx,0),var(--dy,0)) scale(.98);opacity:0;
+    box-shadow:0 0 0 1px rgba(45,226,230,.9), 0 0 30px 4px rgba(45,226,230,.7);
+    transition:clip-path .45s cubic-bezier(.2,.9,.2,1), transform .45s cubic-bezier(.2,.9,.2,1), opacity .16s ease, box-shadow .6s ease}
+  .overlay.open .tmodal{clip-path:inset(0 0 0 0 round 16px);transform:translate(0,0) scale(1);opacity:1;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(212,160,40,.22);
+    transition:opacity .5s ease .5s, clip-path .55s cubic-bezier(.2,.9,.2,1) .5s, transform .55s cubic-bezier(.2,.9,.2,1) .5s, box-shadow .6s ease .5s}
+  .tmodal::after{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;mix-blend-mode:screen;opacity:0;
+    background:repeating-linear-gradient(0deg, rgba(45,226,230,.05) 0 2px, transparent 2px 5px);transition:opacity .8s ease}
+  .overlay.open .tmodal::after{opacity:.35;animation:holoflick 3s steps(60) infinite}
+  @keyframes holoflick{0%,97%,100%{opacity:.32}98%{opacity:.12}99%{opacity:.4}}
+  @media (prefers-reduced-motion:reduce){ .tmodal{clip-path:none;transform:none;transition:opacity .2s ease} .overlay.open .tmodal::after{animation:none} }
+  .tmhead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .tmhead .k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ac);font-weight:800}
+  .tmhead h3{font-size:clamp(22px,2.6vw,32px);font-weight:800;margin-top:5px}
+  .tclose{background:none;border:1px solid #3a3424;color:var(--ink2);width:40px;height:40px;border-radius:10px;font-size:19px;cursor:pointer;flex:none;line-height:1}
+  .tintro{color:var(--ink2);font-size:14px;line-height:1.6;max-width:66ch;margin:10px 0 26px}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+  .tier{position:relative;border:1px solid #2a2418;border-radius:13px;padding:24px 20px;background:#150f08;display:flex;flex-direction:column}
+  .tier.feat{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac), 0 0 38px rgba(212,160,40,.18)}
+  .ribbon{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--ac);color:#1a1305;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;white-space:nowrap}
+  .tier .tn{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);font-weight:800}
+  .tier .price{font-size:36px;font-weight:800;margin:8px 0 0;line-height:1}
+  .tier .price span{font-size:13px;color:var(--ink2);font-weight:600}
+  .tier .tdesc{font-size:13px;color:var(--ink2);font-style:italic;margin:6px 0 4px}
+  .tier ul{list-style:none;margin:16px 0 20px;flex:1}
+  .tier li{font-size:13px;color:var(--ink);opacity:.86;line-height:1.45;padding:8px 0 8px 24px;position:relative;border-top:1px solid #221c11}
+  .tier li:first-child{border-top:none}
+  .tier li:before{content:"\2713";position:absolute;left:0;color:var(--ac);font-weight:800}
+  .tier .pick{padding:12px;border-radius:8px;font-weight:800;cursor:pointer;border:1.5px solid var(--ac);background:transparent;color:var(--ac);font-family:inherit;font-size:14px}
+  .tier.feat .pick{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;border:none;box-shadow:0 3px 0 #7a5a12}
+  .tnote{text-align:center;color:#8a8068;font-size:12px;margin-top:20px}
+  @media(max-width:760px){.tiers{grid-template-columns:1fr}}
+  /* More info modal content */
+  .tmodal.wide{width:min(1040px,calc(100vw - 32px))}
+  .overlay.open .tmodal.wide{transition:opacity .28s ease .08s, clip-path .5s cubic-bezier(.2,.9,.2,1) .08s, transform .5s cubic-bezier(.2,.9,.2,1) .08s, box-shadow .5s ease .08s}
+  .mintro{color:var(--ink2);font-size:14px;line-height:1.6;max-width:72ch;margin:8px 0 24px}
+  .msec{margin-bottom:26px}
+  .msec h4{font-size:17px;margin-bottom:7px}
+  .msec p{color:var(--ink2);font-size:13.5px;line-height:1.55;margin-bottom:13px;max-width:72ch}
+  .shot{border:1px solid #2a2418;border-radius:10px;background:#0c0a12;overflow:hidden}
+  .shot .bar{display:flex;gap:6px;padding:9px 12px;border-bottom:1px solid #1d1a26;background:#0a0810}
+  .shot .bar i{width:9px;height:9px;border-radius:50%;background:#2a2740}
+  .shot .cap{padding:7px 12px;font-size:11.5px;color:#7d769a;border-bottom:1px solid #1a1726}
+  .shot .ui{padding:16px;display:grid;gap:10px}
+  .shot .ln{height:11px;border-radius:4px;background:linear-gradient(90deg,#221d2e,#171320)}
+  .shot .ln.s{width:40%}.shot .ln.m{width:70%}.shot .ln.acc{background:var(--ac);opacity:.5;width:30%}
+  .shot .blk{height:64px;border-radius:8px;background:linear-gradient(135deg,#1a1626,#120f1c);border:1px solid #221d2e}
+  .shot .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mcta{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;padding-top:18px;border-top:1px solid #221c11}
+  .mcta .b{padding:12px 20px;border-radius:8px;font-weight:800;font-size:13.5px;border:none;cursor:pointer;font-family:inherit}
+  .mcta .b-primary{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;box-shadow:0 3px 0 #7a5a12, inset 0 1px 0 rgba(255,255,255,.4)}
+  .mcta .b-guest{background:var(--ac);color:#120c06}
+</style>
+</head>
+<body>
+<div class="hintbar">MusterDeck · <b>Full landing</b> — scroll slowly: hero → one explosion → wheel rises from the centre and slides right. Keep scrolling for the supporter section. (Narrow the window to see mobile.)</div>
+<button class="login">Log in</button>
+
+<!-- persistent space + planet background (stays put across every section) -->
+<div class="bg-fixed">
+  <canvas class="bg-sky" id="starCanvas"></canvas>
+  <img class="bg-planet" src="assets/bg-planet.webp" alt="">
+  <div class="vignette"></div>
+</div>
+
+<div class="page">
+  <!-- screen 1: cinematic intro -> brand + tool wheel -->
+  <div class="scrub">
+    <div class="pin">
+      <div class="scene-fx">
+        <div class="shatter" id="shatter"></div>
+      </div>
+
+      <div class="fx">
+        <div class="ex-glow" id="exGlow"></div>
+        <video class="ex-vid" id="exSw4" src="assets/ex_sw4.mp4" muted playsinline preload="auto"></video>
+        <video class="ex-vid" id="exSwc" src="assets/ex_swc.mp4" muted playsinline preload="auto"></video>
+        <video class="ex-vid ex-sph" id="exSph" src="assets/ex_sph.mp4" muted playsinline preload="auto"></video>
+        <div class="ex-core" id="exCore"></div>
+        <div class="ex-pulse" id="exPulse"></div>
+        <div class="ex-flash" id="exFlash"></div>
+        <div class="spark" id="spark"></div>
+      </div>
+
+      <div class="hero" id="hero">
+        <img class="hloop hpiece" src="assets/musterdeck-logo.webp" alt="MusterDeck" data-dx="0" data-dy="-1.3">
+        <div class="hpre hpiece" data-dx="-0.7" data-dy="-1"><span class="md">M</span>USTER<span class="md">D</span>ECK</div>
+        <div class="hh1 hpiece" data-dx="0" data-dy="-0.5">Rally, <span class="ac">Command</span>, Settle.</div>
+        <div class="hsub hpiece" data-dx="0.7" data-dy="0.4">An independent operations console for Star Citizen crews. Find ops, plan ships, settle loot, run tournaments.</div>
+        <div class="hctas">
+          <button class="hbtn hbtn-primary hpiece" data-dx="-1" data-dy="0.7">Sign up for MusterDeck</button>
+          <button class="hbtn hbtn-ghost hpiece" data-dx="1" data-dy="0.7">View public activities</button>
+        </div>
+        <div class="hmicro hpiece" data-dx="0" data-dy="1.1">Free. Independent fan project. The social tools that we need.</div>
+      </div>
+
+      <div class="stage" id="stage">
+        <div class="leftcol" id="leftcol">
+          <div class="brand">
+            <img class="brandlogo" src="assets/musterdeck-logo.webp" alt="MusterDeck">
+            <div class="wordmark"><span class="md">M</span>USTER<span class="md">D</span>ECK</div>
+            <h1 class="headline">Multiple connected tools.<br>One console.</h1>
+            <button class="joinbtn">Join Now<small>Sign up free</small></button>
+          </div>
+
+          <div class="islands">
+            <div class="island" style="--qc:#C1632E"><div class="k">Rally Point</div><h3>Find or publish operations</h3><p>The public board for Star Citizen ops. Hosts post the roles and ships they need; players filter by activity, time zone, and ship, then apply. Browse free as a guest; sign up to post or apply.</p><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
+            <div class="island" style="--qc:#7FA356"><div class="k">Fleet Command</div><h3>Plan ship composition, staff crews, run ops</h3><p>The shared ops console for serious orgs. Build ship rosters and crew profiles, staff ops from saved templates, lock the roster when it starts, and follow a live ops view with a full audit log.</p><div class="qrow"><button class="qb qb-info">More info</button></div></div>
+            <div class="island" style="--qc:#3DA3E0"><div class="k">Proving Ground</div><h3>Run tournaments and competitive events</h3><p>Competitive events from signup to trophy. Single, double, round robin, or Swiss, from 1v1 to 5v5. Open signups, seed the field, publish brackets, and track standings and leaderboards live.</p><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
+            <div class="island" style="--qc:#C2473A"><div class="k">S.P.O.I.L.S.</div><h3>Settle loot, payouts, ledgers</h3><p>Settlement, Payouts, Operations, Inventory, Loot, and Shares. Log every haul, set the split, and it works out each member's share. Records only, run by your quartermaster.</p><div class="qrow"><button class="qb qb-info">More info</button></div></div>
+          </div>
+
+          <div class="lc-bottom" id="lcBottom">
+            <div class="support">
+              <div class="ptxt">MusterDeck is free, built by Star Citizen players in their own time. Supporters keep it running.</div>
+              <button class="b-patreon">Become a supporter</button>
+            </div>
+
+            <div class="community">
+              <img class="combadge-img" src="assets/made-by-community.webp" alt="Made by the Community">
+              <div class="disclaimer"><b>Unofficial Star Citizen fan site.</b> Not endorsed by or affiliated with the Cloud Imperium or Roberts Space Industries group of companies. Star Citizen&reg;, Squadron 42&reg;, Roberts Space Industries&reg;, and Cloud Imperium&reg; are registered trademarks of Cloud Imperium Rights LLC. All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wheelcol">
+          <div class="scene3d" id="scene3d">
+            <div class="wheel" id="wheel">
+              <div class="disc"></div>
+              <div class="ring">
+                <div class="quad tl" style="--qc:#C1632E"><div class="qtext"><div class="k">Rally Point</div><h3>Find or publish operations</h3><p class="short">The public board for Star Citizen ops.</p><div class="full"><p>Hosts post the roles and ships they need; players filter by activity, time zone, and ship, then apply. Browse free as a guest; sign up to post or apply.</p></div></div><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
+                <div class="quad tr" style="--qc:#7FA356"><div class="qtext"><div class="k">Fleet Command</div><h3>Plan ship composition,<br>staff crews, run ops</h3><p class="short">Shared ops console for serious orgs.</p><div class="full"><p>Build ship rosters and crew profiles, staff ops from saved templates, lock the roster when it starts, and follow a live ops view with a full audit log.</p></div></div><div class="qrow"><button class="qb qb-info">More info</button></div></div>
+                <div class="quad bl" style="--qc:#3DA3E0"><div class="qtext"><div class="k">Proving Ground</div><h3>Run tournaments and<br>competitive events</h3><p class="short">Competitive events from signup to trophy.</p><div class="full"><p>Single, double, round robin, or Swiss, from 1v1 to 5v5. Open signups, seed the field, publish brackets, and track standings and leaderboards live.</p></div></div><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
+                <div class="quad br" style="--qc:#C2473A"><div class="qtext"><div class="k">S.P.O.I.L.S.</div><h3>Settle loot, payouts, ledgers</h3><p class="short">The ledger that ends payout arguments.</p><div class="full"><p>Settlement, Payouts, Operations, Inventory, Loot, and Shares. Log every haul, set the split, and it works out each member's share. Records only, run by your quartermaster.</p></div></div><div class="qrow"><button class="qb qb-info">More info</button></div></div>
+              </div>
+              <div class="hub"><div class="jn">Join Now</div><div class="sub2">Sign up free</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cue">Scroll<span>&#x2193;</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MORE INFO MODAL ===== -->
+<div class="overlay" id="infoOverlay">
+  <div class="tmodal wide" role="dialog" aria-modal="true">
+    <div class="tmhead"><div><div class="k" id="infoKick"></div><h3 id="infoTitle"></h3></div><button class="tclose" aria-label="Close">&times;</button></div>
+    <div id="infoBody"></div>
+    <div class="mcta"><button class="b b-guest" id="infoGuest" style="display:none"></button><button class="b b-primary">Sign up for MusterDeck</button></div>
+  </div>
+</div>
+
+<!-- ===== SUPPORTER MODAL ===== -->
+<div class="overlay" id="tierOverlay">
+  <div class="tmodal" role="dialog" aria-modal="true">
+    <div class="tmhead"><div><div class="k">Support MusterDeck</div><h3>Become a supporter</h3></div><button class="tclose" aria-label="Close">&times;</button></div>
+    <p class="tintro">MusterDeck is free to use and always will be. Supporters keep the servers running and unlock extra tools to run a sharper operation. Pick a level that fits. Change or cancel any time on Patreon.</p>
+    <div class="tiers">
+      <div class="tier"><div class="tn">Captain</div><div class="price">$1<span>/month</span></div><div class="tdesc">Back the project and wear it.</div><ul><li>Supporter badge on your callsign</li><li>Your name in the in-app credits</li><li>Supporter channel on the MusterDeck Discord</li></ul><button class="pick">Choose Captain</button></div>
+      <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs</li><li>Manage the org bank, even across multiple accounts</li><li>Save and reuse Fleet Command staffing templates</li></ul><button class="pick">Choose Admiral</button></div>
+      <div class="tier"><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground</li><li>Build brackets, manage signups, and run events</li><li>Publish standings and leaderboards to the public board</li></ul><button class="pick">Choose Praetorian</button></div>
+    </div>
+    <div class="tnote">Tiers, prices, and perks confirmed. Exact wording still open to polish. Payments handled by Patreon.</div>
+  </div>
+</div>
+
+<script>
+  // ---- canvas starfield (persistent) ----
+  (function(){
+    const cv=document.getElementById('starCanvas'); if(!cv) return;
+    const ctx=cv.getContext('2d'); const dpr=Math.min(window.devicePixelRatio||1,2);
+    let stars=[], W=0, H=0;
+    function build(){
+      W=cv.offsetWidth; H=cv.offsetHeight; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      const n=Math.round(W*H/2400); stars=[];
+      for(let i=0;i<n;i++){
+        const big=Math.random()<0.06;
+        stars.push({x:Math.random()*W,y:Math.random()*H,r:big?Math.random()*0.7+0.8:Math.random()*0.55+0.25,
+          a:Math.random()*0.5+(big?0.4:0.22),tw:Math.random()*6.28,sp:Math.random()*0.015+0.005,
+          c:Math.random()<0.12?'#cfe0ff':(Math.random()<0.12?'#ffe7cf':'#f2f4ff')});
+      }
+    }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      for(const s of stars){ const t=0.75+0.25*Math.sin(s.tw+=s.sp);
+        ctx.globalAlpha=Math.min(1,s.a*t); ctx.fillStyle=s.c;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.283); ctx.fill(); }
+      ctx.globalAlpha=1; requestAnimationFrame(draw);
+    }
+    build(); draw(); addEventListener('resize',build);
+  })();
+
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const rng=(p,a,b)=>clamp((p-a)/(b-a),0,1);
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  const back=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);};
+
+  // ---- wheel mouse tilt ----
+  const scene3d=document.getElementById('scene3d'), wheel=document.getElementById('wheel');
+  let traf=null;
+  scene3d.addEventListener('mousemove',e=>{
+    const r=scene3d.getBoundingClientRect();
+    const nx=((e.clientX-r.left)/r.width-0.5)*2, ny=((e.clientY-r.top)/r.height-0.5)*2;
+    if(traf)cancelAnimationFrame(traf);
+    traf=requestAnimationFrame(()=>{wheel.style.transition='transform .12s ease-out';
+      wheel.style.transform=`rotateX(${(-ny*10).toFixed(2)}deg) rotateY(${(nx*10).toFixed(2)}deg)`;});
+  });
+  scene3d.addEventListener('mouseleave',()=>{wheel.style.transition='transform .55s cubic-bezier(.2,.8,.2,1)';wheel.style.transform='rotateX(0) rotateY(0)';});
+
+  // ---- generic holographic modals ----
+  function openModal(ov,e){
+    const m=ov.querySelector('.tmodal');
+    const cx=e&&e.clientX?e.clientX:innerWidth/2, cy=e&&e.clientY?e.clientY:innerHeight/2;
+    m.style.setProperty('--dx',((cx-innerWidth/2)*0.22).toFixed(0)+'px');
+    m.style.setProperty('--dy',((cy-innerHeight/2)*0.22).toFixed(0)+'px');
+    ov.classList.add('visible'); void ov.offsetWidth; ov.classList.add('open');
+  }
+  function closeModal(ov){ ov.classList.remove('open'); setTimeout(()=>{ if(!ov.classList.contains('open')) ov.classList.remove('visible'); },560); }
+  document.querySelectorAll('.overlay').forEach(ov=>{
+    ov.addEventListener('click',e=>{ if(e.target===ov) closeModal(ov); });
+    ov.querySelectorAll('.tclose').forEach(b=>b.addEventListener('click',()=>closeModal(ov)));
+  });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(closeModal); });
+  const tov=document.getElementById('tierOverlay');
+  document.querySelectorAll('.b-patreon').forEach(b=>b.addEventListener('click',e=>openModal(tov,e)));
+
+  const infoOv=document.getElementById('infoOverlay'), infoMod=infoOv.querySelector('.tmodal');
+  const COLORMAP={'#c1632e':'rally','#7fa356':'fleet','#3da3e0':'proving','#c2473a':'spoils'};
+  const shot=cap=>`<div class="shot"><div class="bar"><i></i><i></i><i></i></div><div class="cap">${cap}</div>`+
+    `<div class="ui"><div class="ln acc"></div><div class="ln m"></div><div class="ln s"></div>`+
+    `<div class="g2"><div class="blk"></div><div class="blk"></div></div><div class="ln m"></div></div></div>`;
+  const DATA={
+    rally:{ac:'#C1632E',kick:'Rally Point',title:'Find or publish operations.',guest:'View public listings',
+      intro:'Rally Point is where Star Citizen crews find each other. It replaces the lost-in-the-scroll Discord callout with a real board: structured posts, filters that matter, and a clean way to apply.',
+      secs:[{h:'The public ops board',p:'Every open op in one place. Filter by activity, time zone, ship, crew size, and host reputation. Anyone can browse as a guest, so you can see the activity before you ever make an account.',cap:'Rally Point board, filtered by activity and time zone'},
+        {h:'Post an op in minutes',p:'Say what you are running, the roles you need, the ships you are bringing, and the crew you want. Set a time, a crew cap, and whether applicants must be verified.',cap:'Op posting form with roles, ships, and crew cap'},
+        {h:'Apply and get picked',p:'Players apply with their callsign, roles, and trust tier attached. Hosts review applicants at a glance and build the crew they want.',cap:'Applicant list with roles and trust tiers'}]},
+    fleet:{ac:'#7FA356',kick:'Fleet Command',title:'Plan ships, staff crews, run ops.',guest:null,
+      intro:'Fleet Command is the shared operations console for orgs that run real operations. One source of truth for ships, crews, and roles, instead of a spreadsheet only one person keeps current.',
+      secs:[{h:'Ship rosters and crew profiles',p:'Track the org fleet and the people who fly it. Crew keep profiles with their roles, preferred seats, and availability, so staffing is not a guessing game.',cap:'Fleet roster with ship cards and crew profiles'},
+        {h:'Staffing templates',p:'Build an operation from a saved template. Assign roles, fill seats, and reuse the setups that work instead of rebuilding them every run.',cap:'Staffing template assigning roles to seats'},
+        {h:'Locked and unlocked rosters',p:'Lock the roster and only fleet admirals, officers, and team officers place crew into positions; anyone else requests a change. Unlock it and crew free-pick their own seats with no permission needed. Set the mode that fits each operation.',cap:'Roster lock toggle with seat assignments'},
+        {h:'Live ops and audit log',p:'Follow a live view as the operation runs. Every assignment and change is logged, so there is a clear record of who did what.',cap:'Live ops view during an active operation'}]},
+    proving:{ac:'#3DA3E0',kick:'Proving Ground',title:'Run tournaments and competitive events.',guest:'View public tournaments',
+      intro:'Proving Ground runs competitive Star Citizen events end to end. Organizers get real tournament tooling; teams and racers get a clean place to sign up, compete, and track standings.',
+      secs:[{h:'Every format',p:'Single elimination, double elimination, round robin, Swiss, and group stage into finals. From 1v1 up to 5v5 and custom formats, for combat, racing, and anything crews compete at.',cap:'Bracket builder, double elimination'},
+        {h:'Signups and seeding',p:'Open registration, set the field, and seed it by rank or by hand. Browse public tournaments as a guest to scout the competition first.',cap:'Signup list with seeds and check-in'},
+        {h:'Scores, standings, disputes',p:'Enter results, watch standings and leaderboards update live, and resolve disputes from one place. Prizes can flow straight into S.P.O.I.L.S.',cap:'Live standings and leaderboard'}]},
+    spoils:{ac:'#C2473A',kick:'S.P.O.I.L.S.',title:'Settle loot, payouts, and prize ledgers.',guest:null,
+      intro:'S.P.O.I.L.S. stands for Settlement, Payouts, Operations, Inventory, Loot, and Shares. It is the ledger that ends payout arguments: a clear record of what was earned, who gets which share, and what the org bank holds.',
+      secs:[{h:'The settlement ledger',p:'Log a haul, set the split, and S.P.O.I.L.S. works out each member’s share. Your quartermaster runs the books; everyone can see where they stand.',cap:'S.P.O.I.L.S. ledger with hauls and member shares'},
+        {h:'Every kind of haul',p:'Mining, salvage, cargo, ship components, ship weapons, sale proceeds, and tournament prizes. If your crew earned it together, it can be settled here.',cap:'Haul categories: mining, salvage, cargo, prizes'},
+        {h:'Records, not transfers',p:'S.P.O.I.L.S. is a record-keeper. It does not move real money, in-game currency, or in-game items. The actual transfers happen in game between the players involved.',cap:'Payout summary per member'}]}
+  };
+  function openInfo(key,e){
+    const d=DATA[key]; if(!d) return;
+    infoMod.style.setProperty('--ac',d.ac);
+    document.getElementById('infoKick').textContent=d.kick;
+    document.getElementById('infoTitle').textContent=d.title;
+    let html='<p class="mintro">'+d.intro+'</p>';
+    d.secs.forEach(s=>{ html+='<div class="msec"><h4>'+s.h+'</h4><p>'+s.p+'</p>'+shot(s.cap)+'</div>'; });
+    document.getElementById('infoBody').innerHTML=html;
+    const g=document.getElementById('infoGuest');
+    if(d.guest){ g.style.display=''; g.textContent=d.guest; } else { g.style.display='none'; }
+    infoMod.scrollTop=0; openModal(infoOv,e);
+  }
+  document.querySelectorAll('.qb-info').forEach(b=>b.addEventListener('click',e=>{
+    const host=b.closest('[style*="--qc"]'); if(!host) return;
+    openInfo(COLORMAP[host.style.getPropertyValue('--qc').trim().toLowerCase()],e);
+  }));
+
+  // reload on breakpoint cross so the right layout initialises cleanly
+  matchMedia('(min-width:981px)').addEventListener('change',()=>location.reload());
+
+  // ---- intro choreography: hero -> ONE procedural explosion -> wheel rises from centre -> slides right ----
+  if(matchMedia('(min-width:981px)').matches){
+    document.body.classList.add('intro');
+    const scrub=document.querySelector('.scrub'),
+          spark=document.getElementById('spark'),
+          exFlash=document.getElementById('exFlash'),exCore=document.getElementById('exCore'),
+          exPulse=document.getElementById('exPulse'),
+          exGlow=document.getElementById('exGlow'),
+          exSw4=document.getElementById('exSw4'),exSwc=document.getElementById('exSwc'),exSph=document.getElementById('exSph'),
+          cue=document.querySelector('.cue'),hero=document.getElementById('hero'),
+          leftcol=document.getElementById('leftcol'),
+          lcTop=document.querySelector('.brand'),lcBottom=document.getElementById('lcBottom');
+    const exVids=[[exSw4,2.55,.85],[exSwc,2.55,.8],[exSph,1.35,1]];
+    // prime the decoders so currentTime scrubbing paints frames (muted autoplay then pause)
+    exVids.forEach(([v])=>{ if(v){ v.muted=true; v.play().then(()=>{v.pause();try{v.currentTime=0;}catch(e){}}).catch(()=>{}); } });
+    const pieces=[...document.querySelectorAll('.hpiece')];
+    const HD=560; let dx=0,dy=0;
+    function measure(){ const prev=scene3d.style.transform; scene3d.style.transform='none';
+      const r=scene3d.getBoundingClientRect(); dx=innerWidth/2-(r.left+r.width/2); dy=innerHeight/2-(r.top+r.height/2);
+      scene3d.style.transform=prev; }
+    function frame(){
+      const rect=scrub.getBoundingClientRect(); const total=scrub.offsetHeight-innerHeight;
+      const p=clamp(-rect.top/total,0,1);
+      cue.style.opacity=1-rng(p,0,.06);
+      hero.style.pointerEvents = p<0.42 ? 'auto' : 'none';
+      scene3d.style.pointerEvents = p>0.62 ? 'auto' : 'none';
+      // ignition spark streaks from upper-right to centre
+      const ign=rng(p,.02,.12),travel=ease(rng(p,.10,.28));
+      spark.style.left=lerp(72,50,travel)+'%';spark.style.top=lerp(22,50,travel)+'%';
+      spark.style.opacity=ign*(1-rng(p,.24,.32));
+      spark.style.transform=`translate(-50%,-50%) scale(${lerp(.2,2.4,travel)})`;
+      // explosion (one shot): three layered clips scrubbed by scroll + procedural core, blue equatorial pulse, full-page white flash
+      const vp=ease(rng(p,.28,.60));                 // clips play once across the blast window
+      const vEnv=Math.min(1,rng(p,.28,.33))*(1-rng(p,.56,.66));
+      const vs=lerp(.6,1.4,vp);
+      // warm ambient glow lifts the surrounding space through the blast
+      if(exGlow) exGlow.style.opacity=(Math.min(1,rng(p,.27,.36))*(1-rng(p,.56,.72))*0.85).toFixed(3);
+      exVids.forEach(([v,dur,fac])=>{ if(v&&v.readyState>=1){ try{ v.currentTime=Math.min(dur, vp*dur); }catch(e){} } });
+      exSw4.style.opacity=(vEnv*0.6).toFixed(3);
+      exSwc.style.opacity=(vEnv*0.65).toFixed(3);
+      exSph.style.opacity=(Math.min(1,rng(p,.27,.31))*(1-rng(p,.46,.56))*0.8).toFixed(3);   // spherical burst is quick, fades earlier
+      exSw4.style.transform=`translate(-50%,-50%) scale(${vs.toFixed(3)})`;
+      exSwc.style.transform=`translate(-50%,-50%) scale(${(vs*1.06).toFixed(3)})`;
+      exSph.style.transform=`translate(-50%,-50%) scale(${lerp(.55,1.2,ease(rng(p,.27,.50))).toFixed(3)})`;
+      // brief, mostly full-page white flash at ignition
+      exFlash.style.opacity=(Math.min(1,rng(p,.28,.31))*(1-rng(p,.31,.40))*0.85).toFixed(3);
+      const eC=ease(rng(p,.28,.52));
+      exCore.style.opacity=(Math.min(1,rng(p,.28,.33))*(1-rng(p,.46,.58))*0.5).toFixed(3);
+      exCore.style.transform=`translate(-50%,-50%) scale(${lerp(.15,1.05,eC).toFixed(3)})`;
+      const eP=ease(rng(p,.35,.62));
+      exPulse.style.opacity=(Math.min(1,rng(p,.35,.40))*(1-rng(p,.58,.68))).toFixed(3);
+      exPulse.style.transform=`translate(-50%,-50%) scale(${lerp(.2,4.4,eP).toFixed(3)}, ${lerp(.7,1.3,eP).toFixed(3)})`;
+      // hero text + CTAs blow apart
+      const sc=ease(rng(p,.30,.54));
+      pieces.forEach(el=>{const ex=parseFloat(el.dataset.dx||0),ey=parseFloat(el.dataset.dy||0);
+        el.style.opacity=1-rng(p,.30,.50);
+        el.style.transform=`translate(${ex*HD*sc}px, ${ey*HD*sc}px) scale(${lerp(1,1.5,sc)}) rotate(${ex*18*sc}deg)`;});
+      // asteroid field shatters out of frame on the blast
+      if(window.__setShatter) window.__setShatter(ease(rng(p,.30,.58)));
+      // wheel rises from the CENTRE of the blast, then slides to its place on the right
+      const formP=back(rng(p,.48,.66));
+      const slideP=ease(rng(p,.64,.84));
+      scene3d.style.opacity=rng(p,.48,.58);
+      scene3d.style.transform=`translate(${(dx*(1-slideP)).toFixed(0)}px,${(dy*(1-slideP)).toFixed(0)}px) scale(${lerp(.05,1,formP).toFixed(3)})`;
+      // brand column slides in from the left
+      leftcol.style.opacity=rng(p,.64,.86);
+      leftcol.style.transform=`translateX(${lerp(-160,0,ease(rng(p,.62,.86))).toFixed(0)}px)`;
+      // just before settling, the column splits: brand rises to the top, supporter/disclaimer drop to the bottom
+      // settled positions are top/bottom (CSS space-between, never overflow); the split animates INTO them from a grouped centre
+      const splitP=ease(rng(p,.66,.92)), gd=innerHeight*0.16;
+      if(lcTop) lcTop.style.transform=`translateY(${((1-splitP)*gd).toFixed(0)}px)`;
+      if(lcBottom) lcBottom.style.transform=`translateY(${(-(1-splitP)*gd).toFixed(0)}px)`;
+      requestAnimationFrame(frame);
+    }
+    measure(); addEventListener('resize',measure); addEventListener('load',measure);
+    const _logo=document.querySelector('.brandlogo'); if(_logo&&!_logo.complete)_logo.addEventListener('load',measure);
+    setTimeout(measure,300); setTimeout(measure,900);
+    requestAnimationFrame(frame);
+  }
+</script>
+<script src="assets/sprites/manifest.js"></script>
+<script>
+  // ---- individually cut-out rocks that shatter outward on the explosion ----
+  (function(){
+    const host=document.getElementById('shatter'); if(!host||!window.__ROCKS) return;
+    const BASE='assets/sprites/', els=[];
+    for(const r of window.__ROCKS){
+      const im=document.createElement('img'); im.className='tile'; im.src=BASE+r.s; im.alt='';
+      im.style.left=(r.x*100)+'%'; im.style.top=(r.y*100)+'%';
+      im.style.width=(r.w*100)+'%'; im.style.height=(r.h*100)+'%';
+      const cx=(r.x+r.w/2)-0.5, cy=(r.y+r.h/2)-0.5, len=Math.hypot(cx,cy)||0.001;
+      im.dataset.dx=(cx/len).toFixed(3); im.dataset.dy=(cy/len).toFixed(3);
+      im.dataset.rot=((Math.random()-0.5)*170).toFixed(1);
+      im.dataset.delay=(Math.random()*0.12).toFixed(3);
+      host.appendChild(im); els.push(im);
+    }
+    window.__setShatter=function(s){
+      const reach=Math.max(window.innerWidth,window.innerHeight)*1.1;
+      for(const d of els){
+        const dl=parseFloat(d.dataset.delay), e=Math.max(0,Math.min(1,(s-dl)/(1-dl)));
+        const dx=parseFloat(d.dataset.dx), dy=parseFloat(d.dataset.dy);
+        d.style.transform='translate('+(dx*e*reach).toFixed(0)+'px,'+(dy*e*reach+e*220).toFixed(0)+'px) rotate('+(parseFloat(d.dataset.rot)*e).toFixed(1)+'deg)';
+        d.style.opacity=(1-Math.max(0,(e-0.55)/0.45)).toFixed(3);
+      }
+    };
+  })();
+</script>
+</body>
+</html>

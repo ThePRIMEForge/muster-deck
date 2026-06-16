@@ -29,3 +29,6 @@ Content & Asstest/**
 supabase/.temp/
 supabase/.branches/
 supabase/generated/
+
+# Stock/source explosion footage stays local (large); derived web assets live in docs/landing/assets
+Explosions/**

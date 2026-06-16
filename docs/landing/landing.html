@@ -315,11 +315,6 @@
           </div>
 
           <div class="lc-bottom" id="lcBottom">
-            <div class="support">
-              <div class="ptxt">MusterDeck is free, built by Star Citizen players in their own time. Supporters keep it running.</div>
-              <button class="b-patreon">Become a supporter</button>
-            </div>
-
             <div class="community">
               <img class="combadge-img" src="assets/made-by-community.webp" alt="Made by the Community">
               <div class="disclaimer"><b>Unofficial Star Citizen fan site.</b> Not endorsed by or affiliated with the Cloud Imperium or Roberts Space Industries group of companies. Star Citizen&reg;, Squadron 42&reg;, Roberts Space Industries&reg;, and Cloud Imperium&reg; are registered trademarks of Cloud Imperium Rights LLC. All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.</div>
@@ -354,20 +349,6 @@
     <div class="tmhead"><div><div class="k" id="infoKick"></div><h3 id="infoTitle"></h3></div><button class="tclose" aria-label="Close">&times;</button></div>
     <div id="infoBody"></div>
     <div class="mcta"><button class="b b-guest" id="infoGuest" style="display:none"></button><button class="b b-primary">Sign up for MusterDeck</button></div>
-  </div>
-</div>
-
-<!-- ===== SUPPORTER MODAL ===== -->
-<div class="overlay" id="tierOverlay">
-  <div class="tmodal" role="dialog" aria-modal="true">
-    <div class="tmhead"><div><div class="k">Support MusterDeck</div><h3>Become a supporter</h3></div><button class="tclose" aria-label="Close">&times;</button></div>
-    <p class="tintro">MusterDeck is free to use and always will be. Supporters keep the servers running and unlock extra tools to run a sharper operation. Pick a level that fits. Change or cancel any time on Patreon.</p>
-    <div class="tiers">
-      <div class="tier"><div class="tn">Captain</div><div class="price">$1<span>/month</span></div><div class="tdesc">Back the project and wear it.</div><ul><li>Supporter badge on your callsign</li><li>Your name in the in-app credits</li><li>Supporter channel on the MusterDeck Discord</li></ul><button class="pick">Choose Captain</button></div>
-      <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs <span class="soon">Coming soon</span></li><li>Manage the org bank, even across multiple accounts <span class="soon">Coming soon</span></li><li>Save and reuse Fleet Command staffing templates <span class="soon">Coming soon</span></li></ul><button class="pick">Choose Admiral</button></div>
-      <div class="tier soon-tier"><div class="ribbon soon-ribbon">Coming soon</div><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground <span class="soon">Coming soon</span></li><li>Build brackets, manage signups, and run events <span class="soon">Coming soon</span></li><li>Publish standings and leaderboards to the public board <span class="soon">Coming soon</span></li></ul><button class="pick" disabled>Coming soon</button></div>
-    </div>
-    <div class="tnote">Tiers, prices, and perks confirmed. Exact wording still open to polish. Payments handled by Patreon.</div>
   </div>
 </div>
 
@@ -429,8 +410,6 @@
     ov.querySelectorAll('.tclose').forEach(b=>b.addEventListener('click',()=>closeModal(ov)));
   });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(closeModal); });
-  const tov=document.getElementById('tierOverlay');
-  document.querySelectorAll('.b-patreon').forEach(b=>b.addEventListener('click',e=>openModal(tov,e)));
 
   const infoOv=document.getElementById('infoOverlay'), infoMod=infoOv.querySelector('.tmodal');
   const COLORMAP={'#c1632e':'rally','#7fa356':'fleet','#3da3e0':'proving','#c2473a':'spoils'};

@@ -22,12 +22,15 @@ relative, no server needed).
 4. **Tool wheel rises from the centre of the blast**, then slides to the right;
    the left column slides in from the left.
 5. **Settled second half**: left column splits — brand (logo + name + tagline) to
-   the top, supporter blurb + button and the community badge + disclaimer to the
-   bottom (in a dark readable box). The 4-quadrant tool wheel sits on the right
-   with a centre "Join Now" hub.
+   the top, the community badge + unofficial-fan-site disclaimer to the bottom (in a
+   dark readable box). The 4-quadrant tool wheel sits on the right with a centre
+   "Join Now" hub. (No supporter CTA here — becoming a supporter requires being
+   logged in, and logged-in users don't see the public landing; that UI lives in
+   the reusable [`become-a-supporter`](../components/become-a-supporter.html)
+   component for the in-app/account area.)
 6. **Mobile (<981px)**: no cinematic — everything stacks (logo, name, tagline,
-   four tool island cards, supporter, badge, disclaimer) and scrolls normally over
-   the same persistent planet.
+   four tool island cards, badge, disclaimer) and scrolls normally over the same
+   persistent planet.
 
 ## Screenshots
 
@@ -39,17 +42,14 @@ relative, no server needed).
 | Wheel rising from centre | ![wheel rising](screenshots/04-wheel-rising.png) |
 | Settled (split left column + wheel) | ![settled](screenshots/05-settled.png) |
 | Mobile | ![mobile](screenshots/06-mobile.png) |
-| Supporter tiers (Coming soon markers) | ![supporter tiers](screenshots/07-supporter-tiers.png) |
 
 ### "Coming soon" markers (2026-06-16)
 
-Features not live yet are flagged in mustard:
-- **Proving Ground** carries a diagonal **COMING SOON** stamp (desktop wheel quad + mobile card).
-- **Admiral** tier: "Create and manage your own orgs", "Manage the org bank…", and
-  "Save and reuse Fleet Command staffing templates" each show a `Coming soon` pill.
-- **Praetorian** tier is entirely coming soon (its unlocks are all Proving Ground) —
-  a "Coming soon" ribbon + a disabled button. Update these (`.coming-stamp`,
-  `.soon`, `.soon-tier`) as features ship.
+**Proving Ground** carries a diagonal **COMING SOON** stamp on the landing (desktop
+wheel quad + mobile card) via `.coming-stamp`. The supporter tier markers (`.soon`
+pills on Admiral, the `.soon-tier` Praetorian treatment) live in the
+[`become-a-supporter`](../components/become-a-supporter.html) component, since the
+supporter UI is not on the public landing. Update these as features ship.
 
 ## The explosion (how it's built)
 
@@ -94,5 +94,5 @@ are documented in [`SOURCES.md`](SOURCES.md).
 ## Reusable components extracted from this page
 
 - [`../components/space-planet-background.html`](../components/space-planet-background.html) — the persistent backdrop (for the hub)
-- [`../components/become-a-supporter.html`](../components/become-a-supporter.html) — supporter blurb + button + Patreon modal
-- [`../components/community-badge.html`](../components/community-badge.html) — community badge + fan-site disclaimer
+- [`../components/community-badge.html`](../components/community-badge.html) — community badge + fan-site disclaimer (used on the landing footer)
+- [`../components/become-a-supporter.html`](../components/become-a-supporter.html) — supporter blurb + button + Patreon tier modal. **Not on the public landing** (becoming a supporter requires login); for the logged-in / account area.

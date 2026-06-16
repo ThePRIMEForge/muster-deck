@@ -79,6 +79,10 @@
   .tier li:before{content:"\2713";position:absolute;left:0;color:var(--ac);font-weight:800}
   .tier .pick{padding:12px;border-radius:8px;font-weight:800;cursor:pointer;border:1.5px solid var(--ac);background:transparent;color:var(--ac);font-family:inherit;font-size:14px}
   .tier.feat .pick{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;border:none;box-shadow:0 3px 0 #7a5a12}
+  .soon{display:inline-block;margin-left:6px;background:var(--ac);color:#1a1305;font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:20px;vertical-align:middle;white-space:nowrap}
+  .ribbon.soon-ribbon{background:#7a7050;color:#15110a}
+  .tier.soon-tier .price,.tier.soon-tier ul{opacity:.85}
+  .tier.soon-tier .pick{background:#352f20;border:1.5px solid #4a4330;color:#9a9079;cursor:not-allowed;box-shadow:none}
   .tnote{text-align:center;color:#8a8068;font-size:12px;margin-top:20px}
   @media(max-width:760px){.tiers{grid-template-columns:1fr}}
 
@@ -102,8 +106,8 @@
     <p class="tintro">MusterDeck is free to use and always will be. Supporters keep the servers running and unlock extra tools to run a sharper operation. Pick a level that fits. Change or cancel any time on Patreon.</p>
     <div class="tiers">
       <div class="tier"><div class="tn">Captain</div><div class="price">$1<span>/month</span></div><div class="tdesc">Back the project and wear it.</div><ul><li>Supporter badge on your callsign</li><li>Your name in the in-app credits</li><li>Supporter channel on the MusterDeck Discord</li></ul><button class="pick">Choose Captain</button></div>
-      <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs</li><li>Manage the org bank, even across multiple accounts</li><li>Save and reuse Fleet Command staffing templates</li></ul><button class="pick">Choose Admiral</button></div>
-      <div class="tier"><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground</li><li>Build brackets, manage signups, and run events</li><li>Publish standings and leaderboards to the public board</li></ul><button class="pick">Choose Praetorian</button></div>
+      <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs <span class="soon">Coming soon</span></li><li>Manage the org bank, even across multiple accounts <span class="soon">Coming soon</span></li><li>Save and reuse Fleet Command staffing templates <span class="soon">Coming soon</span></li></ul><button class="pick">Choose Admiral</button></div>
+      <div class="tier soon-tier"><div class="ribbon soon-ribbon">Coming soon</div><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground</li><li>Build brackets, manage signups, and run events</li><li>Publish standings and leaderboards to the public board</li></ul><button class="pick" disabled>Coming soon</button></div>
     </div>
     <div class="tnote">Tiers, prices, and perks confirmed. Exact wording still open to polish. Payments handled by Patreon.</div>
   </div>

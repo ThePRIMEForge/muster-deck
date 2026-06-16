@@ -149,6 +149,16 @@
   .hub .jn{font-size:clamp(14px,3.3cqw,28px);font-weight:900;line-height:1;white-space:nowrap}
   .hub .sub2{font-size:clamp(8px,1.5cqw,13px);font-weight:700;margin-top:4px;opacity:.82;white-space:nowrap}
 
+  /* ---- coming-soon markers ---- */
+  .coming-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-11deg);z-index:7;pointer-events:none;
+    border:2.5px solid var(--ac);color:var(--ac);font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+    font-size:clamp(11px,2.3vmin,17px);padding:5px 13px;border-radius:8px;background:rgba(10,9,7,.5);
+    box-shadow:0 0 0 1px rgba(0,0,0,.45), 0 6px 18px rgba(0,0,0,.45);white-space:nowrap}
+  .island{position:relative}
+  .island .coming-stamp{font-size:13px}
+  .soon{display:inline-block;margin-left:6px;background:var(--ac);color:#1a1305;font-size:10px;font-weight:800;
+    letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:20px;vertical-align:middle;white-space:nowrap}
+
   /* ---------- mobile tool islands ---------- */
   .islands{display:none;flex-direction:column;gap:14px}
   .island{background:rgba(20,15,9,.92);border:1px solid #2a2418;border-radius:14px;padding:20px;border-top:3px solid var(--qc)}
@@ -219,6 +229,9 @@
   .tier li:before{content:"\2713";position:absolute;left:0;color:var(--ac);font-weight:800}
   .tier .pick{padding:12px;border-radius:8px;font-weight:800;cursor:pointer;border:1.5px solid var(--ac);background:transparent;color:var(--ac);font-family:inherit;font-size:14px}
   .tier.feat .pick{background:linear-gradient(180deg,#e6bb50,#D4A028 55%,#a87d18);color:#1a1305;border:none;box-shadow:0 3px 0 #7a5a12}
+  .ribbon.soon-ribbon{background:#7a7050;color:#15110a}
+  .tier.soon-tier .price,.tier.soon-tier ul{opacity:.85}
+  .tier.soon-tier .pick{background:#352f20;border:1.5px solid #4a4330;color:#9a9079;cursor:not-allowed;box-shadow:none}
   .tnote{text-align:center;color:#8a8068;font-size:12px;margin-top:20px}
   @media(max-width:760px){.tiers{grid-template-columns:1fr}}
   /* More info modal content */
@@ -297,7 +310,7 @@
           <div class="islands">
             <div class="island" style="--qc:#C1632E"><div class="k">Rally Point</div><h3>Find or publish operations</h3><p>The public board for Star Citizen ops. Hosts post the roles and ships they need; players filter by activity, time zone, and ship, then apply. Browse free as a guest; sign up to post or apply.</p><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
             <div class="island" style="--qc:#7FA356"><div class="k">Fleet Command</div><h3>Plan ship composition, staff crews, run ops</h3><p>The shared ops console for serious orgs. Build ship rosters and crew profiles, staff ops from saved templates, lock the roster when it starts, and follow a live ops view with a full audit log.</p><div class="qrow"><button class="qb qb-info">More info</button></div></div>
-            <div class="island" style="--qc:#3DA3E0"><div class="k">Proving Ground</div><h3>Run tournaments and competitive events</h3><p>Competitive events from signup to trophy. Single, double, round robin, or Swiss, from 1v1 to 5v5. Open signups, seed the field, publish brackets, and track standings and leaderboards live.</p><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
+            <div class="island" style="--qc:#3DA3E0"><div class="coming-stamp">Coming soon</div><div class="k">Proving Ground</div><h3>Run tournaments and competitive events</h3><p>Competitive events from signup to trophy. Single, double, round robin, or Swiss, from 1v1 to 5v5. Open signups, seed the field, publish brackets, and track standings and leaderboards live.</p><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
             <div class="island" style="--qc:#C2473A"><div class="k">S.P.O.I.L.S.</div><h3>Settle loot, payouts, ledgers</h3><p>Settlement, Payouts, Operations, Inventory, Loot, and Shares. Log every haul, set the split, and it works out each member's share. Records only, run by your quartermaster.</p><div class="qrow"><button class="qb qb-info">More info</button></div></div>
           </div>
 
@@ -321,7 +334,7 @@
               <div class="ring">
                 <div class="quad tl" style="--qc:#C1632E"><div class="qtext"><div class="k">Rally Point</div><h3>Find or publish operations</h3><p class="short">The public board for Star Citizen ops.</p><div class="full"><p>Hosts post the roles and ships they need; players filter by activity, time zone, and ship, then apply. Browse free as a guest; sign up to post or apply.</p></div></div><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
                 <div class="quad tr" style="--qc:#7FA356"><div class="qtext"><div class="k">Fleet Command</div><h3>Plan ship composition,<br>staff crews, run ops</h3><p class="short">Shared ops console for serious orgs.</p><div class="full"><p>Build ship rosters and crew profiles, staff ops from saved templates, lock the roster when it starts, and follow a live ops view with a full audit log.</p></div></div><div class="qrow"><button class="qb qb-info">More info</button></div></div>
-                <div class="quad bl" style="--qc:#3DA3E0"><div class="qtext"><div class="k">Proving Ground</div><h3>Run tournaments and<br>competitive events</h3><p class="short">Competitive events from signup to trophy.</p><div class="full"><p>Single, double, round robin, or Swiss, from 1v1 to 5v5. Open signups, seed the field, publish brackets, and track standings and leaderboards live.</p></div></div><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
+                <div class="quad bl" style="--qc:#3DA3E0"><div class="coming-stamp">Coming soon</div><div class="qtext"><div class="k">Proving Ground</div><h3>Run tournaments and<br>competitive events</h3><p class="short">Competitive events from signup to trophy.</p><div class="full"><p>Single, double, round robin, or Swiss, from 1v1 to 5v5. Open signups, seed the field, publish brackets, and track standings and leaderboards live.</p></div></div><div class="qrow"><button class="qb qb-guest">View public</button><button class="qb qb-info">More info</button></div></div>
                 <div class="quad br" style="--qc:#C2473A"><div class="qtext"><div class="k">S.P.O.I.L.S.</div><h3>Settle loot, payouts, ledgers</h3><p class="short">The ledger that ends payout arguments.</p><div class="full"><p>Settlement, Payouts, Operations, Inventory, Loot, and Shares. Log every haul, set the split, and it works out each member's share. Records only, run by your quartermaster.</p></div></div><div class="qrow"><button class="qb qb-info">More info</button></div></div>
               </div>
               <div class="hub"><div class="jn">Join Now</div><div class="sub2">Sign up free</div></div>
@@ -351,8 +364,8 @@
     <p class="tintro">MusterDeck is free to use and always will be. Supporters keep the servers running and unlock extra tools to run a sharper operation. Pick a level that fits. Change or cancel any time on Patreon.</p>
     <div class="tiers">
       <div class="tier"><div class="tn">Captain</div><div class="price">$1<span>/month</span></div><div class="tdesc">Back the project and wear it.</div><ul><li>Supporter badge on your callsign</li><li>Your name in the in-app credits</li><li>Supporter channel on the MusterDeck Discord</li></ul><button class="pick">Choose Captain</button></div>
-      <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs</li><li>Manage the org bank, even across multiple accounts</li><li>Save and reuse Fleet Command staffing templates</li></ul><button class="pick">Choose Admiral</button></div>
-      <div class="tier"><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground</li><li>Build brackets, manage signups, and run events</li><li>Publish standings and leaderboards to the public board</li></ul><button class="pick">Choose Praetorian</button></div>
+      <div class="tier feat"><div class="ribbon">Most popular</div><div class="tn">Admiral</div><div class="price">$5<span>/month</span></div><div class="tdesc">Run a sharper operation.</div><ul><li>Everything in Captain</li><li>Early access to new tools and features</li><li>Custom banners on your Rally Point ops</li><li>Create and manage your own orgs <span class="soon">Coming soon</span></li><li>Manage the org bank, even across multiple accounts <span class="soon">Coming soon</span></li><li>Save and reuse Fleet Command staffing templates <span class="soon">Coming soon</span></li></ul><button class="pick">Choose Admiral</button></div>
+      <div class="tier soon-tier"><div class="ribbon soon-ribbon">Coming soon</div><div class="tn">Praetorian</div><div class="price">$20<span>/month</span></div><div class="tdesc">Host the competition.</div><ul><li>Everything in Admiral</li><li>Set up and post tournaments in Proving Ground</li><li>Build brackets, manage signups, and run events</li><li>Publish standings and leaderboards to the public board</li></ul><button class="pick" disabled>Coming soon</button></div>
     </div>
     <div class="tnote">Tiers, prices, and perks confirmed. Exact wording still open to polish. Payments handled by Patreon.</div>
   </div>

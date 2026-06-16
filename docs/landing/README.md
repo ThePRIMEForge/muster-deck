@@ -39,6 +39,17 @@ relative, no server needed).
 | Wheel rising from centre | ![wheel rising](screenshots/04-wheel-rising.png) |
 | Settled (split left column + wheel) | ![settled](screenshots/05-settled.png) |
 | Mobile | ![mobile](screenshots/06-mobile.png) |
+| Supporter tiers (Coming soon markers) | ![supporter tiers](screenshots/07-supporter-tiers.png) |
+
+### "Coming soon" markers (2026-06-16)
+
+Features not live yet are flagged in mustard:
+- **Proving Ground** carries a diagonal **COMING SOON** stamp (desktop wheel quad + mobile card).
+- **Admiral** tier: "Create and manage your own orgs", "Manage the org bank…", and
+  "Save and reuse Fleet Command staffing templates" each show a `Coming soon` pill.
+- **Praetorian** tier is entirely coming soon (its unlocks are all Proving Ground) —
+  a "Coming soon" ribbon + a disabled button. Update these (`.coming-stamp`,
+  `.soon`, `.soon-tier`) as features ship.
 
 ## The explosion (how it's built)
 

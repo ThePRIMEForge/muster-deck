@@ -2,7 +2,7 @@
 
 Status: **Canonical** — single source of truth for color, type, logo, and surface treatment.
 Date: 2026-06-11
-Built on: the **v2 per-pillar color system** decided 2026-06-09 (`02_DESIGN & WORKING FILES/2026-06-09-musterdeck-pillar-color-system.html` + `…-type-specimen.html`, `…-weight-depth.html`).
+Built on: the **v2 per-pillar color system** decided 2026-06-09 (`docs/mockups/2026-06-09-musterdeck-pillar-color-system.html` + `…-type-specimen.html`, `…-weight-depth.html`).
 
 > This guide replaces the older worn-industrial / single-mustard direction (the May 20–22 handoffs). That look — heavy chip-loss distress, one mustard for everything, Stardos Stencil / Capture It — is **retired**. v2 is the modern direction: a **unified system** (shared mark, type, layout grammar) with a **distinct accent color per pillar**, and far lighter texture. The May docs remain only as history.
 
@@ -36,7 +36,7 @@ Logo source files (do not regenerate — these are the official mark; sources st
 - `public/brand/musterdeck-badge.png` (512px, transparent) — header / general use
 - `public/brand/musterdeck-badge-128.png` — apple-touch-icon / small
 - `public/brand/favicon.png` (64px) — wired in `index.html`
-- `public/brand/musterdeck-loop.mp4` / `.webm` (~85KB, 5.4s loop) — animated logo for loading splash / hero. Reference: `02_DESIGN & WORKING FILES/2026-06-11-musterdeck-logo-splash.html`
+- `public/brand/musterdeck-loop.mp4` / `.webm` (~85KB, 5.4s loop) — animated logo for loading splash / hero. Reference: `docs/mockups/2026-06-11-musterdeck-logo-splash.html`
 
 Clear space = height of the badge. On mustard fills use a dark treatment; on dark surfaces the badge sits as-is (graphite rim reads on dark). Note: prior mockups used a placeholder "M" box — that is retired; the real badge is now the mark.
 
@@ -145,7 +145,7 @@ The heavy chip-loss / weathered-paint system is retired. v2 uses three light, pe
 - **Status stamp:** a rotated (-8°), outlined `--stamp`-colored stamp (e.g. "OP LIVE", "SHARES OUT") in Big Shoulders Stencil Display, top-right of a stage. One per surface, low opacity.
 ### Weight / depth baseline (LOCKED 2026-06-11 — starting point)
 
-Locked from `02_DESIGN & WORKING FILES/2026-06-11-musterdeck-palette-verification.html`. This is the **floor**, not the ceiling — we are actively pushing for more 3D and texture from here (see §12).
+Locked from `docs/mockups/2026-06-11-musterdeck-palette-verification.html`. This is the **floor**, not the ceiling — we are actively pushing for more 3D and texture from here (see §12).
 
 - **Buttons:** extruded bottom lip in the accent's deep shade (`color-mix(--ac 55%, #000)` ~4px), inset top highlight (`rgba(255,255,255,.35)`), accent glow, press-in on `:active` (translateY 3px). Cyan Terminal button extrudes in cyan.
 - **Lines:** global-bar divider 2px, brand-mark box 2.5px (with faint mark glow), tiles 1.5px accent borders + inset highlight + drop shadow. **No 1px hairlines** — the thin-line look is explicitly rejected.
@@ -156,7 +156,7 @@ Depth/glow ladder reference: `…-weight-depth.html` (2026-06-09 21:07).
 
 ### Button system (LOCKED 2026-06-11)
 
-Three components, all **pure CSS/SVG — zero art assets**. All accent-token-driven (`--ac`, `--bg`), so each pillar skin colors them automatically. Reference implementations: `02_DESIGN & WORKING FILES/2026-06-11-musterdeck-button-pair.html` and `…-slide-confirm.html`.
+Three components, all **pure CSS/SVG — zero art assets**. All accent-token-driven (`--ac`, `--bg`), so each pillar skin colors them automatically. Reference implementations: `docs/mockups/2026-06-11-musterdeck-button-pair.html` and `…-slide-confirm.html`.
 
 **1 · Primary — Hardware Extrude.** The solid CTA. Thick accent-deep bottom lip, top sheen highlight, accent glow, deep press-in on `:active`. In Terminal, swap `--ac` → `--ac2` (cyan).
 

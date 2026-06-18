@@ -69,11 +69,7 @@ export const foundationCopy = {
     discord: 'Continue with Discord',
     google: 'Continue with Google',
     email: 'Continue with email',
-    consentPrefix: 'I agree to the',
-    termsLink: 'Terms of Service',
-    consentAnd: 'and',
-    privacyLink: 'Privacy Policy',
-    consentSuffix: '.',
+    terms: 'I agree to the Terms of Service and Privacy Policy.',
   },
   admin: {
     title: 'Admin Portal',

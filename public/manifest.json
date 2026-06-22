@@ -1,0 +1,34 @@
+{
+  "name": "MusterDeck",
+  "short_name": "MusterDeck",
+  "description": "Star Citizen fan operations platform — Fleet Command, Rally Point, S.P.O.I.L.S., Proving Ground.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#161109",
+  "background_color": "#161109",
+  "icons": [
+    {
+      "src": "/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/brand/musterdeck-badge-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/brand/musterdeck-badge.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

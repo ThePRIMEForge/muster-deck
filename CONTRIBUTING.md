@@ -10,7 +10,7 @@ MusterDeck is a React + Supabase fan tool for Star Citizen fleet coordination. T
 |---|---|
 | Frontend | React 19, Vite 7, TypeScript |
 | Backend | Supabase (PostgreSQL + Auth + RLS) |
-| Deploy | Netlify (auto-deploys on merge to `main`) |
+| Deploy | GitHub Pages (auto-deploys on merge to `main` via GitHub Actions) |
 | CI | GitHub Actions (TypeScript check + CodeQL) |
 
 ---

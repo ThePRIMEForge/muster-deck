@@ -129,7 +129,7 @@ const privacyPolicy: LegalDocument = {
           type: 'list',
           items: [
             'Supabase — authentication and database hosting for your account and app data.',
-            'Netlify — hosting and delivery of the website.',
+            'GitHub Pages — hosting and delivery of the website.',
             'Discord — if you choose to link a Discord identity or interact with our community integrations.',
             'Google — if you choose to sign in with Google, for authenticating your account.',
             'Patreon or a payment processor (not enabled yet) — if we later offer support or paid features, the relevant provider processes membership and payment details under its own terms and privacy policy. MusterDeck does not receive or store your full card number.',

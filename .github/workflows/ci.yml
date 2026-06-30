@@ -28,10 +28,17 @@ jobs:
         run: npm run typecheck --if-present
       - name: Build
         run: npm run build
-      - name: Test (optional)
+      - name: Test with coverage
         run: |
-          if npm run | grep -qE '^[[:space:]]+test'; then
-            npm test -- --watch=false
+          if npm run | grep -qE '^[[:space:]]+test:coverage'; then
+            mkdir -p coverage
+            npm run test:coverage
           else
-            echo "No test script defined; skipping tests."
+            echo "No test:coverage script defined; skipping tests."
           fi
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false

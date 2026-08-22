@@ -583,6 +583,44 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
 }
 
+export type AuthIdentity = {
+  id: string;
+  user_id: string;
+  identity_id: string;
+  provider: string;
+};
+
+export async function getAuthIdentities(): Promise<AuthIdentity[]> {
+  if (!supabase) return [];
+  const { data: { user } } = await supabase.auth.getUser();
+  return (user?.identities ?? []) as AuthIdentity[];
+}
+
+export async function linkProvider(provider: 'discord' | 'google'): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { data, error } = await supabase.auth.linkIdentity({
+    provider,
+    options: { redirectTo: window.location.href },
+  });
+  if (error) throw error;
+  if (data?.url) {
+    window.location.href = data.url;
+  }
+}
+
+export async function unlinkProvider(identity: AuthIdentity): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { error } = await supabase.auth.unlinkIdentity(identity as Parameters<typeof supabase.auth.unlinkIdentity>[0]);
+  if (error) throw error;
+}
+
+export async function deleteMyAccount(): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { error } = await supabase.rpc('delete_my_account');
+  if (error) throw error;
+  await supabase.auth.signOut();
+}
+
 // --- Admin ---
 
 export type AdminProfileRow = {

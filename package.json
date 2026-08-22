@@ -14,6 +14,7 @@
     "format:check": "prettier --check src",
     "prepare": "husky",
     "test": "node --test --experimental-strip-types scripts/permissions/*.test.ts scripts/foundation/*.test.ts scripts/fleet-command/*.test.ts scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",
+    "test:coverage": "node --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-reporter=spec --test-reporter-destination=stdout --test --experimental-strip-types scripts/permissions/*.test.ts scripts/foundation/*.test.ts scripts/fleet-command/*.test.ts scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",
     "test:data": "node --test scripts/staffing-templates/*.test.mjs scripts/wiki-sync/*.test.mjs",
     "staffing:generate-reviewed": "node scripts/staffing-templates/generate-reviewed-staffing-template-sql.mjs",
     "db:load-generated": "bash scripts/supabase/load-generated-local-data.sh",

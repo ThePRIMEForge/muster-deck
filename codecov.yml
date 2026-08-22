@@ -1,0 +1,22 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 5%
+    patch:
+      default:
+        target: 60%
+        threshold: 10%
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: true
+
+ignore:
+  - "src/vite-env.d.ts"
+  - "**/*.d.ts"
+  - "dist/**"
+  - "scripts/**/*.test.ts"
+  - "scripts/**/*.test.mjs"

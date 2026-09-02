@@ -547,6 +547,7 @@ export type ProfileRow = {
   display_name: string;
   primary_org: string;
   rsi_handle: string | null;
+  rsi_verification_token: string | null;
   rsi_verification_status: string;
   account_status: string;
   site_role: string;
@@ -581,6 +582,21 @@ export async function updateMyProfile({
 export async function signOut(): Promise<void> {
   if (!supabase) return;
   await supabase.auth.signOut();
+}
+
+// --- RSI verification ---
+
+export async function generateRsiVerificationToken(): Promise<string> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { data, error } = await supabase.rpc('generate_rsi_verification_token');
+  if (error) throw error;
+  return data as string;
+}
+
+export async function submitRsiVerification(): Promise<void> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const { error } = await supabase.rpc('submit_rsi_verification');
+  if (error) throw error;
 }
 
 // --- Admin ---
